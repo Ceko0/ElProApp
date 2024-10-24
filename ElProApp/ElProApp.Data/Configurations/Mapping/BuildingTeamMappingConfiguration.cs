@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Data.Configurations
+﻿namespace ElProApp.Data.Configuration.Mapping
 {
     using ElProApp.Data.Models.Mappings;
     using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,7 @@
                 .HasOne(btm => btm.Building)
                 .WithMany(b => b.TeamsOnBuilding)
                 .HasForeignKey(btm => btm.BuildingId)
-                .OnDelete(DeleteBehavior.NoAction); 
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder
                 .HasOne(btm => btm.Team)
