@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using ElProApp.Data;
 namespace ElProApp.Web
 {
     using Microsoft.EntityFrameworkCore;
@@ -13,6 +16,8 @@ namespace ElProApp.Web
 
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ElProAppDbContext>();
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ElProAppDbContext>()
