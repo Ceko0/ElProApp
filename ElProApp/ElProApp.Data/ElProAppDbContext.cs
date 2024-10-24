@@ -29,15 +29,8 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            modelBuilder.ApplyConfiguration(new TeamConfiguration());
-            modelBuilder.ApplyConfiguration(new JobConfiguration());
-            modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
-            modelBuilder.ApplyConfiguration(new JobDoneConfiguration());
-            modelBuilder.ApplyConfiguration(new BuildingConfiguration());
-            modelBuilder.ApplyConfiguration(new JobDoneTeamMappingConfiguration());
-            modelBuilder.ApplyConfiguration(new EmployeeTeamMappingConfiguration());
-            modelBuilder.ApplyConfiguration(new BuildingTeamMappingConfiguration());
         }
     }
 }

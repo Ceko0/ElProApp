@@ -1,13 +1,14 @@
 ﻿namespace ElProApp.Data.Models
 {
     using System;
-    using Microsoft.AspNetCore.Identity;
     using System.ComponentModel.DataAnnotations;
     using static Common.EntityValidationErrorMessage.Employee;
     using static Common.EntityValidationErrorMessage.Master;
     using static Common.EntityValidationConstants.Employee;
     using Microsoft.EntityFrameworkCore;
     using ElProApp.Data.Models.Mappings;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Identity;
 
     public class Employee
     {
@@ -40,11 +41,8 @@
         [Comment("Foreign key representing the team to which the employee belongs.")]
         public Guid TeamId { get; set; }
 
-        public string IdentityUserId { get; set; } = null!;
-        public virtual IdentityUser IdentityUser { get; set; } = null!;
-
+        public string UserId { get; set; } = null!;
+        public IdentityUser User { get; set; } = null!;
         public virtual ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new HashSet<EmployeeTeamMapping>();
-
-
     }
 }

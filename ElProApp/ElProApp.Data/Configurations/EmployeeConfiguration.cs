@@ -30,10 +30,10 @@
                 .HasColumnType("decimal(18, 2)");
 
             builder
-            .HasOne(e => e.IdentityUser)
-            .WithOne()
-            .HasForeignKey<Employee>(e => e.IdentityUserId)
-            .IsRequired(); 
+           .HasOne(e => e.User)
+           .WithOne()
+           .HasForeignKey<Employee>(e => e.UserId)
+           .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }

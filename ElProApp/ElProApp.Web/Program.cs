@@ -17,9 +17,7 @@ namespace ElProApp.Web
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ElProAppDbContext>();
-
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            builder.Services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ElProAppDbContext>()
                 .AddDefaultTokenProviders();
 

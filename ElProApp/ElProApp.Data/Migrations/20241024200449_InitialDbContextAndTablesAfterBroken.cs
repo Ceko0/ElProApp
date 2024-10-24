@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ElProApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initialeDbContextAndTables : Migration
+    public partial class InitialDbContextAndTablesAfterBroken : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,22 +61,6 @@ namespace ElProApp.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_buildings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "employees",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the employee."),
-                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The first name of the employee with a maximum of 20 characters."),
-                    LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The last name of the employee with a maximum of 20 characters."),
-                    Wages = table.Column<decimal>(type: "decimal(4,2)", nullable: false, comment: "The wages of the employee with up to 4 digits before the decimal point and up to 2 digits after."),
-                    MoneyToTake = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "The money the employee has to take, must be a positive value."),
-                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key representing the team to which the employee belongs.")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -150,8 +134,8 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -195,8 +179,8 @@ namespace ElProApp.Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -204,6 +188,29 @@ namespace ElProApp.Data.Migrations
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "employees",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the employee."),
+                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The first name of the employee with a maximum of 20 characters."),
+                    LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The last name of the employee with a maximum of 20 characters."),
+                    Wages = table.Column<decimal>(type: "decimal(4,2)", nullable: false, comment: "The wages of the employee with up to 4 digits before the decimal point and up to 2 digits after."),
+                    MoneyToTake = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "The money the employee has to take, must be a positive value."),
+                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key representing the team to which the employee belongs."),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_employees", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_employees_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -348,6 +355,12 @@ namespace ElProApp.Data.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_employees_UserId",
+                table: "employees",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_employeeTeamMappings_TeamId",
                 table: "employeeTeamMappings",
                 column: "TeamId");
@@ -399,9 +412,6 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "buildings");
 
             migrationBuilder.DropTable(
@@ -412,6 +422,9 @@ namespace ElProApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "teams");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "jobs");
