@@ -29,6 +29,7 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        [Display(Name = "Потребителско име")]
         public string Username { get; set; }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Мобилен номер")]
             public string PhoneNumber { get; set; }
         }
 
