@@ -5,14 +5,21 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     
-    using Data;
+    using ElProApp.Data;
     using Models.Employee;
     using Data.Models;
     using System.Security.Claims;
+    using ElProApp.Services.Data.Interfaces;
 
     [Authorize]
-    public class EmployeeController(ElProAppDbContext data , UserManager<IdentityUser> userManager) : Controller
+    public class EmployeeController(ElProAppDbContext data,
+                              UserManager<IdentityUser> userManager,
+                              IEmployeeService employeeService) : Controller
     {
+        private readonly ElProAppDbContext data = data;
+        private readonly UserManager<IdentityUser> userManager = userManager;
+        private readonly IEmployeeService employeeService = employeeService;
+
         [HttpGet]
         public IActionResult Add() 
         {
@@ -31,27 +38,16 @@
                 return View(model);
             }
 
-            if(data.Employees.Any(e => e.UserId == userId))
+            try
             {
-                ModelState.AddModelError(string.Empty, "Вече имате създаден служител");
+                await employeeService.AddAsync(model, userId);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
-
-            var currentUser = await userManager.FindByIdAsync(userId);
-
-            var employee = new Employee
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Wages = model.Wages,
-                UserId = userId ?? string.Empty,
-                User = currentUser = null!
-            };
-
-
-            data.Employees.Add(employee);
-            await data.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]

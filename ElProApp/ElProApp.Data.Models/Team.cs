@@ -42,18 +42,18 @@
         /// Collection of mappings representing the buildings assigned to this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and buildings.")]
-        public virtual ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = new HashSet<BuildingTeamMapping>();
+        public virtual ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = [];
 
         /// <summary>
         /// Collection of mappings representing the jobs completed by this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and completed jobs.")]
-        public virtual ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = new HashSet<JobDoneTeamMapping>();
+        public virtual ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = [];
 
         /// <summary>
         /// Collection of mappings representing employees who are members of this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and employees.")]
-        public virtual ICollection<EmployeeTeamMapping> EmployeesInTeam { get; set; } = new HashSet<EmployeeTeamMapping>();
+        public virtual ICollection<EmployeeTeamMapping> EmployeesInTeam { get; set; } = [];
     }
 }

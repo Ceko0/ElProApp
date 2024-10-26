@@ -45,7 +45,7 @@
 
         public IEnumerable<TType> GetAll()
         {
-            return this.dbSet.ToArray();
+            return [.. this.dbSet];
         }
 
         public async Task<IEnumerable<TType>> GetAllAsync()

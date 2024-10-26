@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ElProApp.Data.Models\ElProApp.Data.Models.csproj" />
     <ProjectReference Include="..\ElProApp.Data\ElProApp.Data.csproj" />
+    <ProjectReference Include="..\ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ElProApp.Data\ElProApp.Data.csproj" />
+    <ProjectReference Include="..\ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj" />
+    <ProjectReference Include="..\ElProApp.Web.Models\ElProApp.Web.Models.csproj" />
+  </ItemGroup>
+
 </Project>

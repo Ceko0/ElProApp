@@ -1,14 +1,17 @@
-namespace ElProApp.Web
+﻿namespace ElProApp.Web
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity;
-
-    using Data;
     using Services.Mapping;
-    using ElProApp.Web.Models;
-    using ElProApp.Web.Infrasreucture.Extensions;
     using System.Reflection;
+    using Microsoft.Extensions.DependencyInjection;
+
+    using ElProApp.Data;    
+    using ElProApp.Web.Models;
     using ElProApp.Data.Models;
+    using ElProApp.Web.Infrastructure.Extensions;
+    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Services.Data;
 
     public class Program
     {
@@ -41,8 +44,8 @@ namespace ElProApp.Web
                 options.SignIn.RequireConfirmedAccount = false;
             });
 
-            builder.Services.RegisterRepositories(typeof(Employee).Assembly); 
-            builder.Services.RegisterUserDefinedServices(Assembly.GetExecutingAssembly());
+            builder.Services.RegisterRepositories(typeof(Employee).Assembly);
+            builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

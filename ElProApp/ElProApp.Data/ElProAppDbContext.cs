@@ -13,12 +13,8 @@
     /// <summary>
     /// Represents the database context for the ElProApp application, which manages database sets for the app's entities.
     /// </summary>
-    public class ElProAppDbContext : IdentityDbContext<IdentityUser>
+    public class ElProAppDbContext(DbContextOptions<ElProAppDbContext> options) : IdentityDbContext<IdentityUser>(options)
     {
-        public ElProAppDbContext(DbContextOptions<ElProAppDbContext> options)
-            : base(options)
-        {
-        }
 
         /// <summary>
         /// DbSet for managing buildings in the database.

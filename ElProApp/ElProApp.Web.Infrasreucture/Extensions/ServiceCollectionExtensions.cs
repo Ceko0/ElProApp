@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Web.Infrasreucture.Extensions
+﻿namespace ElProApp.Web.Infrastructure.Extensions
 {
     using System.Reflection;
     using Microsoft.AspNetCore.Identity;
@@ -12,7 +12,7 @@
     {
         public static void RegisterRepositories(this IServiceCollection services, Assembly modelsAssembly)
         {
-            Type[] typesToExclude = new Type[] { typeof(IdentityUser) };
+            Type[] typesToExclude = [typeof(IdentityUser)];
             Type[] modelTypes = modelsAssembly
                 .GetTypes()
                 .Where(t => !t.IsAbstract && !t.IsInterface &&
@@ -27,7 +27,7 @@
                     Type repositoryInstanceType = typeof(BaseRepository<,>);
                     PropertyInfo? idPropInfo = type
                         .GetProperties()
-                        .Where(p => p.Name.ToLower() == "id")
+                        .Where(p => p.Name.Equals("id", StringComparison.CurrentCultureIgnoreCase))
                         .SingleOrDefault();
 
                     Type[] constructArgs = new Type[2];
@@ -65,12 +65,7 @@
             foreach (Type serviceInterfaceType in serviceInterfaceTypes)
             {
                 Type? serviceType = serviceTypes
-                    .SingleOrDefault(t => "i" + t.Name.ToLower() == serviceInterfaceType.Name.ToLower());
-                if (serviceType == null)
-                {
-                    throw new NullReferenceException($"Service type could not be obtained for the service {serviceInterfaceType.Name}");
-                }
-
+                    .SingleOrDefault(t => ("i" + t.Name.ToLower()).Equals(serviceInterfaceType.Name, StringComparison.CurrentCultureIgnoreCase)) ?? throw new NullReferenceException($"Service type could not be obtained for the service {serviceInterfaceType.Name}");
                 services.AddScoped(serviceInterfaceType, serviceType);
             }
         }

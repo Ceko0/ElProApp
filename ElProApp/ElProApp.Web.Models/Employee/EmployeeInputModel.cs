@@ -5,8 +5,10 @@
     using static Common.EntityValidationConstants.Employee;
     using static Common.EntityValidationErrorMessage.Employee;
     using static Common.EntityValidationErrorMessage.Master;
+    using Data.Models;
+    using Services.Mapping;
 
-    public class EmployeeInputModel
+    public class EmployeeInputModel : IMapFrom<Employee>
     {
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
