@@ -8,7 +8,7 @@
     using Data.Models;
     using Services.Mapping;
 
-    public class EmployeeInputModel : IMapFrom<Employee>
+    public class EmployeeInputModel : IMapTo<Employee>
     {
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]

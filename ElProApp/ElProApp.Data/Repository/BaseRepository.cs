@@ -43,20 +43,11 @@
             return entity;
         }
 
-        public IEnumerable<TType> GetAll()
-        {
-            return [.. this.dbSet];
-        }
+        public IEnumerable<TType> GetAll() => this.dbSet.AsQueryable();
 
-        public async Task<IEnumerable<TType>> GetAllAsync()
-        {
-            return await this.dbSet.ToArrayAsync();
-        }
+        public async Task<IEnumerable<TType>> GetAllAsync() => await this.dbSet.ToArrayAsync();
 
-        public IQueryable<TType> GetAllAttached()
-        {
-            return this.dbSet.AsQueryable();
-        }
+        public IQueryable<TType> GetAllAttached() => this.dbSet.AsQueryable();
 
         public void Add(TType item)
         {

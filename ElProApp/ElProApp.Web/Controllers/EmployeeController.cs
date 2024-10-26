@@ -41,7 +41,7 @@
             try
             {
                 await employeeService.AddAsync(model, userId);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details));
             }
             catch (InvalidOperationException ex)
             {
@@ -53,37 +53,20 @@
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            Guid validId = Guid.Empty;
-            bool isValid =IdValidation(id,ref validId);
-
-            if(!isValid) return BadRequest("Invalid ID format.");
-
-            var entity = await data.Employees.FirstOrDefaultAsync(e => e.Id == validId);
-
-            if (entity == null) return BadRequest("Invalid Employee.");
-
-            var model = new EmployeeViewModel()
+            if (!Guid.TryParse(id, out Guid validId))
             {
-                Id = entity.Id,
-                FirstName = entity.FirstName,
-                LastName = entity.LastName,
-                Wages = entity.Wages,
-                MoneyToTake = entity.MoneyToTake,
-                UserId = entity.UserId,
-                UserName = entity.User.UserName ?? string.Empty,
-                TeamsEmployeeBelongsTo = entity.TeamsEmployeeBelongsTo
-            };
+                return BadRequest("Invalid ID format.");
+            }
 
-            return View();
+            var model = await employeeService.GetEmployeeByIdAsync(validId);
+
+            if (model == null)
+            {
+                return BadRequest("Invalid Employee.");
+            }
+
+            return View(model);
         }
-
-        private static bool IdValidation(string id, ref Guid validId)
-        {
-            bool isValidId = Guid.TryParse(id, out  validId);
-            
-            return isValidId;
-        }
-
         private string? GetUserId() => HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

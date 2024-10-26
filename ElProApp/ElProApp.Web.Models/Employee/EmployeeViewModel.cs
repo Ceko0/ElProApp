@@ -1,8 +1,10 @@
 ﻿namespace ElProApp.Web.Models.Employee
 {
     using ElProApp.Data.Models.Mappings;
+    using ElProApp.Services.Mapping;
+    using ElProApp.Data.Models;
 
-    public class EmployeeViewModel
+    public class EmployeeViewModel : IMapFrom<Employee>
     {
         public Guid Id { get; set; }
 
