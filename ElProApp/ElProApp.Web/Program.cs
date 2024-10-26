@@ -4,6 +4,11 @@ namespace ElProApp.Web
     using Microsoft.AspNetCore.Identity;
 
     using Data;
+    using Services.Mapping;
+    using ElProApp.Web.Models;
+    using ElProApp.Web.Infrasreucture.Extensions;
+    using System.Reflection;
+    using ElProApp.Data.Models;
 
     public class Program
     {
@@ -36,11 +41,16 @@ namespace ElProApp.Web
                 options.SignIn.RequireConfirmedAccount = false;
             });
 
+            builder.Services.RegisterRepositories(typeof(Employee).Assembly); 
+            builder.Services.RegisterUserDefinedServices(Assembly.GetExecutingAssembly());
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
+
+            AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
