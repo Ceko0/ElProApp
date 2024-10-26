@@ -11,12 +11,12 @@
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Display(Name = "Име")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Display(Name = "Фамилия")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, 9999.99, ErrorMessage = ErrorMassageWages)]

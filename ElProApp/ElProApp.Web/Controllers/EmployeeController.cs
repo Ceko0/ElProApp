@@ -14,7 +14,7 @@
     public class EmployeeController(ElProAppDbContext data , UserManager<IdentityUser> userManager) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> Add() 
+        public IActionResult Add() 
         {
             return View(new EmployeeInputModel());
         }        
@@ -45,7 +45,7 @@
                 LastName = model.LastName,
                 Wages = model.Wages,
                 UserId = userId ?? string.Empty,
-                User = currentUser
+                User = currentUser = null!
             };
 
 
