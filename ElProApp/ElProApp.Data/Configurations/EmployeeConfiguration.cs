@@ -2,38 +2,47 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
     using Models;
     using static Common.EntityValidationConstants.Employee;
 
+    /// <summary>
+    /// Configuration class for the Employee entity, defining the schema for the Employee table.
+    /// </summary>
     public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
     {
+        /// <summary>
+        /// Configures the Employee entity properties and relationships.
+        /// </summary>
+        /// <param name="builder">EntityTypeBuilder used to configure the Employee entity.</param>
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            builder
-                .HasKey(e => e.Id);
+            // Sets the primary key for the Employee entity.
+            builder.HasKey(e => e.Id);
 
+            // Configures the FirstName property as required with a maximum length.
             builder.Property(e => e.FirstName)
-                .IsRequired()
-                .HasMaxLength(NameMaxLength);
+                .IsRequired() // First name must not be null
+                .HasMaxLength(NameMaxLength); // Maximum length defined by NameMaxLength constant
 
+            // Configures the LastName property as required with a maximum length.
             builder.Property(e => e.LastName)
-                .IsRequired()
-                .HasMaxLength(NameMaxLength);
+                .IsRequired() // Last name must not be null
+                .HasMaxLength(NameMaxLength); // Maximum length defined by NameMaxLength constant
 
+            // Configures the Wages property as required with a specific decimal type.
             builder.Property(e => e.Wages)
-                .IsRequired()
-                .HasColumnType("decimal(4, 2)");
+                .IsRequired() // Wages must not be null
+                .HasColumnType("decimal(4, 2)"); // 4 digits total, 2 after the decimal point
 
-            builder
-                .Property(e => e.MoneyToTake)
-                .HasColumnType("decimal(18, 2)");
+            // Configures the MoneyToTake property with a specific decimal type.
+            builder.Property(e => e.MoneyToTake)
+                .HasColumnType("decimal(18, 2)"); // 18 digits total, 2 after the decimal point
 
-            builder
-           .HasOne(e => e.User)
-           .WithOne()
-           .HasForeignKey<Employee>(e => e.UserId)
-           .OnDelete(DeleteBehavior.Cascade); 
+            // Configures the one-to-one relationship between Employee and IdentityUser.
+            builder.HasOne(e => e.User) // Specifies the navigation property
+                .WithOne() // There is one IdentityUser per Employee
+                .HasForeignKey<Employee>(e => e.UserId) // Specifies the foreign key
+                .OnDelete(DeleteBehavior.Cascade); // Cascading delete on User deletion
         }
     }
 }
