@@ -11,7 +11,8 @@
     public class EmployeeService(IRepository<Employee, Guid> employeeRepository, IHttpContextAccessor httpContextAccessor) : IEmployeeService
     {
         private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
-        public async Task<bool> AddAsync(EmployeeInputModel model)
+
+        public async Task<string> AddAsync(EmployeeInputModel model)
         {
             var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) throw new InvalidOperationException("Неуспешно извличане на UserId. Опитай отново.");
@@ -24,7 +25,7 @@
             employee.UserId = userId;
 
             await employeeRepository.AddAsync(employee);
-            return true;
+            return employee.Id.ToString();
         }
 
         public async Task<EmployeeViewModel?> GetEmployeeByIdAsync(string id)

@@ -31,8 +31,8 @@
         {
             try
             {
-                await employeeService.AddAsync(model);
-                return RedirectToAction(nameof(Details));
+                string employeeId = await employeeService.AddAsync(model);
+                return RedirectToAction(nameof(Details),new { id = employeeId });
             }
             catch (InvalidOperationException ex)
             {
