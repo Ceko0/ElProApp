@@ -29,18 +29,9 @@
         [HttpPost]
         public async Task<IActionResult> Add(EmployeeInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-            var userId = GetUserId();
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                ModelState.AddModelError(string.Empty, "Неуспешно извличане на UserId. Опитай отново.");
-                return View(model);
-            }
-
             try
             {
-                await employeeService.AddAsync(model, userId);
+                await employeeService.AddAsync(model);
                 return RedirectToAction(nameof(Details));
             }
             catch (InvalidOperationException ex)
@@ -53,12 +44,7 @@
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            if (!Guid.TryParse(id, out Guid validId))
-            {
-                return BadRequest("Invalid ID format.");
-            }
-
-            var model = await employeeService.GetEmployeeByIdAsync(validId);
+            var model = await employeeService.GetEmployeeByIdAsync(id);
 
             if (model == null)
             {
@@ -67,6 +53,5 @@
 
             return View(model);
         }
-        private string? GetUserId() => HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

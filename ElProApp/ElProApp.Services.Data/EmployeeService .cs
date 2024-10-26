@@ -5,17 +5,20 @@
     using ElProApp.Web.Models.Employee;
     using Interfaces;
     using ElProApp.Services.Mapping;
+    using System.Security.Claims;
+    using Microsoft.AspNetCore.Http;
 
-    public class EmployeeService(IRepository<Employee, Guid> employeeRepository) : IEmployeeService
+    public class EmployeeService(IRepository<Employee, Guid> employeeRepository, IHttpContextAccessor httpContextAccessor) : IEmployeeService
     {
-        public async Task<bool> AddAsync(EmployeeInputModel model, string userId)
+        private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
+        public async Task<bool> AddAsync(EmployeeInputModel model)
         {
+            var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) throw new InvalidOperationException("Неуспешно извличане на UserId. Опитай отново.");
+            
             var existingEmployee = await employeeRepository.FirstOrDefaultAsync(e => e.UserId == userId);
-            if (existingEmployee != null)
-            {
-                throw new InvalidOperationException("Вече имате създаден служител");
-            }
-
+            if (existingEmployee != null)  throw new InvalidOperationException("Вече имате създаден служител");
+            
             var employee = AutoMapperConfig.MapperInstance.Map<Employee>(model);
 
             employee.UserId = userId;
@@ -24,17 +27,15 @@
             return true;
         }
 
-
-        public async Task<EmployeeViewModel> GetEmployeeByIdAsync(Guid id)
+        public async Task<EmployeeViewModel?> GetEmployeeByIdAsync(string id)
         {
-            var entity = await employeeRepository
-                .GetByIdAsync(id);
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId))
+            {
+                throw new ArgumentException("Invalid ID format.");
+            }
 
-            EmployeeViewModel model = null;
-
-            if (entity != null) AutoMapperConfig.MapperInstance.Map(entity, model);
-
-            return model;
+            var entity = await employeeRepository.GetByIdAsync(validId);
+            return entity != null ? AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity) : null;
         }
     }
 }
