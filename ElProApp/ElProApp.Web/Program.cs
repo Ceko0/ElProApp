@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using ElProApp.Data;
 namespace ElProApp.Web
 {
     using Microsoft.EntityFrameworkCore;
@@ -64,7 +61,6 @@ namespace ElProApp.Web
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.MapRazorPages();
             app.UseDeveloperExceptionPage();
             app.Run();

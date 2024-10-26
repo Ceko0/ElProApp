@@ -1,12 +1,12 @@
 ﻿
 namespace ElProApp.Data.Models
 {
-    using ElProApp.Data.Models.Mappings;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
 
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
+    using Mappings;
 
     public class JobDone
     {
@@ -21,7 +21,7 @@ namespace ElProApp.Data.Models
         [Required]
         [Comment("The job associated with this record. Represents the job that has been completed.")]
         public Job Job { get; set; } = null!;
-        
+
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
         [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
@@ -29,7 +29,7 @@ namespace ElProApp.Data.Models
         public decimal Quantity { get; set; }
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Range(1, 30, ErrorMessage =ErrorMassageDaysForJob)]
+        [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
         [Comment("Number of days spent completing the job")]
         public int DaysForJob { get; set; }
 

@@ -1,0 +1,41 @@
+﻿@using ElProApp.Web.Models.Employee
+@model EmployeeInputModel
+@{
+    ViewData["Title"] = "Добави служител";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Add" method="post">
+            <h2>Добави нов служител</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="FirstName" class="form-control" placeholder="Име" />
+                <label asp-for="FirstName">Име</label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="LastName" class="form-control" placeholder="Фамилия" />
+                <label asp-for="LastName">Фамилия</label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Wages" type="number" step="0.01" class="form-control" placeholder="Заплата" />
+                <label asp-for="Wages">Заплата</label>
+                <span asp-validation-for="Wages" class="text-danger"></span>
+            </div>
+
+            <button type="submit" formmethod="post" class="w-100 btn btn-lg btn-primary">Добави служител</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

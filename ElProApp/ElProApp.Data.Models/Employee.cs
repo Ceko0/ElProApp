@@ -19,30 +19,33 @@
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Comment("The first name of the employee with a maximum of 20 characters.")]
+        [PersonalData]
         public string FirstName { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Comment("The last name of the employee with a maximum of 20 characters.")]
+        [PersonalData]
         public string LastName { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, 9999.99, ErrorMessage = ErrorMassageWages)]
-        [RegularExpression(@"^\d{1,4}(\.\d{1,2})?$", ErrorMessage = ErrorMassageWages)]
+        [Display(Name = "Заплата")]
         [Comment("The wages of the employee with up to 4 digits before the decimal point and up to 2 digits after.")]
-        public decimal Wages { get; set; }
+        public decimal Wages { get; set; } = 0.0m;
 
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
+        [Display(Name = "Сума, която служителят трябва да получи")]
         [Comment("The money the employee has to take, must be a positive value.")]
-        public decimal MoneyToTake { get; set; }
+        public decimal MoneyToTake { get; set; } = 0.0m;
 
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Comment("Foreign key representing the team to which the employee belongs.")]
-        public Guid TeamId { get; set; }
-
+        [Comment("Foreign key representing the user account associated with this employee.")]
         public string UserId { get; set; } = null!;
+
+        [Comment("Navigation property to the IdentityUser associated with this employee.")]
         public IdentityUser User { get; set; } = null!;
-        public virtual ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new HashSet<EmployeeTeamMapping>();
+
+        [Comment("Collection representing the many-to-many relationship between employees and teams.")]
+        public virtual ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = [];
     }
 }

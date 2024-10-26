@@ -1,0 +1,54 @@
+﻿@using ElProApp.Web.Models.Employee
+@model EmployeeViewModel
+@{
+    ViewData["Title"] = "Информация за служител";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Информация за служител</h1>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h3>@Model.FirstName @Model.LastName</h3>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Идентификатор:</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Име:</dt>
+                <dd class="col-sm-9">@Model.FirstName</dd>
+
+                <dt class="col-sm-3">Фамилия:</dt>
+                <dd class="col-sm-9">@Model.LastName</dd>
+
+                <dt class="col-sm-3">Заплата:</dt>
+                <dd class="col-sm-9">@Model.Wages.ToString("C2")</dd>
+
+                <dt class="col-sm-3">Парите за вземане:</dt>
+                <dd class="col-sm-9">@Model.MoneyToTake.ToString("C2")</dd>
+
+                <dt class="col-sm-3">Екип:</dt>
+                <dd class="col-sm-9">
+                    <select class="form-select" disabled>
+                        <option value="">Изберете отбор</option>
+                        @foreach (var team in Model.TeamsEmployeeBelongsTo)
+                        {
+                            <option>@team.Team.Name</option>
+                        }
+                    </select>
+                </dd>
+
+                <dt class="col-sm-3">Потребител:</dt>
+                <dd class="col-sm-9">@Model.UserId</dd>
+            </dl>
+            <div class="d-flex justify-content-between">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    <button type="submit" class="btn btn-danger">Изтриване</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

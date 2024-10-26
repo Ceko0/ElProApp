@@ -6,7 +6,7 @@
     using static Common.EntityValidationConstants.Team;
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
-    using ElProApp.Data.Models.Mappings;
+    using Mappings;
 
     public class Team
     {
