@@ -31,7 +31,7 @@
                 return View(model);
             }
 
-            if(data.employees.Any(e => e.UserId == userId))
+            if(data.Employees.Any(e => e.UserId == userId))
             {
                 ModelState.AddModelError(string.Empty, "Вече имате създаден служител");
                 return View(model);
@@ -49,7 +49,7 @@
             };
 
 
-            data.employees.Add(employee);
+            data.Employees.Add(employee);
             await data.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -62,7 +62,7 @@
 
             if(!isValid) return BadRequest("Invalid ID format.");
 
-            var entity = await data.employees.FirstOrDefaultAsync(e => e.Id == validId);
+            var entity = await data.Employees.FirstOrDefaultAsync(e => e.Id == validId);
 
             if (entity == null) return BadRequest("Invalid Employee.");
 

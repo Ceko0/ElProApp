@@ -2,6 +2,8 @@
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+    using static Common.EntityValidationConstants.Job;
     using Models;
 
     /// <summary>
