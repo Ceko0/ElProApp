@@ -1,0 +1,46 @@
+﻿@using ElProApp.Web.Models.Team
+@model TeamAddInputModel
+
+@{
+    ViewData["Title"] = "Add Team";
+}
+
+<h1>Add Team</h1>
+
+<form asp-action="Add" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Buildings</label>
+        <select asp-for="BuildingWithTeam" asp-items="@(new SelectList(Model.BuildingWithTeam, "Id", "BuildingName"))" multiple="multiple" class="form-control"></select>
+        <span asp-validation-for="BuildingWithTeam" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Jobs Done</label>
+        <select asp-for="JobsDoneByTeam" asp-items="@(new SelectList(Model.JobsDoneByTeam, "Id", "JobName"))" multiple="multiple" class="form-control"></select>
+        <span asp-validation-for="JobsDoneByTeam" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Employees</label>
+        <select asp-for="EmployeesInTeams" asp-items="@(new SelectList(Model.EmployeesInTeams, "Id", "EmployeeName"))" multiple="multiple" class="form-control"></select>
+        <span asp-validation-for="EmployeesInTeams" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Team</button>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
