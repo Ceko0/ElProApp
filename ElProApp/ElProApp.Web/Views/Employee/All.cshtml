@@ -1,0 +1,43 @@
+﻿@using ElProApp.Web.Models.Employee
+@model IEnumerable<EmployeeAllViewModel>
+@{
+    ViewData["Title"] = "Списък със служители";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък със служители</h1>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Име</th>
+                <th>Фамилия</th>
+                <th>Заплата</th>
+                <th>Парите за вземане</th>
+                <th>Екип</th>
+                <th>Потребител</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.Wages.ToString("C2")</td>
+                    <td>@employee.MoneyToTake.ToString("C2")</td>
+                    <td>
+                        <select class="form-select" disabled>
+                            <option>Изберете отбор</option>
+                            @foreach (var team in employee.TeamsEmployeeBelongsTo)
+                            {
+                                <option>@team.Team.Name</option>
+                            }
+                        </select>
+                    </td>
+                    <td>@employee.UserName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

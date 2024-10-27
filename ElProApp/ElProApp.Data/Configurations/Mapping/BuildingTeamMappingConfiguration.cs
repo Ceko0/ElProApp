@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Data.Configuration.Mapping
+﻿namespace ElProApp.Data.Configurations.Mapping
 {
     using ElProApp.Data.Models.Mappings;
     using Microsoft.EntityFrameworkCore;

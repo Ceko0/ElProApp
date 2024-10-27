@@ -1,0 +1,32 @@
+﻿@using ElProApp.Web.Models.Employee
+@model EmployeeEditInputModel
+@{
+    ViewData["Title"] = "Информация за служител";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Информация за служител</h1>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h3>@Model.FirstName @Model.LastName</h3>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Име:</dt>
+                <dd class="col-sm-9">@Model.FirstName</dd>
+
+                <dt class="col-sm-3">Фамилия:</dt>
+                <dd class="col-sm-9">@Model.LastName</dd>
+
+                <dt class="col-sm-3">Заплата:</dt>
+                <dd class="col-sm-9">@Model.Wages.ToString("C2")</dd>                
+            </dl>
+            <div class="d-flex justify-content-between">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>
+            </div>
+        </div>
+    </div>
+</div>
+

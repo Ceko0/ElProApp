@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Data.Configuration
+﻿namespace ElProApp.Data.Configurations
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

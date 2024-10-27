@@ -14,9 +14,6 @@
             <h3>@Model.FirstName @Model.LastName</h3>
             <hr />
             <dl class="row">
-                <dt class="col-sm-3">Идентификатор:</dt>
-                <dd class="col-sm-9">@Model.Id</dd>
-
                 <dt class="col-sm-3">Име:</dt>
                 <dd class="col-sm-9">@Model.FirstName</dd>
 
@@ -39,12 +36,14 @@
                         }
                     </select>
                 </dd>
-
                 <dt class="col-sm-3">Потребител:</dt>
-                <dd class="col-sm-9">@Model.UserId</dd>
+                <dd class="col-sm-9">@Model.UserName</dd>
             </dl>
             <div class="d-flex justify-content-between">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>                
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>    
+                <form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете този служител?');">
+                    <button type="submit" class="btn btn-danger">Изтриване</button>
+                </form>
             </div>
         </div>
     </div>
