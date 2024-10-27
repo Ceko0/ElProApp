@@ -1,0 +1,86 @@
+{
+  "Teams": [
+    {
+      "Id": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77",
+      "Name": "Engineering Team",
+      "IsDeleted": false
+    },
+    {
+      "Id": "a27cfed2-abc4-4b6f-9447-3a77c43bf999",
+      "Name": "Maintenance Team",
+      "IsDeleted": false
+    }
+  ],
+  "IdentityUsers": [
+    {
+      "Id": "3f11c6e3-ec7b-4c56-b2f4-ecf77c3d4b88", // GUID за John Doe
+      "UserName": "john.doe@example.com",
+      "Email": "john.doe@example.com",
+      "PasswordHash": "hashedpassword1",
+      "PhoneNumber": "1234567890",
+      "IsDeleted": false
+    },
+    {
+      "Id": "cc8c5c1f-b0c9-4e3f-8eb3-e70c5e74d63b", // GUID за Jane Smith
+      "UserName": "jane.smith@example.com",
+      "Email": "jane.smith@example.com",
+      "PasswordHash": "hashedpassword2",
+      "PhoneNumber": "0987654321",
+      "IsDeleted": false
+    }
+  ],
+  "Employees": [
+    {
+      "Id": "b3219f94-7541-4f5c-8238-35fdc97e9b43",
+      "FirstName": "John",
+      "LastName": "Doe",
+      "Wages": 3000.50,
+      "MoneyToTake": 500.00,
+      "IsDeleted": false,
+      "UserId": "3f11c6e3-ec7b-4c56-b2f4-ecf77c3d4b88" // Примерен GUID за идентификация
+    },
+    {
+      "Id": "c53db596-5871-4048-9b39-72a7dcd8143c",
+      "FirstName": "Jane",
+      "LastName": "Smith",
+      "Wages": 3200.75,
+      "MoneyToTake": 750.00,
+      "IsDeleted": false,
+      "UserId": "cc8c5c1f-b0c9-4e3f-8eb3-e70c5e74d63b" // Примерен GUID за идентификация
+    }
+  ],
+  "Buildings": [
+    {
+      "Id": "d67a5304-94c4-4c67-9399-321e1b823c7a",
+      "Name": "Main Office",
+      "Location": "123 Main St, Cityville",
+      "IsDeleted": false
+    },
+    {
+      "Id": "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d",
+      "Name": "Warehouse",
+      "Location": "456 Warehouse Blvd, Townsville",
+      "IsDeleted": false
+    }
+  ],
+  "Jobs": [
+    {
+      "Id": "9f57e3a4-102a-4d3d-b19b-7e4f6e8a2b4c",
+      "Name": "Electrical Installation",
+      "Price": 150.00
+    },
+    {
+      "Id": "fa6cd2c1-0f5e-4e4f-a3be-0a3df39b2e76",
+      "Name": "Plumbing Repair",
+      "Price": 85.50
+    }
+  ],
+  "JobDones": [
+    {
+      "Id": "f24ae2d4-75a8-4aef-b6f7-b1a5c4a12d89",
+      "JobId": "9f57e3a4-102a-4d3d-b19b-7e4f6e8a2b4c",
+      "Quantity": 3,
+      "DaysForJob": 5
+    }
+  ]
+}

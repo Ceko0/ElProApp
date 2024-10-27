@@ -35,7 +35,7 @@
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, 9999.99, ErrorMessage = ErrorMassagePozitive)]
         [RegularExpression(@"^\d{1,4}(\.\d{1,2})?$", ErrorMessage = ErrorMassagePrice)]
-        [Comment("The price of the job with up to 4 digits before the decimal point and up to 2 digits after.")]
+        [Comment("The price of the job with up to 6 digits before the decimal point and up to 2 digits after.")]
         public decimal Price { get; set; }
 
         /// <summary>

@@ -31,7 +31,7 @@
             builder
                 .Property(j => j.Price)
                 .IsRequired() // Price must not be null
-                .HasColumnType("decimal(4, 2)"); // 4 digits total, 2 after the decimal point
+                .HasColumnType("decimal(6, 2)"); // 4 digits total, 2 after the decimal point
         }
     }
 }

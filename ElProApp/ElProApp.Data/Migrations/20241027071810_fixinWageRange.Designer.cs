@@ -4,6 +4,7 @@ using ElProApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElProApp.Data.Migrations
 {
     [DbContext(typeof(ElProAppDbContext))]
-    partial class ElProAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241027071810_fixinWageRange")]
+    partial class fixinWageRange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,8 +111,8 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The name of the job with a maximum of 50 characters.");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(6, 2)")
-                        .HasComment("The price of the job with up to 6 digits before the decimal point and up to 2 digits after.");
+                        .HasColumnType("decimal(4, 2)")
+                        .HasComment("The price of the job with up to 4 digits before the decimal point and up to 2 digits after.");
 
                     b.HasKey("Id");
 

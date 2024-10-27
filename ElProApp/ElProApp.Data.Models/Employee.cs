@@ -47,7 +47,7 @@
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, 9999.99, ErrorMessage = ErrorMassageWages)]
         [Display(Name = "Заплата")]
-        [Comment("The wages of the employee with up to 4 digits before the decimal point and up to 2 digits after.")]
+        [Comment("The wages of the employee with up to 6 digits before the decimal point and up to 2 digits after.")]
         public decimal Wages { get; set; } = 0.0m;
 
         /// <summary>

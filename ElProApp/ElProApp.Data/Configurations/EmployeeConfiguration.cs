@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Data.Configuration
+﻿namespace ElProApp.Data.Configurations
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -32,7 +32,7 @@
             // Configures the Wages property as required with a specific decimal type.
             builder.Property(e => e.Wages)
                 .IsRequired() // Wages must not be null
-                .HasColumnType("decimal(4, 2)"); // 4 digits total, 2 after the decimal point
+                .HasColumnType("decimal(6, 2)"); // 6 digits total, 2 after the decimal point
 
             // Configures the MoneyToTake property with a specific decimal type.
             builder.Property(e => e.MoneyToTake)

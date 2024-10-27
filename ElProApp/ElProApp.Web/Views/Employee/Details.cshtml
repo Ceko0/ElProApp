@@ -44,10 +44,7 @@
                 <dd class="col-sm-9">@Model.UserId</dd>
             </dl>
             <div class="d-flex justify-content-between">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>
-                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
-                    <button type="submit" class="btn btn-danger">Изтриване</button>
-                </form>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>                
             </div>
         </div>
     </div>

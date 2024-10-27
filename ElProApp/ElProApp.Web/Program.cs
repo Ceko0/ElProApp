@@ -76,6 +76,15 @@
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
             app.UseDeveloperExceptionPage();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ElProAppDbContext>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var seeder = new Data.SeedData.DatabaseSeeder(dbContext, userManager);
+                seeder.SeedDatabase();
+            }
+
             app.Run();
         }
     }
