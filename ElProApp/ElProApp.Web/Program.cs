@@ -3,32 +3,33 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity;
     using Services.Mapping;
-    using System.Reflection;
     using Microsoft.Extensions.DependencyInjection;
 
-    using ElProApp.Data;    
+    using ElProApp.Data;
     using ElProApp.Web.Models;
     using ElProApp.Data.Models;
     using ElProApp.Web.Infrastructure.Extensions;
-    using ElProApp.Services.Data.Interfaces;
     using ElProApp.Services.Data;
 
     public class Program
     {
         public static void Main(string[] args)
         {
+            // Create a new web application builder
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure the database context to use SQL Server
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
+            // Configure default identity settings
             builder.Services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ElProAppDbContext>()
                 .AddDefaultTokenProviders();
 
+            // Configure identity options such as password requirements and lockout settings
             builder.Services.Configure<IdentityOptions>(options =>
             {
-
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -44,39 +45,49 @@
                 options.SignIn.RequireConfirmedAccount = false;
             });
 
+            // Register repositories and services
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
 
-            // Add services to the container.
+            // Add services to the container for MVC and Razor Pages
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            // Build the application
             var app = builder.Build();
 
+            // Configure AutoMapper mappings
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
+                // Use the error handling page for non-development environments
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseHsts(); // Enable HTTP Strict Transport Security
             }
 
+            // Enable HTTPS redirection and static file serving
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // Configure request routing
             app.UseRouting();
 
+            // Enable authentication and authorization
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Map controller routes and Razor Pages
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            // Optional: Show developer exception page in development
             app.UseDeveloperExceptionPage();
 
+            // Seed the database with initial data
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ElProAppDbContext>();
@@ -85,6 +96,7 @@
                 seeder.SeedDatabase();
             }
 
+            // Run the application
             app.Run();
         }
     }
