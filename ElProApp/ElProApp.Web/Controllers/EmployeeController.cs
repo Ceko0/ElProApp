@@ -66,7 +66,7 @@
         /// <returns>View for editing the employee.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(string id) 
-            => View(await employeeService.EditByModelAsync(id));
+            => View(await employeeService.EditByIdAsync(id));
 
         /// <summary>
         /// Processes the request to edit an employee.
