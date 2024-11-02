@@ -14,7 +14,7 @@
     /// Represents a team within the system, including its unique identifier, name, 
     /// and associated relationships to buildings, jobs, and employees.
     /// </summary>
-    public class Team
+    public class Team 
     {
         /// <summary>
         /// Unique identifier for the team, serving as the primary key.
