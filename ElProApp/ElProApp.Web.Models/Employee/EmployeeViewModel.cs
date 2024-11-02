@@ -1,7 +1,6 @@
 ﻿namespace ElProApp.Web.Models.Employee
 {
     using Services.Mapping;
-
     using Data.Models.Mappings;
     using Data.Models;
     using AutoMapper;
@@ -50,8 +49,13 @@
         /// <summary>
         /// Gets or sets the collection of teams that the employee belongs to.
         /// </summary>
-        public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = [];
+        public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new List<EmployeeTeamMapping>();
 
+        /// <summary>
+        /// Creates custom mappings for the EmployeeViewModel.
+        /// Maps the UserName property from the associated User entity.
+        /// </summary>
+        /// <param name="configuration">The configuration profile for AutoMapper.</param>
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Employee, EmployeeViewModel>()

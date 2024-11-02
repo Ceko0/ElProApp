@@ -11,8 +11,8 @@
     public class TeamAddInputModel
     {
         // Unique identifier for the team
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]        
-        public string Id { get; set; }
+        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
+        public string Id { get; set; } = null!;
 
         // Name of the team
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]

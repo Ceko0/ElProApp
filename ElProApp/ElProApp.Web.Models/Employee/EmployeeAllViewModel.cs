@@ -1,7 +1,6 @@
 ﻿namespace ElProApp.Web.Models.Employee
 {
     using Services.Mapping;
-
     using Data.Models.Mappings;
 
     /// <summary>
@@ -36,13 +35,13 @@
         public decimal MoneyToTake { get; set; }
 
         /// <summary>
-        /// Gets or sets the username associated with the employee.
+        /// Gets or sets the user ID associated with the employee.
         /// </summary>
         public string UserId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the collection of teams that the employee belongs to.
         /// </summary>
-        public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new List<EmployeeTeamMapping>();
+        public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = [];
     }
 }
