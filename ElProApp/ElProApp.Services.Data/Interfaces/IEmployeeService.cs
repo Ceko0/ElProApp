@@ -2,14 +2,14 @@
 
 namespace ElProApp.Services.Data.Interfaces
 {
-    public interface IBaseCRUDService <TModel, TViewModel, TInputModel, TEditInputModel>
+    public interface IEmployeeService
     {
         /// <summary>
         /// Adds a new employee based on the provided input model.
         /// </summary>
         /// <param name="model">The model containing employee data.</param>
         /// <returns>The ID of the newly added employee.</returns>
-        Task<string> AddAsync(TInputModel model);
+        Task<string> AddAsync(EmployeeInputModel model);
 
         /// <summary>
         /// Retrieves an employee by their ID.
@@ -30,7 +30,7 @@ namespace ElProApp.Services.Data.Interfaces
         /// </summary>
         /// <param name="model">The model containing updated employee data.</param>
         /// <returns>A boolean indicating success or failure of the edit operation.</returns>
-        Task<bool> EditByModelAsync(TEditInputModel model);
+        Task<bool> EditByModelAsync(EmployeeEditInputModel model);
 
         /// <summary>
         /// Retrieves all employees as a list.
