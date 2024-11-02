@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Http;
     using ElProApp.Data.Repository.Interfaces;
-    using System.Security.Claims; 
+    using System.Security.Claims;
     using Microsoft.EntityFrameworkCore;
 
     using Web.Models.Employee;
@@ -14,7 +14,7 @@
     /// <summary>
     /// Service class for managing employee-related operations, including adding, editing, deleting, and retrieving employee information.
     /// </summary>
-    public class EmployeeService : IEmployeeService
+    public class EmployeeService : IBaseCRUDService<Employee, EmployeeViewModel, EmployeeInputModel, EmployeeEditInputModel>
     {
         private readonly IRepository<Employee, Guid> employeeRepository;
         private readonly UserManager<IdentityUser> userManager;
@@ -160,5 +160,6 @@
 
             return await userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException("Invalid user.");
         }
+
     }
 }

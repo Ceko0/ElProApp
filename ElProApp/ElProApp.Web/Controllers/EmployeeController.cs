@@ -4,18 +4,19 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Identity;
     
-    using ElProApp.Data;
+    using Data;
     using Models.Employee;
-    using ElProApp.Services.Data.Interfaces;
+    using Services.Data.Interfaces;
+    using Data.Models;
 
     [Authorize]
     public class EmployeeController(ElProAppDbContext data,
                               UserManager<IdentityUser> userManager,
-                              IEmployeeService employeeService) : Controller
+                              IBaseCRUDService<Employee, EmployeeViewModel, EmployeeInputModel, EmployeeEditInputModel> employeeService) : Controller
     {
         private readonly ElProAppDbContext data = data;
         private readonly UserManager<IdentityUser> userManager = userManager;
-        private readonly IEmployeeService employeeService = employeeService;
+        private readonly IBaseCRUDService<Employee, EmployeeViewModel, EmployeeInputModel, EmployeeEditInputModel> employeeService = employeeService;
 
         /// <summary>
         /// Displays a list of all employees.
