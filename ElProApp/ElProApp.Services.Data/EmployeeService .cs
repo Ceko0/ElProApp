@@ -63,9 +63,9 @@
         /// </summary>
         /// <param name="id">The ID of the employee.</param>
         /// <returns>The input model for editing the employee or an exception if the record is missing.</returns>
-        public async Task<EmployeeEditInputModel> EditByModelAsync(string id)
+        public async Task<EmployeeEditInputModel> EditByIdAsync(string id)
         {
-            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId)) throw new ArgumentException("Invalid ID format.");
+            Guid validId = ConvertAndTestIdToGuid(id);
             var entity = await employeeRepository.GetByIdAsync(validId);
             if (entity.IsDeleted) throw new InvalidOperationException("User is deleted.");
 
@@ -102,11 +102,10 @@
         /// Retrieves a list of all employees who are not marked as deleted.
         /// </summary>
         /// <returns>A list of view models representing all active employees.</returns>
-        public async Task<IEnumerable<EmployeeAllViewModel>> GetAllAsync()
-        {
-            var model = await employeeRepository.GetAllAttached().Where(x => !x.IsDeleted).To<EmployeeAllViewModel>().ToArrayAsync();
-            return model;
-        }
+        public async Task<IEnumerable<EmployeeAllViewModel>> GetAllAsync() 
+            => await employeeRepository.GetAllAttached().Where(x => !x.IsDeleted).To<EmployeeAllViewModel>().ToArrayAsync();
+           
+        
 
         /// <summary>
         /// Soft deletes an employee by marking them as deleted, based on their ID.

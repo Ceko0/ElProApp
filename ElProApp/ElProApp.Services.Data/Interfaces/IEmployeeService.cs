@@ -23,7 +23,7 @@ namespace ElProApp.Services.Data.Interfaces
         /// </summary>
         /// <param name="id">The employee's ID.</param>
         /// <returns>The edit input model for the employee.</returns>
-        Task<EmployeeEditInputModel> EditByModelAsync(string id);
+        Task<EmployeeEditInputModel> EditByIdAsync(string id);
 
         /// <summary>
         /// Edits an existing employee using the provided edit input model.
