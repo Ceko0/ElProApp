@@ -38,7 +38,7 @@
         /// <summary>
         /// Gets or sets the username associated with the employee.
         /// </summary>
-        public string UserName { get; set; } = null!;
+        public string UserId { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the collection of teams that the employee belongs to.

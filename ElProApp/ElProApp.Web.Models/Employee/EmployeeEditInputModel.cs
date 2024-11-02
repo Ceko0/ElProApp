@@ -12,7 +12,7 @@
     /// ViewModel for editing employee details.
     /// Implements mapping to the Employee entity.
     /// </summary>
-    public class EmployeeEditInputModel : IMapTo<Employee>
+    public class EmployeeEditInputModel : IMapTo<Employee> ,IMapFrom<Employee>
     {
         /// <summary>
         /// Gets or sets the unique identifier for the employee.

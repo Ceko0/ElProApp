@@ -4,12 +4,13 @@
 
     using Data.Models.Mappings;
     using Data.Models;
+    using AutoMapper;
 
     /// <summary>
     /// ViewModel for displaying employee details.
     /// Implements mapping from the Employee entity.
     /// </summary>
-    public class EmployeeViewModel : IMapFrom<Employee>
+    public class EmployeeViewModel : IMapFrom<Employee>, IHaveCustomMappings
     {
         /// <summary>
         /// Gets or sets the unique identifier of the employee.
@@ -50,5 +51,11 @@
         /// Gets or sets the collection of teams that the employee belongs to.
         /// </summary>
         public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = [];
+
+        public void CreateMappings(IProfileExpression configuration)
+        {
+            configuration.CreateMap<Employee, EmployeeViewModel>()
+                .ForMember(d => d.UserName, x => x.MapFrom(s => s.User.UserName));
+        }
     }
 }

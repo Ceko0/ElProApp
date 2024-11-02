@@ -7,12 +7,15 @@
     using ElProApp.Services.Mapping;
     using System.Security.Claims;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Identity;
 
-    public class EmployeeService(IRepository<Employee, Guid> employeeRepository, IHttpContextAccessor httpContextAccessor) : IEmployeeService
+    public class EmployeeService(IRepository<Employee, Guid> employeeRepository,UserManager<IdentityUser> userManager, IHttpContextAccessor httpContextAccessor) : IEmployeeService
     {
+        private readonly IRepository<Employee, Guid> employeeRepository = employeeRepository;
+        private readonly UserManager<IdentityUser> userManaget = userManager;
         private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
+
 
         /// <summary>
         /// Adds a new employee.
@@ -57,7 +60,25 @@
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId)) throw new ArgumentException("Invalid ID format.");
             
             var entity = await employeeRepository.GetByIdAsync(validId);
-            return entity == null ? AutoMapperConfig.MapperInstance.Map<EmployeeEditInputModel>(entity) : throw new ArgumentException("mising entity.");
+
+            if ( entity.IsDeleted) throw new InvalidOperationException("User is deleted.");
+
+            IdentityUser user;
+           
+            if (!string.IsNullOrEmpty(entity.UserId))
+            {                
+                user = await userManager.FindByIdAsync(entity.UserId)
+                       ?? throw new InvalidOperationException("User not found.");
+            }
+            else user = await GetCurrentUserAsync();
+
+            entity.User = user;
+
+            return AutoMapperConfig.MapperInstance.Map<Employee, EmployeeEditInputModel>(entity);
+
+            //entity == null 
+            //    ? AutoMapperConfig.MapperInstance.Map<EmployeeEditInputModel>(entity)
+            //    : throw new ArgumentException("mising entity.");
 
         }
 
@@ -88,7 +109,7 @@
         /// <returns>A list of all employees.</returns>
         public async Task<IEnumerable<EmployeeAllViewModel>> GetAllAsync()
         {
-            var model = await employeeRepository.GetAllAttached().To<EmployeeAllViewModel>().ToArrayAsync();
+            var model = await employeeRepository.GetAllAttached().Where(x => !x.IsDeleted).To<EmployeeAllViewModel>().ToArrayAsync();
 
             return model;
         }
@@ -133,6 +154,15 @@
         {
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId)) throw new ArgumentException("Invalid ID format.");
             return validId;
+        }
+
+        private async Task<IdentityUser> GetCurrentUserAsync()
+        {
+            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) throw new InvalidOperationException("User not found.");
+
+            return await userManager.FindByIdAsync(userId)
+                   ?? throw new InvalidOperationException("Invalid user.");
         }
     }
 }

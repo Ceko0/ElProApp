@@ -1,4 +1,5 @@
 ﻿@using ElProApp.Web.Models.Employee
+@using System.Security.Claims
 @model IEnumerable<EmployeeAllViewModel>
 @{
     ViewData["Title"] = "Списък със служители";
@@ -15,7 +16,7 @@
                 <th>Заплата</th>
                 <th>Парите за вземане</th>
                 <th>Екип</th>
-                <th>Потребител</th>
+                <th>Детайли</th>
             </tr>
         </thead>
         <tbody>
@@ -35,7 +36,16 @@
                             }
                         </select>
                     </td>
-                    <td>@employee.UserName</td>
+                    <td>
+                        @{
+                            
+                            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                            if (employee.UserId == currentUserId)
+                            {
+                                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-primary">Детайли</a>
+                            }
+                        }
+                    </td>
                 </tr>
             }
         </tbody>

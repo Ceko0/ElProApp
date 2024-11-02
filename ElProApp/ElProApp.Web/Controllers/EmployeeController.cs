@@ -65,7 +65,8 @@
         /// <param name="id">The employee's ID.</param>
         /// <returns>View for editing the employee.</returns>
         [HttpGet]
-        public async Task<IActionResult> Edit(string id) => View(await employeeService.EditByModelAsync(id));
+        public async Task<IActionResult> Edit(string id) 
+            => View(await employeeService.EditByModelAsync(id));
 
         /// <summary>
         /// Processes the request to edit an employee.
@@ -92,7 +93,7 @@
         /// <param name="id">The employee's ID.</param>
         /// <returns>Redirects to the employee list.</returns>
         [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> SoftDelete(string id)
         {
             bool isDeleted = await employeeService.SoftDeleteAsync(id);
             if (isDeleted)
