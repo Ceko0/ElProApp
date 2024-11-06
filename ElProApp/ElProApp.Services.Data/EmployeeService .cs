@@ -19,12 +19,15 @@
         private readonly IRepository<Employee, Guid> employeeRepository;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IEmployeeTeamMappingService employeeTeamMappingService;
 
-        public EmployeeService(IRepository<Employee, Guid> employeeRepository, UserManager<IdentityUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public EmployeeService(IRepository<Employee, Guid> _employeeRepository, UserManager<IdentityUser> _userManager, IHttpContextAccessor _httpContextAccessor,
+                              IEmployeeTeamMappingService _employeeTeamMappingService)
         {
-            this.employeeRepository = employeeRepository;
-            this.userManager = userManager;
-            this.httpContextAccessor = httpContextAccessor;
+            employeeRepository = _employeeRepository;
+            userManager = _userManager;
+            httpContextAccessor = _httpContextAccessor;
+            employeeTeamMappingService = _employeeTeamMappingService;
         }
 
         /// <summary>
@@ -54,7 +57,10 @@
         public async Task<EmployeeViewModel?> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await employeeRepository.GetByIdAsync(validId);
+            var entity = await employeeRepository.GetByIdAsync(validId);            
+            entity.User = await GetUserAsync(entity.UserId);
+            var teams = employeeTeamMappingService.GetAllByEmployeeId(id).ToList();
+            entity.TeamsEmployeeBelongsTo = teams;
             return entity != null ? AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity) : throw new ArgumentException("Missing entity.");
         }
 
@@ -102,9 +108,14 @@
         /// Retrieves a list of all employees who are not marked as deleted.
         /// </summary>
         /// <returns>A list of view models representing all active employees.</returns>
-        public async Task<IEnumerable<EmployeeAllViewModel>> GetAllAsync() 
-            => await employeeRepository.GetAllAttached().Where(x => !x.IsDeleted).To<EmployeeAllViewModel>().ToArrayAsync();
-           
+        public async Task<IEnumerable<EmployeeViewModel>> GetAllAsync() 
+            => await employeeRepository
+                            .GetAllAttached()
+                            .Include(e => e.TeamsEmployeeBelongsTo)
+                            .ThenInclude(te => te.Team)
+                            .Where(x => !x.IsDeleted)
+                            .To<EmployeeViewModel>()
+                            .ToListAsync(); 
         
 
         /// <summary>
@@ -158,6 +169,16 @@
             if (userId == null) throw new InvalidOperationException("User not found.");
 
             return await userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException("Invalid user.");
+        }
+        private async Task<IdentityUser> GetUserAsync(string id) 
+            => await userManager.FindByIdAsync(id) 
+            ?? throw new InvalidOperationException("Invalid user.");
+
+        public Employee GetByUserId(string id)
+        {
+            var entity = employeeRepository.GetAllAttached().Where(x => x.UserId == id).ToArray();
+
+            return entity[0];
         }
     }
 }
