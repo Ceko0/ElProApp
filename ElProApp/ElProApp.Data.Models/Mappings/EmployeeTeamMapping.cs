@@ -10,13 +10,8 @@
     /// </summary>
     public class EmployeeTeamMapping
     {
-        /// <summary>
-        /// Unique identifier for the mapping between Employee and Team.
-        /// </summary>
-        [Key]
         [Required]
-        [Comment("Unique identifier for the mapping between Employee and Team.")]
-        public Guid Id { get; set; } = new();
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Foreign key for the employee.

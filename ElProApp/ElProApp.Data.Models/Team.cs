@@ -9,6 +9,7 @@
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
     using Mappings;
+    using Microsoft.EntityFrameworkCore.ValueGeneration;
 
     /// <summary>
     /// Represents a team within the system, including its unique identifier, name, 
@@ -21,7 +22,7 @@
         /// </summary>
         [Required]
         [Comment("Primary key and unique identifier for the team.")]
-        public Guid Id { get; set; } = new();
+        public Guid Id { get; set; } = Guid.NewGuid() ;
 
         /// <summary>
         /// Name of the team with a specified maximum length.
@@ -42,18 +43,18 @@
         /// Collection of mappings representing the buildings assigned to this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and buildings.")]
-        public virtual ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = [];
+        public virtual ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = new List<BuildingTeamMapping>();
 
         /// <summary>
         /// Collection of mappings representing the jobs completed by this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and completed jobs.")]
-        public virtual ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = [];
+        public virtual ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = new List<JobDoneTeamMapping>();
 
         /// <summary>
         /// Collection of mappings representing employees who are members of this team.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between teams and employees.")]
-        public virtual ICollection<EmployeeTeamMapping> EmployeesInTeam { get; set; } = [];
+        public virtual ICollection<EmployeeTeamMapping> EmployeesInTeam { get; set; } = new List<EmployeeTeamMapping>();
     }
 }

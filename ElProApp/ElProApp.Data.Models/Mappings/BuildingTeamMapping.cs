@@ -10,11 +10,7 @@
     /// </summary>
     public class BuildingTeamMapping
     {
-        /// <summary>
-        /// Unique identifier for the mapping between Building and Team.
-        /// </summary>
-        [Key]
-        [Comment("Unique identifier for the mapping record.")]
+        [Required]
         public Guid Id { get; set; }
 
         /// <summary>

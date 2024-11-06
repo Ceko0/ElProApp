@@ -81,6 +81,6 @@
         /// Collection representing the many-to-many relationship between employees and teams.
         /// </summary>
         [Comment("Collection representing the many-to-many relationship between employees and teams.")]
-        public virtual ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = [];
+        public virtual ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new List<EmployeeTeamMapping>();
     }
 }

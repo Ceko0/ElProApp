@@ -42,6 +42,6 @@
         /// Collection representing the many-to-many relationship between jobs and teams that have completed the job.
         /// </summary>
         [Comment("Collection of mappings between jobs and teams representing job completions.")]
-        public virtual ICollection<JobDone> JobsDone { get; set; } = [];
+        public virtual ICollection<JobDone> JobsDone { get; set; } = new List<JobDone>();
     }
 }

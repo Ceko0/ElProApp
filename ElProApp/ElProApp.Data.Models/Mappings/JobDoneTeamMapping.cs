@@ -10,13 +10,8 @@
     /// </summary>
     public class JobDoneTeamMapping
     {
-        /// <summary>
-        /// Unique identifier for the mapping between JobDone and Team.
-        /// </summary>
-        [Key]
         [Required]
-        [Comment("Unique identifier for the mapping between JobDone and Team.")]
-        public Guid Id { get; set; } = new();
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Foreign key for the job done.
