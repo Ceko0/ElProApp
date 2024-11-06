@@ -81,7 +81,7 @@
             // Map controller routes and Razor Pages
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=All}/{id?}");
             app.MapRazorPages();
 
             // Optional: Show developer exception page in development

@@ -5,10 +5,8 @@
     using Microsoft.EntityFrameworkCore;
     using System.Reflection;
 
-    using Configuration;
     using Models.Mappings;
     using Models;
-    using Configuration.Mapping;
 
     /// <summary>
     /// Represents the database context for the ElProApp application, which manages database sets for the app's entities.

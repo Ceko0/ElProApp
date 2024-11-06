@@ -4,6 +4,7 @@ using ElProApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElProApp.Data.Migrations
 {
     [DbContext(typeof(ElProAppDbContext))]
-    partial class ElProAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241104190216_fixingKeyFOrMapping")]
+    partial class fixingKeyFOrMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,7 +156,8 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Unique identifier for the mapping record.");
 
                     b.HasKey("BuildingId", "TeamId");
 
@@ -173,7 +177,8 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Unique identifier for the mapping between Employee and Team.");
 
                     b.HasKey("EmployeeId", "TeamId");
 
@@ -193,7 +198,8 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Unique identifier for the mapping between JobDone and Team.");
 
                     b.HasKey("JobDoneId", "TeamId");
 
