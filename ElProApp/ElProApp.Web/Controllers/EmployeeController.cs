@@ -7,15 +7,17 @@
     using ElProApp.Data;
     using Models.Employee;
     using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Services.Mapping;
 
     [Authorize]
-    public class EmployeeController(ElProAppDbContext data,
-                              UserManager<IdentityUser> userManager,
-                              IEmployeeService employeeService) : Controller
+    public class EmployeeController(ElProAppDbContext _data,
+                              UserManager<IdentityUser> _userManager,
+                              IEmployeeService _employeeService) : Controller
     {
-        private readonly ElProAppDbContext data = data;
-        private readonly UserManager<IdentityUser> userManager = userManager;
-        private readonly IEmployeeService employeeService = employeeService;
+        private readonly ElProAppDbContext data = _data;
+        private readonly UserManager<IdentityUser> userManager = _userManager;
+        private readonly IEmployeeService employeeService = _employeeService;
+
 
         /// <summary>
         /// Displays a list of all employees.
@@ -57,7 +59,13 @@
         /// <param name="id">The employee's ID.</param>
         /// <returns>View with employee details.</returns>
         [HttpGet]
-        public async Task<IActionResult> Details(string id) => View(await employeeService.GetByIdAsync(id));
+        public async Task<IActionResult> Details(string id)
+        {
+            var model = await employeeService.GetByIdAsync(id);
+
+            
+            return View(model);
+        }
 
         /// <summary>
         /// Displays the form for editing an employee.
