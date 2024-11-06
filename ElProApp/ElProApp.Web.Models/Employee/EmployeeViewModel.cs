@@ -4,6 +4,8 @@
     using Data.Models.Mappings;
     using Data.Models;
     using AutoMapper;
+    using Microsoft.AspNetCore.Identity;
+    using ElProApp.Web.Models.Team;
 
     /// <summary>
     /// ViewModel for displaying employee details.
@@ -44,7 +46,7 @@
         /// <summary>
         /// Gets or sets the username of the employee.
         /// </summary>
-        public string UserName { get; set; } = string.Empty;
+        public IdentityUser User { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the collection of teams that the employee belongs to.
@@ -59,7 +61,7 @@
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Employee, EmployeeViewModel>()
-                .ForMember(d => d.UserName, x => x.MapFrom(s => s.User.UserName));
+                .ForMember(d => d.User, x => x.MapFrom(s => s.User));
         }
     }
 }
