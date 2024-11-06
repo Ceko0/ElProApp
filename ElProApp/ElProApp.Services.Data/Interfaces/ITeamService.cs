@@ -4,7 +4,8 @@ namespace ElProApp.Services.Data.Interfaces
 {
     public interface ITeamService
     {
-        Task<string> AddAsync(TeamAddInputModel model);
+        Task<TeamInputModel> AddAsync();
+        Task<string> AddAsync(TeamInputModel model);
 
         Task<TeamViewModel> GetByIdAsync(string id);
 
@@ -12,10 +13,7 @@ namespace ElProApp.Services.Data.Interfaces
 
         Task<bool> EditByModelAsync(TeamEditInputModel model);
 
-        Task<IEnumerable<TeamAllViewModel>> GetAllAsync();
+        Task<IEnumerable<TeamViewModel>> GetAllAsync();
         Task<bool> SoftDeleteAsync(string id);
-
-
-
     }
 }

@@ -1,7 +1,8 @@
-﻿using ElProApp.Web.Models.Employee;
-
-namespace ElProApp.Services.Data.Interfaces
+﻿namespace ElProApp.Services.Data.Interfaces
 {
+    using ElProApp.Data.Models;
+    using ElProApp.Web.Models.Employee;
+
     public interface IEmployeeService
     {
         /// <summary>
@@ -36,7 +37,7 @@ namespace ElProApp.Services.Data.Interfaces
         /// Retrieves all employees as a list.
         /// </summary>
         /// <returns>A collection of employee view models.</returns>
-        Task<IEnumerable<EmployeeAllViewModel>> GetAllAsync();
+        Task<IEnumerable<EmployeeViewModel>> GetAllAsync();
 
         /// <summary>
         /// Soft deletes an employee by their ID.
@@ -44,5 +45,6 @@ namespace ElProApp.Services.Data.Interfaces
         /// <param name="id">The employee's ID.</param>
         /// <returns>A boolean indicating success or failure of the delete operation.</returns>
         Task<bool> SoftDeleteAsync(string id);
+        Employee GetByUserId(string id);
     }
 }
