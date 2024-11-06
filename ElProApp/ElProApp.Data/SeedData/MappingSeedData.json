@@ -1,0 +1,36 @@
+{
+  "Mappings": [
+    {
+      "TeamId": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77", // Engineering Team
+      "BuildingIds": [
+        "d67a5304-94c4-4c67-9399-321e1b823c7a" // Main Office
+      ],
+      "EmployeeIds": [
+        "b3219f94-7541-4f5c-8238-35fdc97e9b43" // John Doe
+      ],
+      "JobDoneIds": [
+        "f24ae2d4-75a8-4aef-b6f7-b1a5c4a12d89" // Job done with Job ID
+      ]
+    },
+    {
+      "TeamId": "a27cfed2-abc4-4b6f-9447-3a77c43bf999", // Maintenance Team
+      "BuildingIds": [
+        "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d" // Warehouse
+      ],
+      "EmployeeIds": [
+        "c53db596-5871-4048-9b39-72a7dcd8143c" // Jane Smith
+      ],
+      "JobDoneIds": []
+    },
+    {
+      "TeamId": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77", // Engineering Team (Second mapping example)
+      "BuildingIds": [
+        "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d" // Warehouse
+      ],
+      "EmployeeIds": [
+        "c53db596-5871-4048-9b39-72a7dcd8143c" // Jane Smith
+      ],
+      "JobDoneIds": []
+    }
+  ]
+}
