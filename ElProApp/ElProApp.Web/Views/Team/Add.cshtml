@@ -1,11 +1,7 @@
 ﻿@using ElProApp.Web.Models.Team
-@model TeamAddInputModel
+@model TeamInputModel
 
-@{
-    ViewData["Title"] = "Add Team";
-}
-
-<h1>Add Team</h1>
+<h2>Добавяне на екип</h2>
 
 <form asp-action="Add" method="post">
     <div class="form-group">
@@ -16,27 +12,59 @@
 
     <div class="form-group">
         <label>Buildings</label>
-        <select asp-for="BuildingWithTeam" asp-items="@(new SelectList(Model.BuildingWithTeam, "Id", "BuildingName"))" multiple="multiple" class="form-control"></select>
-        <span asp-validation-for="BuildingWithTeam" class="text-danger"></span>
+        <select asp-for="SelectedBuildingId" asp-items="@(new SelectList(Model.BuildingWithTeam, "Id", "Name"))" class="form-control">
+            <option value="">Изберете сграда</option>
+        </select>
+        <span asp-validation-for="SelectedBuildingId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label>Jobs Done</label>
-        <select asp-for="JobsDoneByTeam" asp-items="@(new SelectList(Model.JobsDoneByTeam, "Id", "JobName"))" multiple="multiple" class="form-control"></select>
-        <span asp-validation-for="JobsDoneByTeam" class="text-danger"></span>
+        <div>
+            @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
+            {
+                <ul>
+                    @foreach (var job in Model.JobsDoneByTeam)
+                    {
+                        <li>@job.Job.Name</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Няма налични завършени работи.</p>
+            }
+        </div>
     </div>
 
     <div class="form-group">
         <label>Employees</label>
-        <select asp-for="EmployeesInTeams" asp-items="@(new SelectList(Model.EmployeesInTeams, "Id", "EmployeeName"))" multiple="multiple" class="form-control"></select>
-        <span asp-validation-for="EmployeesInTeams" class="text-danger"></span>
+        <div>
+            @if (Model.AvailableEmployees != null && Model.AvailableEmployees.Any())
+            {
+                <ul>
+                    @foreach (var employee in Model.AvailableEmployees)
+                    {
+                        <li>
+                            <input type="checkbox" name="SelectedEmployeeIds" value="@employee.Id"
+                            @(Model.SelectedEmployeeIds.Contains(employee.Id) ? "checked" : "") />
+                            @employee.FirstName
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Няма налични служители.</p>
+            }
+        </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Add Team</button>
+    <button type="submit" class="btn btn-primary">Добави екип</button>
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад към списъка</a>
 </div>
 
 @section Scripts {

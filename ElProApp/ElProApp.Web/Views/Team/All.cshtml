@@ -1,0 +1,89 @@
+﻿@using ElProApp.Web.Models.Team
+@model ICollection<TeamViewModel>
+
+@{
+    ViewData["Title"] = "Списък с екипи";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък с екипи</h1>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Име</th>
+                <th>Обекти</th>
+                <th>Служители</th>
+                <th>Свършена работа</th>
+                <th>Детайли</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var team in Model)
+                {
+                    <tr>
+                        <td>@team.Name</td>
+
+                        <td>
+                            @if (team.BuildingWithTeam != null && team.BuildingWithTeam.Any())
+                            {
+                                <span>
+                                    @string.Join(", ", team.BuildingWithTeam
+                                             .Where(b => b.Building != null)
+                                             .Select(b => b.Building.Name))
+                                </span>
+                            }
+                            else
+                            {
+                                <span>Няма налични обекти</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any())
+                            {
+                                <ul>
+                                    @foreach (var employee in team.EmployeesInTeam)
+                                    {
+                                        <li>@employee.Employee.FirstName @employee.Employee.LastName</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span>Няма налични служители</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (team.JobsDoneByTeam != null && team.JobsDoneByTeam.Any())
+                            {
+                                <span>
+                                    @string.Join(", ", team.JobsDoneByTeam
+                                             .Where(j => j.JobDone?.Job != null) // Проверка за null
+                                             .Select(j => j.JobDone.Job.Name))
+                                </span>
+                            }
+                            else
+                            {
+                                <span>Няма налични свършени работи</span>
+                            }
+                        </td>
+
+                        <td>
+                            <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">Няма налични екипи</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

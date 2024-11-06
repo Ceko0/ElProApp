@@ -28,19 +28,28 @@
 
                 <dt class="col-sm-3">Екип:</dt>
                 <dd class="col-sm-9">
-                    <select class="form-select" disabled>
-                        <option value="">Изберете отбор</option>
-                        @foreach (var team in Model.TeamsEmployeeBelongsTo)
-                        {
-                            <option>@team.Team.Name</option>
-                        }
-                    </select>
+                    @if (Model.TeamsEmployeeBelongsTo != null)
+                    {
+                        <select class="form-select" disabled>
+                            <option value="">Изберете отбор</option>
+                            @foreach (var team in Model.TeamsEmployeeBelongsTo)
+                            {
+                                <option>@team.Team.Name</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <span>Този служител не е част от екип.</span>
+                    }
                 </dd>
+
                 <dt class="col-sm-3">Потребител:</dt>
-                <dd class="col-sm-9">@Model.UserName</dd>
+                <dd class="col-sm-9">@Model.User.UserName</dd>
             </dl>
+
             <div class="d-flex justify-content-between">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>    
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>
                 <form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете този служител?');">
                     <button type="submit" class="btn btn-danger">Изтриване</button>
                 </form>

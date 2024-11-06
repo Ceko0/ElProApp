@@ -1,6 +1,6 @@
 ﻿@using ElProApp.Web.Models.Employee
 @using System.Security.Claims
-@model IEnumerable<EmployeeAllViewModel>
+@model ICollection<EmployeeViewModel>
 @{
     ViewData["Title"] = "Списък със служители";
 }
@@ -30,12 +30,20 @@
                     <td>
                         <select class="form-select" disabled>
                             <option>Изберете отбор</option>
-                            @foreach (var team in employee.TeamsEmployeeBelongsTo)
+                            @if (employee.TeamsEmployeeBelongsTo != null)
                             {
-                                <option>@team.Team.Name</option>
+                                @foreach (var teamMapping in employee.TeamsEmployeeBelongsTo)
+                                {
+                                    <option>@teamMapping.Team.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                <option>Няма екипи</option>
                             }
                         </select>
                     </td>
+
                     <td>
                         @{
                             
