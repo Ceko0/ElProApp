@@ -17,7 +17,7 @@
         public void Configure(EntityTypeBuilder<JobDoneTeamMapping> builder)
         {
             // Sets the primary key for the JobDoneTeamMapping entity.
-            builder.HasKey(jdtm => jdtm.Id);
+            builder.HasKey(et => new { et.JobDoneId, et.TeamId });
 
             // Configures the relationship between JobDone and JobDoneTeamMapping.
             builder

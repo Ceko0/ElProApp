@@ -17,7 +17,7 @@
         public void Configure(EntityTypeBuilder<BuildingTeamMapping> builder)
         {
             // Sets the primary key for the BuildingTeamMapping entity.
-            builder.HasKey(btm => btm.Id);
+            builder.HasKey(et => new { et.BuildingId, et.TeamId });
 
             // Configures the relationship between Building and BuildingTeamMapping.
             builder
