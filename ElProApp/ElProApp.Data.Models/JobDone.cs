@@ -53,6 +53,14 @@
         public int DaysForJob { get; set; }
 
         /// <summary>
+        /// Foreign key for the team that completed the job. 
+        /// If you want to use many-to-many mapping, remove this property.
+        /// </summary>
+        [Required]
+        [Comment("Foreign key for the team responsible for completing the job.")]
+        public Guid TeamId { get; set; }
+
+        /// <summary>
         /// Collection of mappings between teams and this job, indicating which teams participated in completing the job.
         /// </summary>
         [Comment("Collection representing teams that completed the job, mapped in a many-to-many relationship.")]
