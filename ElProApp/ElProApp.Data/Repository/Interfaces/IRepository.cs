@@ -94,6 +94,8 @@ namespace ElProApp.Data.Repository.Interfaces
         /// <returns>True if the entity was successfully deleted; otherwise, false.</returns>
         Task<bool> DeleteAsync(TId id);
 
+        public Task<bool> DeleteByCompositeKeyAsync(params object[] keyValues);
+
         /// <summary>
         /// Soft deletes an entity by its identifier.
         /// </summary>

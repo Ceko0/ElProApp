@@ -70,7 +70,7 @@
         /// Asynchronously retrieves all entities.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation, containing a collection of all entities.</returns>
-        public async Task<IEnumerable<TType>> GetAllAsync() => await this.dbSet.ToArrayAsync();
+        public async Task<IEnumerable<TType>> GetAllAsync() => await this.dbSet.ToListAsync();
 
         /// <summary>
         /// Retrieves all attached entities (e.g., tracked by the context).
@@ -144,6 +144,20 @@
         public async Task<bool> DeleteAsync(TId id)
         {
             TType entity = await this.GetByIdAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            this.dbSet.Remove(entity);
+            await this.data.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteByCompositeKeyAsync(params object[] keyValues)
+        {
+            var entity = await this.dbSet.FindAsync(keyValues);
             if (entity == null)
             {
                 return false;
