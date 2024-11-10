@@ -4,11 +4,12 @@
 
     public interface IEmployeeTeamMappingService
     {
-        public ICollection<EmployeeTeamMapping> GetAllByEmployeeId(string id);
-        public Task<ICollection<EmployeeTeamMapping>> GetAllAsync();
-        public Task<EmployeeTeamMapping> AddAsync(Guid employeeId, Guid TeamId);
-        public Task<ICollection<EmployeeTeamMapping>> GetByTeamIdAsync(Guid id);
-        public bool Any(Guid employeeId, Guid teamId);
-        public Task<bool> RemoveAsync(EmployeeTeamMapping mapping);
+        ICollection<EmployeeTeamMapping> GetAllByEmployeeId(string id);
+        Task<ICollection<EmployeeTeamMapping>> GetAllAsync();
+        IQueryable<EmployeeTeamMapping> GetAllAttached();
+        Task<EmployeeTeamMapping> AddAsync(Guid employeeId, Guid TeamId);
+        Task<ICollection<EmployeeTeamMapping>> GetByTeamIdAsync(Guid id);
+        bool Any(Guid employeeId, Guid teamId);
+        Task<bool> RemoveAsync(EmployeeTeamMapping mapping);
     }
 }

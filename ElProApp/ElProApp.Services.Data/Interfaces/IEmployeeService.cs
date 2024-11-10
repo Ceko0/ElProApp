@@ -39,6 +39,8 @@
         /// <returns>A collection of employee view models.</returns>
         Task<ICollection<EmployeeViewModel>> GetAllAsync();
 
+        IQueryable<Employee> GetAllAttached();
+
         /// <summary>
         /// Soft deletes an employee by their ID.
         /// </summary>

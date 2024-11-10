@@ -6,6 +6,7 @@ namespace ElProApp.Services.Data.Interfaces
     public interface IJobDoneTeamMappingService
     {
         public Task<ICollection<JobDoneTeamMapping>> GetAllAsync();
+        IQueryable<JobDoneTeamMapping> GetAllAttached();
         public Task<ICollection<JobDoneTeamMapping>> GetByTeamIdAsync(Guid Id);
         public Task<JobDoneTeamMapping> AddAsync(Guid jobDoneID, Guid teamId);
         public bool Any(Guid jobDoneId, Guid teamId);

@@ -11,19 +11,25 @@
     public class JobDoneTeamMappingService(IRepository<JobDoneTeamMapping, Guid> _jobDoneTeamMappingRepository) : IJobDoneTeamMappingService
     {
         private readonly IRepository<JobDoneTeamMapping, Guid> jobDoneTeamMappingRepository = _jobDoneTeamMappingRepository;
-
-        public async Task<ICollection<JobDoneTeamMapping>> GetAllAsync() => await jobDoneTeamMappingRepository
+     
+        public async Task<ICollection<JobDoneTeamMapping>> GetAllAsync()
+            => await jobDoneTeamMappingRepository
                 .GetAllAttached()
                 .Include(x => x.Team)
                 .ThenInclude(t => t.EmployeesInTeam)
                 .Include(x => x.Team)
-                .ThenInclude( t => t.JobsDoneByTeam)
+                .ThenInclude(t => t.JobsDoneByTeam)
                 .Include(x => x.Team)
                 .ThenInclude(t => t.BuildingWithTeam)
-                .Include( x => x.JobDone)
+                .Include(x => x.JobDone)
                 .ThenInclude(jd => jd.Job)
                 .Include(x => x.JobDone)
-                .ThenInclude(jd => jd.TeamsDoTheJob).ToListAsync();
+                .ThenInclude(jd => jd.TeamsDoTheJob)
+                .ToListAsync();
+
+        public IQueryable<JobDoneTeamMapping> GetAllAttached()
+            => jobDoneTeamMappingRepository
+                .GetAllAttached();
 
         public async Task<ICollection<JobDoneTeamMapping>> GetByTeamIdAsync(Guid Id)
             => await jobDoneTeamMappingRepository
@@ -54,6 +60,6 @@
 
         public async Task<bool> RemoveAsync(JobDoneTeamMapping mapping) 
             => await jobDoneTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.JobDoneId, mapping.TeamId);
-        
+
     }
 }

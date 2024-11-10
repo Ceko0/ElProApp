@@ -14,23 +14,16 @@
     /// <summary>
     /// Service class for managing employee-related operations, including adding, editing, deleting, and retrieving employee information.
     /// </summary>
-    public class EmployeeService : IEmployeeService
-    {
-        private readonly IRepository<Employee, Guid> employeeRepository;
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly IHttpContextAccessor httpContextAccessor;
-        private readonly IEmployeeTeamMappingService employeeTeamMappingService;
-
-        public EmployeeService(IRepository<Employee, Guid> _employeeRepository
+    public class EmployeeService(IRepository<Employee, Guid> _employeeRepository
             , UserManager<IdentityUser> _userManager
             , IHttpContextAccessor _httpContextAccessor
             , IEmployeeTeamMappingService _employeeTeamMappingService)
-        {
-            employeeRepository = _employeeRepository;
-            userManager = _userManager;
-            httpContextAccessor = _httpContextAccessor;
-            employeeTeamMappingService = _employeeTeamMappingService;
-        }
+            : IEmployeeService
+    {
+        private readonly IRepository<Employee, Guid> employeeRepository = _employeeRepository;
+        private readonly UserManager<IdentityUser> userManager = _userManager;
+        private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
+        private readonly IEmployeeTeamMappingService employeeTeamMappingService = _employeeTeamMappingService;
 
         /// <summary>
         /// Adds a new employee based on the provided model.
@@ -117,8 +110,11 @@
                             .ThenInclude(te => te.Team)
                             .Where(x => !x.IsDeleted)
                             .To<EmployeeViewModel>()
-                            .ToListAsync(); 
-        
+                            .ToListAsync();
+
+        public IQueryable<Employee> GetAllAttached() 
+            => employeeRepository
+            .GetAllAttached();
 
         /// <summary>
         /// Soft deletes an employee by marking them as deleted, based on their ID.

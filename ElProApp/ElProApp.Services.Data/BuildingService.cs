@@ -1,35 +1,45 @@
 ﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
-    
+
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Building;
+    using ElProApp.Services.Data.Methods;
 
-
-    internal class BuildingService(IRepository<Building , Guid> _BuildingRepository) : IBuildingService
+    internal class BuildingService(IRepository<Building, Guid> _BuildingRepository
+        , IBuildingTeamMappingService _buildingTeamMappingService)
+        : IBuildingService
     {
         private readonly IRepository<Building, Guid> buildingRepository = _BuildingRepository;
+        private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
 
         public async Task<string> AddAsync(BuildingInputModel model)
         {
             if ((await buildingRepository.FirstOrDefaultAsync(x => x.Name == model.Name)) != null)
-                     throw new InvalidOperationException("A building with this name already exists!");
+                throw new InvalidOperationException("A building with this name already exists!");
             var building = AutoMapperConfig.MapperInstance.Map<Building>(model);
 
             await buildingRepository.AddAsync(building);
             return building.Id.ToString();
         }
 
-        public async Task<BuildingEditInputModel> EditByIdAsync(string id)
+        public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await buildingRepository.GetByIdAsync(validId);
-            if (entity.IsDeleted) throw new InvalidOperationException("Team is deleted.");
+            var model = buildingRepository
+                .GetAllAttached()
+                .Where(x => x.IsDeleted != true)
+                .Include(x => x.TeamsOnBuilding)
+                .ThenInclude( t => t.Team)
+                .To<BuildingEditInputModel>()
+                .FirstOrDefault(x => x.Id == validId);
 
-            return AutoMapperConfig.MapperInstance.Map<BuildingEditInputModel>(entity);
+            if (model == null) throw new InvalidOperationException("Team is deleted.");
+
+            return model;
         }
 
         public async Task<bool> EditByModelAsync(BuildingEditInputModel model)
@@ -38,8 +48,27 @@
             {
                 var entity = await buildingRepository.GetByIdAsync(model.Id);
                 AutoMapperConfig.MapperInstance.Map(model, entity);
-
                 await buildingRepository.SaveAsync();
+
+                var existingTeamIds = entity.TeamsOnBuilding.Select(t => t.TeamId).ToList();
+                foreach (var teamId in existingTeamIds)
+                {
+                    if (!model.selectedTeamEntities.Contains(teamId))
+                    {
+                        var mappingToRemove = entity.TeamsOnBuilding.FirstOrDefault(m => m.TeamId == teamId);
+                        if (mappingToRemove != null)
+                        {
+                            await buildingTeamMappingService.RemoveAsync(mappingToRemove);
+                        }
+                    }
+                }
+
+                foreach (var teamId in model.selectedTeamEntities)
+                {
+                    if (!buildingTeamMappingService.Any(model.Id, teamId))
+                        await buildingTeamMappingService.AddAsync(model.Id, teamId);
+                }
+
                 return true;
             }
             catch (Exception)
@@ -49,23 +78,27 @@
         }
 
         public async Task<ICollection<BuildingViewModel>> GetAllAsync()
-        {
-            var building = await buildingRepository.GetAllAttached()
-                                   .Include(x => x.TeamsOnBuilding)
-                                   .ThenInclude(tb => tb.Team)
-                                   .Where(x => !x.IsDeleted)
-                                   .To <BuildingViewModel>()
-                                   .ToListAsync();
-            return (building);
-        }
+            => await buildingRepository.GetAllAttached()
+                .Include(x => x.TeamsOnBuilding)
+                .ThenInclude(tb => tb.Team)
+                .Where(x => !x.IsDeleted)
+                .To<BuildingViewModel>()
+                .ToListAsync();
 
-        public async Task<BuildingViewModel> GetByIdAsync(string id)
+        public IQueryable<Building> GetAllAttached()
+            => buildingRepository.GetAllAttached();
+
+        public BuildingViewModel GetById(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await buildingRepository.GetByIdAsync(validId).ConfigureAwait(false);
-            return entity != null
-                ? AutoMapperConfig.MapperInstance.Map<BuildingViewModel>(entity)
-                : throw new ArgumentException("Missing entity.");
+            var model = buildingRepository
+                .GetAllAttached()
+                .Include(x => x.TeamsOnBuilding)
+                .ThenInclude(tb => tb.Team)
+                .To<BuildingViewModel>()
+                .FirstOrDefault(x => x.Id == validId);
+
+            return model;
         }
 
         public async Task<bool> SoftDeleteAsync(string id)

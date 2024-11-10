@@ -63,7 +63,7 @@
 
             if (model.SelectedBuildingId != Guid.Empty)
             {
-                BuildingViewModel building = await buildingService.GetByIdAsync(model.SelectedBuildingId.ToString()) 
+                BuildingViewModel building = buildingService.GetById(model.SelectedBuildingId.ToString()!) 
                     ?? throw new InvalidOperationException("The selected building does not exist.");
                 await teamRepository.AddAsync(team);
                 string stringUserId = GetUserId();
@@ -200,13 +200,13 @@
             }
         }
 
-
         /// <summary>
         /// Retrieves all teams that are not marked as deleted.
         /// Maps them to TeamAllViewModel.
         /// </summary>
         /// <returns>IEnumerable of TeamAllViewModel.</returns>
-        public async Task<ICollection<TeamViewModel>> GetAllAsync() => await teamRepository
+        public async Task<ICollection<TeamViewModel>> GetAllAsync()
+                => await teamRepository
                 .GetAllAttached()
                 .Include(x => x.JobsDoneByTeam)
                 .ThenInclude(jd => jd.JobDone)
@@ -216,6 +216,10 @@
                 .ThenInclude(e => e.Employee)
                 .To<TeamViewModel>()
                 .ToListAsync();
+
+        public IQueryable<Team> GetAllAttached()
+            => teamRepository
+            .GetAllAttached();
 
         /// <summary>
         /// Retrieves a specific team by its ID.
@@ -256,6 +260,13 @@
             {
                 return false;
             }
+        }
+
+        public async Task<bool> Any(Guid id)
+        {
+            var team = await teamRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (team == null) return false;
+            return true;
         }
 
         /// <summary>

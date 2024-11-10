@@ -6,18 +6,21 @@
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
 
-    public class EmployeeTeamMappingService(IRepository<EmployeeTeamMapping, Guid> _employeeTeamMappingRepository) : IEmployeeTeamMappingService
+    public class EmployeeTeamMappingService(IRepository<EmployeeTeamMapping, Guid> _employeeTeamMappingRepository)
+        : IEmployeeTeamMappingService
     {
         private readonly IRepository<EmployeeTeamMapping, Guid> employeeTeamMappingRepository = _employeeTeamMappingRepository;
 
         public async Task<ICollection<EmployeeTeamMapping>> GetAllAsync()
-        {
-            var entitys = await employeeTeamMappingRepository.GetAllAsync();
+            => await employeeTeamMappingRepository
+            .GetAllAttached()
+            .Include(x => x.Employee)
+            .Include(x => x.Team)
+            .ToListAsync();
 
-            var model = new List<EmployeeTeamMapping>(entitys);
-
-            return model;
-        }
+        public IQueryable<EmployeeTeamMapping> GetAllAttached()
+            => employeeTeamMappingRepository
+            .GetAllAttached();
 
         public ICollection<EmployeeTeamMapping> GetAllByEmployeeId(string id)
         {
@@ -74,6 +77,6 @@
 
         public async Task<bool> RemoveAsync(EmployeeTeamMapping mapping) 
             => await employeeTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.EmployeeId, mapping.TeamId);
-        
+
     }
 }

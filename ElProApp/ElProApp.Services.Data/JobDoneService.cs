@@ -8,7 +8,8 @@
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.JobDone;
 
-    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository) : IJobDoneService
+    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository) 
+        : IJobDoneService
     {
         private readonly IRepository<JobDone, Guid> jobDoneRepository = _jobDoneRepository;
 
@@ -44,15 +45,15 @@
             }
         }
 
-        public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
-        {
-            var jobDone = await jobDoneRepository.GetAllAttached()
+        public async Task<ICollection<JobDoneViewModel>> GetAllAsync() => await jobDoneRepository.GetAllAttached()
                                    .Include(x => x.TeamsDoTheJob)
                                    .ThenInclude(tj => tj.Team)
                                    .To<JobDoneViewModel>()
                                    .ToListAsync();
-            return (jobDone);
-        }
+
+        public IQueryable<JobDone> GetAllAttached()
+            => jobDoneRepository
+            .GetAllAttached();            
 
         public async Task<JobDoneViewModel> GetByIdAsync(string id)
         {

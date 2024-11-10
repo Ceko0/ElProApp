@@ -5,7 +5,8 @@
     using ElProApp.Services.Data.Interfaces;
     using Microsoft.EntityFrameworkCore;
 
-    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> _buildingTeamMappingRepository) : IBuildingTeamMappingService
+    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> _buildingTeamMappingRepository)
+        : IBuildingTeamMappingService
     {
         private readonly IRepository<BuildingTeamMapping, Guid> buildingTeamMappingRepository = _buildingTeamMappingRepository;
         public async Task<BuildingTeamMapping> AddAsync(Guid buildingId, Guid teamId)
@@ -28,6 +29,23 @@
             .GetAllAttached()
             .Where(x => x.TeamId == teamId)
             .ToListAsync();
+
+        public async Task<ICollection<BuildingTeamMapping>> GetByBuildingIdAsync(Guid buildingId)
+            => await buildingTeamMappingRepository
+            .GetAllAttached()
+            .Where(x => x.BuildingId == buildingId)
+            .ToListAsync();
+
+        public async Task<ICollection<BuildingTeamMapping>> GetAllAttachedAsync()
+            => await buildingTeamMappingRepository
+            .GetAllAttached()
+            .Include(x => x.Building)
+            .Include(x => x.Team)
+            .ToListAsync();
+
+        public IQueryable<BuildingTeamMapping> GetAllAttached()
+            => buildingTeamMappingRepository
+            .GetAllAttached();
 
         public bool Any(Guid buildingId, Guid teamId)
         {
