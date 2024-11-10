@@ -13,7 +13,7 @@ namespace ElProApp.Web.Controllers
             _logger = logger;
         }
 
-        public IActionResult All()
+        public IActionResult Index()
         {
             return View();
         }
