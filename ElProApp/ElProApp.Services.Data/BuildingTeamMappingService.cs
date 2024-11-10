@@ -22,8 +22,22 @@
 
             return buildingTeamMapping;
         }
+                
+        public async Task<ICollection<BuildingTeamMapping>> GetByTeamIdAsync(Guid teamId)
+            => await buildingTeamMappingRepository
+            .GetAllAttached()
+            .Where(x => x.TeamId == teamId)
+            .ToListAsync();
 
-        public async Task<ICollection<BuildingTeamMapping>> GetAllByTeamId(Guid teamId) => await buildingTeamMappingRepository.GetAllAttached().Where(x => x.TeamId == teamId).ToListAsync();
+        public bool Any(Guid buildingId, Guid teamId)
+        {
+            var model = buildingTeamMappingRepository.GetAllAttached().Where(x => x.TeamId == teamId && x.BuildingId == buildingId);
+
+            return model.Any();
+        }
+
+        public async Task<bool> RemoveAsync(BuildingTeamMapping mapping)
+            => await buildingTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.BuildingId, mapping.TeamId);
         
     }
 }

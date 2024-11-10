@@ -10,17 +10,23 @@
     {
         private readonly IRepository<EmployeeTeamMapping, Guid> employeeTeamMappingRepository = _employeeTeamMappingRepository;
 
-        public async Task<IEnumerable<EmployeeTeamMapping>> GetAllAsync()
+        public async Task<ICollection<EmployeeTeamMapping>> GetAllAsync()
         {
-            var entity = await employeeTeamMappingRepository.GetAllAsync();
+            var entitys = await employeeTeamMappingRepository.GetAllAsync();
 
-            return entity;
+            var model = new List<EmployeeTeamMapping>(entitys);
+
+            return model;
         }
 
-        public IEnumerable<EmployeeTeamMapping> GetAllByEmployeeId(string id)
+        public ICollection<EmployeeTeamMapping> GetAllByEmployeeId(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = employeeTeamMappingRepository.GetAllAttached().Where(x => x.EmployeeId == validId).Include(x => x.Team);
+            var entity = employeeTeamMappingRepository
+                .GetAllAttached()
+                .Where(x => x.EmployeeId == validId)
+                .Include(x => x.Team)
+                .ToList();
             return entity;
         }       
 
@@ -31,6 +37,7 @@
 
             var emlpoyeeTeamMappingEntity = new EmployeeTeamMapping()
             {
+                Id = Guid.NewGuid(),
                 EmployeeId = employeeId,
                 TeamId = teamId
             };
@@ -38,10 +45,19 @@
             await employeeTeamMappingRepository.AddAsync(emlpoyeeTeamMappingEntity);
 
             return emlpoyeeTeamMappingEntity;
+        } 
+
+        public async Task<ICollection<EmployeeTeamMapping>> GetByTeamIdAsync(Guid id)
+        {
+            var entity = await employeeTeamMappingRepository
+            .GetAllAttached()
+            .Where(x => x.TeamId == id)
+            .Include(x => x.Employee)
+            .Include(x => x.Team)
+            .ToListAsync();
+
+            return entity;
         }
-               
-        public IEnumerable<EmployeeTeamMapping> GetAllByTeamId(Guid id) => employeeTeamMappingRepository.GetAllAttached().Where(x => x.TeamId == id).Include(x => x.EmployeeId);
-        
         
         private static Guid ConvertAndTestIdToGuid(string id)
         {
@@ -49,5 +65,15 @@
             return validId;
         }
 
+        public bool Any(Guid employeeId, Guid teamId)
+        {
+            var model = employeeTeamMappingRepository
+                .GetAllAttached().Where(x => x.EmployeeId == employeeId && x.TeamId == teamId);
+            return model.Any();
+        }
+
+        public async Task<bool> RemoveAsync(EmployeeTeamMapping mapping) 
+            => await employeeTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.EmployeeId, mapping.TeamId);
+        
     }
 }

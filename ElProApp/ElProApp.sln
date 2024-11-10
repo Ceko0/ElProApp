@@ -21,11 +21,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElProApp.Web.Models", "ElPr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{5BB2C59B-0278-4165-9C74-96C888201F72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElProApp.Services.Mapping", "ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj", "{241800E3-A823-4740-BA85-AAE2F59D7D69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElProApp.Services.Mapping", "ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj", "{241800E3-A823-4740-BA85-AAE2F59D7D69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElProApp.Services.Data", "ElProApp.Services.Data\ElProApp.Services.Data.csproj", "{BB28A59F-A9D3-4C69-AF24-B16427B2A226}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElProApp.Services.Data", "ElProApp.Services.Data\ElProApp.Services.Data.csproj", "{BB28A59F-A9D3-4C69-AF24-B16427B2A226}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElProApp.Web.Infrastructure", "ElProApp.Web.Infrasreucture\ElProApp.Web.Infrastructure.csproj", "{E16048D0-4CA5-48EA-A30C-FF95906FE107}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElProApp.Web.Infrastructure", "ElProApp.Web.Infrasreucture\ElProApp.Web.Infrastructure.csproj", "{E16048D0-4CA5-48EA-A30C-FF95906FE107}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{741FBD90-EDB2-46B0-A542-F09D68ACDAF4}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
