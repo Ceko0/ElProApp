@@ -64,6 +64,6 @@
         /// Collection of mappings between teams and this job, indicating which teams participated in completing the job.
         /// </summary>
         [Comment("Collection representing teams that completed the job, mapped in a many-to-many relationship.")]
-        public virtual ICollection<JobDoneTeamMapping> TeamsDoTheJob { get; set; } = new List<JobDoneTeamMapping>();
+        public virtual IEnumerable<JobDoneTeamMapping> TeamsDoTheJob { get; set; } = new List<JobDoneTeamMapping>();
     }
 }

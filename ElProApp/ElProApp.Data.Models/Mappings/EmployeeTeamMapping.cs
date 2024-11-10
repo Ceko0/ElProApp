@@ -11,7 +11,7 @@
     public class EmployeeTeamMapping
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         /// <summary>
         /// Foreign key for the employee.

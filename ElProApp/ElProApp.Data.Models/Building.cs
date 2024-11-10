@@ -51,6 +51,6 @@
         /// Navigation property for the teams working in this building.
         /// </summary>
         [Comment("Collection of teams associated with the building through BuildingTeamMapping.")]
-        public virtual ICollection<BuildingTeamMapping> TeamsOnBuilding { get; set; } = new List<BuildingTeamMapping>();
+        public virtual IEnumerable<BuildingTeamMapping> TeamsOnBuilding { get; set; } = new List<BuildingTeamMapping>();
     }
 }
