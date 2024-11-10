@@ -20,18 +20,18 @@
                 <dt class="col-sm-3">Фамилия:</dt>
                 <dd class="col-sm-9">@Model.LastName</dd>
 
-                <dt class="col-sm-3">Заплата:</dt>
-                <dd class="col-sm-9">@Model.Wages.ToString("C2")</dd>
+                <dt class="col-sm-3">Дневно възнаграждение:</dt>
+                <dd class="col-sm-9">@Model.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</dd>
 
-                <dt class="col-sm-3">Парите за вземане:</dt>
-                <dd class="col-sm-9">@Model.MoneyToTake.ToString("C2")</dd>
+                <dt class="col-sm-3">Заработка:</dt>
+                <dd class="col-sm-9">@Model.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</dd>
 
                 <dt class="col-sm-3">Екип:</dt>
                 <dd class="col-sm-9">
                     @if (Model.TeamsEmployeeBelongsTo != null)
                     {
                         <select class="form-select" disabled>
-                            <option value="">Изберете отбор</option>
+                            <option value="">Изберете екип</option>
                             @foreach (var team in Model.TeamsEmployeeBelongsTo)
                             {
                                 <option>@team.Team.Name</option>

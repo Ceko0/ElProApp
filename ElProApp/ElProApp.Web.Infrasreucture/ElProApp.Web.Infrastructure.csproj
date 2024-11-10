@@ -12,8 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ElProApp.Data\ElProApp.Data.csproj" />
-    <ProjectReference Include="..\ElProApp.Services.Data\ElProApp.Services.Data.csproj" />
-    <ProjectReference Include="..\ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,55 @@
+﻿@using ElProApp.Web.Models.Building
+@model BuildingEditInputModel
+
+@{
+    ViewData["Title"] = "Редактиране на сграда";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Редактиране на сграда - @Model.Name</h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label asp-for="Name" class="control-label">Име на сградата</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Location" class="control-label">Локация</label>
+            <input asp-for="Location" class="form-control" />
+            <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
+
+       @*  @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
+        {
+            <div class="form-group">
+                <label>Екипи на сградата</label>
+                @foreach (var teamMapping in Model.TeamsOnBuilding)
+                {
+                    <div class="form-check">
+                        <input type="checkbox" name="TeamIds" value="@teamMapping?.Team?.Id" class="form-check-input" 
+                               @(teamMapping?.Team != null ? "checked" : "") />
+                        <label class="form-check-label">@teamMapping?.Team?.Name</label>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Няма свързани екипи със сградата.</p>
+        } *@
+
+        <button type="submit" class="btn btn-primary">Запази промените</button>
+        <a asp-action="All" class="btn btn-secondary">Отказ</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

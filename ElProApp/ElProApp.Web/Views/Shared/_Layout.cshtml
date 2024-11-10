@@ -19,19 +19,62 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="All">Списък със служители</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Служител
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="All">Списък </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Add">Добавяне </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Details">Детайли </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Edit">Редактиране </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="All">Списък с екипи</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Сграда
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="All">Списък </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Add">Добавяне </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Details">Детайли </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Edit">Редактиране </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Add">добавяне екипи</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Details">детаили екипи</a>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Edit">преработка екипи</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                екип
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="All">Списък </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Add">Добавяне </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Details">Детайли </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Edit">Редактиране </a>
+                                </li>
+                            </ul>
                         </li>
                         </li>
                     </ul>
