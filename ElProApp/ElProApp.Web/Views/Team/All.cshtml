@@ -1,4 +1,5 @@
 ﻿@using ElProApp.Web.Models.Team
+@using System.Security.Claims
 @model ICollection<TeamViewModel>
 
 @{
@@ -45,9 +46,9 @@
                             @if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any())
                             {
                                 <ul>
-                                    @foreach (var employee in team.EmployeesInTeam)
+                                    @foreach (var employee  in team.EmployeesInTeam)
                                     {
-                                        <li>@employee.Employee.FirstName @employee.Employee.LastName</li>
+                                        <li>@employee.Employee.FirstName @employee.Employee.LastName </li>
                                     }
                                 </ul>
                             }
@@ -62,7 +63,7 @@
                             {
                                 <span>
                                     @string.Join(", ", team.JobsDoneByTeam
-                                             .Where(j => j.JobDone?.Job != null) // Проверка за null
+                                             .Where(j => j.JobDone?.Job != null)
                                              .Select(j => j.JobDone.Job.Name))
                                 </span>
                             }
@@ -73,7 +74,13 @@
                         </td>
 
                         <td>
-                            <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
+                            @{
+                                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                                if (team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
+                                {
+                                    <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
+                                }                                
+                            }
                         </td>
                     </tr>
                 }

@@ -6,79 +6,76 @@
 }
 
 <div class="container mt-4">
-    <h1 class="display-4">Details for @Model.Name</h1>
+    <h1 class="display-4">Информация за @Model.Name</h1>
 
     <div class="mb-4">
-        <h3>Team Information</h3>
-        <p><strong>Team ID:</strong> @Model.Id</p>
-        <p><strong>Team Name:</strong> @Model.Name</p>
+        <h3>Информация за екипа</h3>
+        <p><strong>Име на екипа:</strong> @Model.Name</p>
     </div>
 
     <div class="mb-4">
-        <h4>Buildings Associated with Team</h4>
+        <h4>Сгради, свързани с екипа</h4>
         <ul class="list-group">
             @if (Model.BuildingWithTeam != null && Model.BuildingWithTeam.Any())
             {
                 foreach (var building in Model.BuildingWithTeam)
                 {
                     <li class="list-group-item">
-                        <strong>Building ID:</strong> @building.BuildingId
+                        <strong>Име на сградата:</strong> @building.Building?.Name
                         <br />
-                        <strong>Building Name:</strong> @building.Building?.Name
+                        <strong>Местоположение на сградата:</strong> @building.Building?.Location
                     </li>
                 }
             }
             else
             {
-                <li class="list-group-item">No buildings associated with this team.</li>
+                <li class="list-group-item">Няма свързани сгради с този екип.</li>
             }
         </ul>
     </div>
 
     <div class="mb-4">
-        <h4>Jobs Done by Team</h4>
+        <h4>Извършени дейности от екипа</h4>
         <ul class="list-group">
             @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
             {
                 foreach (var job in Model.JobsDoneByTeam)
                 {
                     <li class="list-group-item">
-                        <strong>Job ID:</strong> @job.JobDone.JobId
-                        <br />
-                        <strong>Job Description:</strong> @job.JobDone.Job?.Name
+                        <strong>Описание на дейността:</strong> @job.JobDone.Job?.Name
                     </li>
                 }
             }
             else
             {
-                <li class="list-group-item">No jobs done by this team.</li>
+                <li class="list-group-item">Няма извършени дейности от този екип.</li>
             }
         </ul>
     </div>
 
     <div class="mb-4">
-        <h4>Employees in Team</h4>
+        <h4>Служители в екипа</h4>
         <ul class="list-group">
             @if (Model.EmployeesInTeam != null)
             {
+                var counter = 1;
                 foreach (var employee in Model.EmployeesInTeam)
                 {
                     <li class="list-group-item">
-                        <strong>Employee ID:</strong> @employee.EmployeeId
-                        <br />
-                        <strong>Employee Name:</strong> @employee.Employee?.FirstName
+                        <strong>Служител @counter:</strong> @employee.Employee?.FirstName @employee.Employee?.LastName
                     </li>
+                    counter++;
                 }
             }
             else
             {
-                <li class="list-group-item">No employees in this team.</li>
+                <li class="list-group-item">Няма служители в този екип.</li>
             }
         </ul>
     </div>
 
     <div class="mt-4">
-        <a asp-action="All" class="btn btn-secondary">Back to Team List</a>
+        <a asp-action="All" class="btn btn-secondary">Обратно към списъка с екипи</a>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary ml-2">Редактирай</a>
     </div>
 </div>
