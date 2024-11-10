@@ -44,7 +44,7 @@
             }
         }
 
-        public async Task<IEnumerable<JobDoneViewModel>> GetAllAsync()
+        public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
         {
             var jobDone = await jobDoneRepository.GetAllAttached()
                                    .Include(x => x.TeamsDoTheJob)

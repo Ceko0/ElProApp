@@ -12,7 +12,7 @@ namespace ElProApp.Services.Data.Interfaces
 
         Task<bool> EditByModelAsync(JobDoneEditInputModel model);
 
-        Task<IEnumerable<JobDoneViewModel>> GetAllAsync();
+        Task<ICollection<JobDoneViewModel>> GetAllAsync();
         Task<bool> SoftDeleteAsync(string id);
     }
 }

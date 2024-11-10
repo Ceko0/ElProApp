@@ -48,7 +48,7 @@
             }
         }
 
-        public async Task<IEnumerable<BuildingViewModel>> GetAllAsync()
+        public async Task<ICollection<BuildingViewModel>> GetAllAsync()
         {
             var building = await buildingRepository.GetAllAttached()
                                    .Include(x => x.TeamsOnBuilding)

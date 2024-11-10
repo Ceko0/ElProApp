@@ -21,8 +21,10 @@
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IEmployeeTeamMappingService employeeTeamMappingService;
 
-        public EmployeeService(IRepository<Employee, Guid> _employeeRepository, UserManager<IdentityUser> _userManager, IHttpContextAccessor _httpContextAccessor,
-                              IEmployeeTeamMappingService _employeeTeamMappingService)
+        public EmployeeService(IRepository<Employee, Guid> _employeeRepository
+            , UserManager<IdentityUser> _userManager
+            , IHttpContextAccessor _httpContextAccessor
+            , IEmployeeTeamMappingService _employeeTeamMappingService)
         {
             employeeRepository = _employeeRepository;
             userManager = _userManager;
@@ -108,7 +110,7 @@
         /// Retrieves a list of all employees who are not marked as deleted.
         /// </summary>
         /// <returns>A list of view models representing all active employees.</returns>
-        public async Task<IEnumerable<EmployeeViewModel>> GetAllAsync() 
+        public async Task<ICollection<EmployeeViewModel>> GetAllAsync() 
             => await employeeRepository
                             .GetAllAttached()
                             .Include(e => e.TeamsEmployeeBelongsTo)

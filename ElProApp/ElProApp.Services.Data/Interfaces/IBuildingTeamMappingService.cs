@@ -5,6 +5,8 @@
     public interface IBuildingTeamMappingService
     {
         public Task<BuildingTeamMapping> AddAsync(Guid buildingId, Guid teamId);
-        public Task<ICollection<BuildingTeamMapping>> GetAllByTeamId(Guid teamId);
+        public Task<ICollection<BuildingTeamMapping>> GetByTeamIdAsync(Guid teamId);
+        public bool Any(Guid buildingId, Guid teamId);
+        public Task<bool> RemoveAsync(BuildingTeamMapping mapping);
     }
 }

@@ -12,7 +12,7 @@
 
         Task<bool> EditByModelAsync(BuildingEditInputModel model);
 
-        Task<IEnumerable<BuildingViewModel>> GetAllAsync();
+        Task<ICollection<BuildingViewModel>> GetAllAsync();
         Task<bool> SoftDeleteAsync(string id);
     }
 }

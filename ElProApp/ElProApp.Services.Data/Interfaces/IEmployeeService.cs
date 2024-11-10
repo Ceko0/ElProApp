@@ -37,7 +37,7 @@
         /// Retrieves all employees as a list.
         /// </summary>
         /// <returns>A collection of employee view models.</returns>
-        Task<IEnumerable<EmployeeViewModel>> GetAllAsync();
+        Task<ICollection<EmployeeViewModel>> GetAllAsync();
 
         /// <summary>
         /// Soft deletes an employee by their ID.

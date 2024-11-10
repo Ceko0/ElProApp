@@ -12,8 +12,7 @@ namespace ElProApp.Services.Data.Interfaces
         Task<TeamEditInputModel> EditByIdAsync(string id);
 
         Task<bool> EditByModelAsync(TeamEditInputModel model);
-
-        Task<IEnumerable<TeamViewModel>> GetAllAsync();
+        Task<ICollection<TeamViewModel>> GetAllAsync();
         Task<bool> SoftDeleteAsync(string id);
     }
 }
