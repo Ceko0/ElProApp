@@ -46,9 +46,8 @@
                 string employeeId = await employeeService.AddAsync(model);
                 return RedirectToAction(nameof(Details),new { id = employeeId });
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException )
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
         }

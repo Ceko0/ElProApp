@@ -10,6 +10,7 @@
     using ElProApp.Data.Models;
     using ElProApp.Web.Infrastructure.Extensions;
     using ElProApp.Services.Data;
+    using ElProApp.Services.Data.Methods;
 
     public class Program
     {
@@ -48,6 +49,7 @@
             // Register repositories and services
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
+            builder.Services.AddScoped<GetMethods>();
 
             // Add services to the container for MVC and Razor Pages
             builder.Services.AddControllersWithViews();
