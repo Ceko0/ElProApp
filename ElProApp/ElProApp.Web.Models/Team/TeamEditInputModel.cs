@@ -10,6 +10,9 @@
     using static Common.EntityValidationConstants.Team;
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
+    using ElProApp.Web.Models.Building;
+    using ElProApp.Web.Models.JobDone;
+    using ElProApp.Web.Models.Employee;
 
     public class TeamEditInputModel : IMapTo<Team>
     {        
@@ -20,10 +23,14 @@
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         public string Name { get; set; } = null!;
 
-        public ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = new List<BuildingTeamMapping>();
+        public ICollection<BuildingViewModel> BuildingWithTeam { get; set; } = new List<BuildingViewModel>();
 
-        public ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = new List<JobDoneTeamMapping>();
+        public ICollection<JobDoneViewModel> JobsDoneByTeam { get; set; } = new List<JobDoneViewModel>();
 
-        public ICollection<EmployeeTeamMapping> EmployeesInTeam { get; set; } = new List<EmployeeTeamMapping>();
+        public ICollection<EmployeeViewModel> EmployeesInTeam { get; set; } = new List<EmployeeViewModel>();
+
+        public List<Guid> BuildingWithTeamIds { get; set; } = new List<Guid>();
+        public List<Guid> JobsDoneByTeamIds { get; set; } = new List<Guid>();
+        public List<Guid> EmployeesInTeamIds { get; set; } = new List<Guid>();
     }
 }
