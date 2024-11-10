@@ -19,7 +19,7 @@
 
         private void SeedInitialData()
         {
-            var jsonData = File.ReadAllText("D:\\ProgramsScool\\ElProApp\\ElProApp\\ElProApp.Data\\SeedData\\SeedData.json");
+            var jsonData = File.ReadAllText("D:..\\ElProApp.Data\\SeedData\\SeedData.json");
             var initialData = JsonConvert.DeserializeObject<InitialData>(jsonData);
 
             foreach (var team in initialData.Teams)
