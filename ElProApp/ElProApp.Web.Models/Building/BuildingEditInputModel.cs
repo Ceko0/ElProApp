@@ -2,7 +2,7 @@
 namespace ElProApp.Web.Models.Building
 { 
     using System.ComponentModel.DataAnnotations;
-    using AutoMapper;
+
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
@@ -10,7 +10,7 @@ namespace ElProApp.Web.Models.Building
     using static ElProApp.Common.EntityValidationErrorMessage.Building;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
 
-    public class BuildingEditInputModel : IMapTo<JobDone>, IHaveCustomMappings
+    public class BuildingEditInputModel : IMapTo<JobDone>
     {
         public Guid Id { get; set; }
 
@@ -25,14 +25,5 @@ namespace ElProApp.Web.Models.Building
         public string Location { get; set; } = null!;
 
         public ICollection<BuildingTeamMapping> TeamsOnBuilding = new List<BuildingTeamMapping>();
-
-        public ICollection<Guid> selectedTeamEntities = new List<Guid>();
-
-        public void CreateMappings(IProfileExpression configuration)
-        {
-            configuration.CreateMap<Building, BuildingEditInputModel>()
-                .ForMember(b => b.TeamsOnBuilding, b => b.MapFrom(s => s.TeamsOnBuilding));
-
-        }
     }
 }

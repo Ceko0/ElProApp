@@ -3,7 +3,7 @@
     using System.Reflection;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
-
+    using Data.Models;
     using Data.Repository;
     using Data.Repository.Interfaces;
 

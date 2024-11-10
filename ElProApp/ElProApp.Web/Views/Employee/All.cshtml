@@ -13,8 +13,8 @@
             <tr>
                 <th>Име</th>
                 <th>Фамилия</th>
-                <th>Дневно възнаграждение</th>
-                <th>Заработка</th>
+                <th>Заплата</th>
+                <th>Парите за вземане</th>
                 <th>Екип</th>
                 <th>Детайли</th>
             </tr>
@@ -25,8 +25,8 @@
                 <tr>
                     <td>@employee.FirstName</td>
                     <td>@employee.LastName</td>
-                    <td>@employee.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
-                    <td>@employee.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
+                    <td>@employee.Wages.ToString("C2")</td>
+                    <td>@employee.MoneyToTake.ToString("C2")</td>
                     <td>
                         <select class="form-select" disabled>
                             <option>Изберете отбор</option>
