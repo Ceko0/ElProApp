@@ -24,7 +24,7 @@
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
-       @*  @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
+       @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
         {
             <div class="form-group">
                 <label>Екипи на сградата</label>
@@ -41,7 +41,7 @@
         else
         {
             <p>Няма свързани екипи със сградата.</p>
-        } *@
+        } 
 
         <button type="submit" class="btn btn-primary">Запази промените</button>
         <a asp-action="All" class="btn btn-secondary">Отказ</a>
