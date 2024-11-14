@@ -1,7 +1,5 @@
 ﻿namespace ElProApp.Services.Data.Methods
 {
-    using Microsoft.AspNetCore.Http;
-
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
@@ -10,14 +8,12 @@
         , IEmployeeTeamMappingService _employeeTeamMpaping
         , IBuildingTeamMappingService _buildingTeamMappingService
         , IJobDoneTeamMappingService _jobDoneTeamMappingService
-        , IHttpContextAccessor _httpContextAccessor
         , IEmployeeService _employeeService
         , IJobDoneService _jobDoneService
         ,ITeamService _teamService
         ,IJobService _jobService)        
 
     {
-        private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
         private readonly IBuildingService buildingService = _buildingService;
         private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
         private readonly IEmployeeTeamMappingService employeeTeamMappingService = _employeeTeamMpaping;
