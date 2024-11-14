@@ -1,4 +1,6 @@
-﻿namespace ElProApp.Services.Data
+﻿using System.Diagnostics;
+
+namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -29,13 +31,13 @@
         public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var model = buildingRepository
+            var model = await buildingRepository
                 .GetAllAttached()
                 .Where(x => x.IsDeleted != true)
                 .Include(x => x.TeamsOnBuilding)
                 .ThenInclude( t => t.Team)
                 .To<BuildingEditInputModel>()
-                .FirstOrDefault(x => x.Id == validId);
+                .FirstOrDefaultAsync(x => x.Id == validId);
 
             if (model == null) throw new InvalidOperationException("Team is deleted.");
 
@@ -98,7 +100,7 @@
                 .To<BuildingViewModel>()
                 .FirstOrDefault(x => x.Id == validId);
 
-            return model;
+            return model!;
         }
 
         public async Task<bool> SoftDeleteAsync(string id)
