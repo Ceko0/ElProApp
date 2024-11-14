@@ -76,7 +76,7 @@
                         <td>
                             @{
                                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                if (team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
+                                if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
                                 {
                                     <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
                                 }                                
