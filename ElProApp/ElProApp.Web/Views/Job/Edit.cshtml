@@ -1,0 +1,25 @@
+﻿@using ElProApp.Web.Models.Job
+@model JobEditInputModel
+
+<h1>Edit Job</h1>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,24 @@
+﻿@using ElProApp.Web.Models.Job
+@model JobInputModel
+
+<h1>Add New Job</h1>
+
+<form asp-action="Add" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+<a asp-action="All" class="btn btn-secondary">Back to All Jobs</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -4,11 +4,11 @@
 
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
-    using ElProApp.Services.Mapping;
-    using static ElProApp.Common.EntityValidationErrorMessage.JobDobe;
-    using static ElProApp.Common.EntityValidationErrorMessage.Master;
+    using Services.Mapping;
+    using static Common.EntityValidationErrorMessage.JobDobe;
+    using static Common.EntityValidationErrorMessage.Master;
 
-    public class JobDoneEditInputModel : IMapTo<JobDone>
+    public class JobDoneEditInputModel : IMapTo<JobDone> , IMapFrom<JobDone>
     {
 
         public Guid Id { get; set; }

@@ -1,9 +1,9 @@
 ﻿namespace ElProApp.Web.Controllers
-{   
+{
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Identity;
-    
+
     using ElProApp.Data;
     using Models.Employee;
     using ElProApp.Services.Data.Interfaces;
@@ -24,14 +24,16 @@
         /// </summary>
         /// <returns>View with the list of employees.</returns>
         [HttpGet]
-        public async Task<IActionResult> All() => View(await employeeService.GetAllAsync());
+        public async Task<IActionResult> All()
+            => View(await employeeService.GetAllAsync());
 
         /// <summary>
         /// Displays the form for adding a new employee.
         /// </summary>
         /// <returns>View for adding an employee.</returns>
         [HttpGet]
-        public IActionResult Add() => View(new EmployeeInputModel());
+        public IActionResult Add()
+            => View(new EmployeeInputModel());
 
         /// <summary>
         /// Processes the request to add a new employee.
@@ -44,9 +46,9 @@
             try
             {
                 string employeeId = await employeeService.AddAsync(model);
-                return RedirectToAction(nameof(Details),new { id = employeeId });
+                return RedirectToAction(nameof(Details), new { id = employeeId });
             }
-            catch (InvalidOperationException )
+            catch (InvalidOperationException)
             {
                 return View(model);
             }
@@ -59,12 +61,7 @@
         /// <returns>View with employee details.</returns>
         [HttpGet]
         public async Task<IActionResult> Details(string id)
-        {
-            var model = await employeeService.GetByIdAsync(id);
-
-            
-            return View(model);
-        }
+            => View(await employeeService.GetByIdAsync(id));
 
         /// <summary>
         /// Displays the form for editing an employee.
@@ -72,7 +69,7 @@
         /// <param name="id">The employee's ID.</param>
         /// <returns>View for editing the employee.</returns>
         [HttpGet]
-        public async Task<IActionResult> Edit(string id) 
+        public async Task<IActionResult> Edit(string id)
             => View(await employeeService.EditByIdAsync(id));
 
         /// <summary>
@@ -83,14 +80,17 @@
         [HttpPost]
         public async Task<IActionResult> Edit(EmployeeEditInputModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            bool isEdited = await employeeService.EditByModelAsync(model);
+            if (!ModelState.IsValid) return View(model);
 
-            if (isEdited) return RedirectToAction(nameof(Details),new {id = model.Id});
-            
+            try
+            {
+                if (await employeeService.EditByModelAsync(model)) 
+                    return RedirectToAction(nameof(Details), new { id = model.Id });
+            }
+            catch
+            {
+                RedirectToAction(nameof(All));
+            }
             return View(model);
         }
 
@@ -110,5 +110,5 @@
             ModelState.AddModelError("", "Failed to delete employee.");
             return RedirectToAction(nameof(Details), new { id });
         }
-    } 
+    }
 }

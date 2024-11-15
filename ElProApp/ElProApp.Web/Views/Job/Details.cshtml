@@ -1,0 +1,13 @@
+﻿@using ElProApp.Web.Models.Job
+@model JobViewModel
+
+<h1>Job Details</h1>
+
+<p><strong>Name:</strong> @Model.Name</p>
+<p><strong>Price:</strong> @Model.Price.ToString("F2")</p>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>
+<a asp-action="All" class="btn btn-secondary">Back to All Jobs</a>

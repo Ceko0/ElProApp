@@ -1,17 +1,19 @@
 ﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
-    
+
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Services.Mapping;
-    using ElProApp.Web.Models.JobDone;
+    using Interfaces;
+    using Mapping;
+    using Web.Models.JobDone;
+    using ElProApp.Services.Data.Methods;
 
-    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository) 
-        : IJobDoneService
+
+    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository) : IJobDoneService
     {
         private readonly IRepository<JobDone, Guid> jobDoneRepository = _jobDoneRepository;
+        private readonly GetMethods get = null!;
 
         public async Task<string> AddAsync(JobDoneInputModel model)
         {
@@ -24,7 +26,7 @@
         public async Task<JobDoneEditInputModel> EditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await jobDoneRepository.GetByIdAsync(validId);            
+            var entity = await jobDoneRepository.GetByIdAsync(validId);
 
             return AutoMapperConfig.MapperInstance.Map<JobDoneEditInputModel>(entity);
         }
@@ -53,15 +55,22 @@
 
         public IQueryable<JobDone> GetAllAttached()
             => jobDoneRepository
-            .GetAllAttached();            
+            .GetAllAttached();
 
         public async Task<JobDoneViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await jobDoneRepository.GetByIdAsync(validId).ConfigureAwait(false);
-            return entity != null
-                ? AutoMapperConfig.MapperInstance.Map<JobDoneViewModel>(entity)
-                : throw new ArgumentException("Missing entity.");
+            var entity = await jobDoneRepository.GetByIdAsync(validId);
+
+            if (entity != null)
+            {
+                JobDoneViewModel? model = AutoMapperConfig.MapperInstance.Map<JobDoneViewModel>(entity);
+                model.TeamsDoTheJob = await get.GetAllJobDoneTeamMappingsAttached()
+                    .Where(x => x.JobDoneId == entity.Id).ToListAsync();
+                return model;
+            }
+
+            throw new ArgumentException("Missing entity.");
         }
 
         public async Task<bool> SoftDeleteAsync(string id)

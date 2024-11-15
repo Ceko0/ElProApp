@@ -11,7 +11,7 @@
     public class JobDoneInputModel : IMapTo<JobDone>
     {
 
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]

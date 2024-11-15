@@ -1,0 +1,33 @@
+﻿@using ElProApp.Web.Models.JobDone
+@model JobDoneInputModel
+
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Добави нова изпълнена задача</h1>
+
+    <form asp-action="Add" method="post">
+        <div class="form-group">
+            <label asp-for="quantity" class="control-label">Количество</label>
+            <input asp-for="quantity" class="form-control" />
+            <span asp-validation-for="quantity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DaysForJob" class="control-label">Дни за изпълнение</label>
+            <input asp-for="DaysForJob" class="form-control" />
+            <span asp-validation-for="DaysForJob" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="JobId" class="control-label">Работа</label>
+            <select asp-for="JobId" class="form-control">
+                <option>Изберете работа...</option>               
+            </select>
+            <span asp-validation-for="JobId" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Добави</button>
+    </form>
+
+    <a asp-action="All" class="btn btn-secondary mt-3">Обратно към всички</a>
+</div>

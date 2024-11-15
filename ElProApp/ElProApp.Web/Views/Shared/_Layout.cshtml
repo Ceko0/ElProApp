@@ -76,8 +76,45 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                свършена работа
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="All">Списък </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Add">Добавяне </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Details">Детайли </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Edit">Редактиране </a>
+                                </li>
+                            </ul>
                         </li>
-                    </ul>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                работа
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="All">Списък </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Add">Добавяне </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Details">Детайли </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Edit">Редактиране </a>
+                                </li>
+                            </ul>
+                        </li>
+                        </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>

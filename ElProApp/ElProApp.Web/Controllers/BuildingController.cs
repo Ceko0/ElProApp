@@ -4,7 +4,7 @@
     using Microsoft.EntityFrameworkCore;
 
     using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.Building;
+    using Models.Building;
     using ElProApp.Services.Data.Methods;
 
     public class BuildingController(IBuildingService _buildingService, IBuildingTeamMappingService _buildingTeamMappingService, GetMethods _get) : Controller
@@ -85,7 +85,7 @@
             bool isEdited = await buildingService.EditByModelAsync(model);
             if (!isEdited)
             {
-                model.TeamsOnBuilding = await _buildingTeamMappingService.GetAllAttachedAsync();
+                model.TeamsOnBuilding = await buildingTeamMappingService.GetAllAttachedAsync();
                 return View(model);
             }
 

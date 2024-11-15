@@ -33,6 +33,8 @@
         public IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMappingAttached()
             =>  employeeTeamMappingService.GetAllAttached();
 
+        public IQueryable<JobDoneTeamMapping> GetAllJobDoneTeamMappingsAttached()
+            => jobDoneTeamMappingService.GetAllAttached();
     }
 
 
