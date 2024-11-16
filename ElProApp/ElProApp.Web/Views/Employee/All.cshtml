@@ -1,6 +1,7 @@
 ﻿@using ElProApp.Web.Models.Employee
 @using System.Security.Claims
 @model ICollection<EmployeeViewModel>
+
 @{
     ViewData["Title"] = "Списък със служители";
 }
@@ -15,8 +16,8 @@
                 <th>Фамилия</th>
                 <th>Дневно възнаграждение</th>
                 <th>Заработка</th>
-                <th>Екип</th>
-                <th>Детайли</th>
+                <th>Информация за екипи</th>
+                <th>Информация</th>
             </tr>
         </thead>
         <tbody>
@@ -28,29 +29,29 @@
                     <td>@employee.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
                     <td>@employee.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
                     <td>
-                        <select class="form-select" disabled>
-                            <option>Изберете отбор</option>
-                            @if (employee.TeamsEmployeeBelongsTo != null)
-                            {
-                                @foreach (var teamMapping in employee.TeamsEmployeeBelongsTo)
+                        @if (employee.TeamsEmployeeBelongsTo != null && employee.TeamsEmployeeBelongsTo.Any(te => te != null))
+                        {
+                            <select class="form-select" onchange="location.href=this.value;">
+                                <option selected disabled>Изберете екип за информация</option>
+                                @foreach (var teamMapping in employee.TeamsEmployeeBelongsTo.Where(te => te != null))
                                 {
-                                    <option>@teamMapping.Team.Name</option>
+                                    <option value="@Url.Action("Details", "Team", new { id = teamMapping.Team.Id })">
+                                        @teamMapping?.Team?.Name
+                                    </option>
                                 }
-                            }
-                            else
-                            {
-                                <option>Няма екипи</option>
-                            }
-                        </select>
+                            </select>
+                        }
+                        else
+                        {
+                            <p>Няма екипи за този служител.</p>
+                        }
                     </td>
-
                     <td>
                         @{
-                            
                             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                             if (employee.UserId == currentUserId)
                             {
-                                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-primary">Детайли</a>
+                                <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Информация за служителя</a>
                             }
                         }
                     </td>

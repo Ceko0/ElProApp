@@ -108,6 +108,8 @@
                             .GetAllAttached()
                             .Include(e => e.TeamsEmployeeBelongsTo)
                             .ThenInclude(te => te.Team)
+                            .Include(e => e.TeamsEmployeeBelongsTo)
+                            .ThenInclude( te => te.Employee)
                             .Where(x => !x.IsDeleted)
                             .To<EmployeeViewModel>()
                             .ToListAsync();
