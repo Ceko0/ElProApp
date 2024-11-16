@@ -28,21 +28,21 @@
 
                 <dt class="col-sm-3">Екип:</dt>
                 <dd class="col-sm-9">
-                    @if (Model.TeamsEmployeeBelongsTo != null)
+                    @if (Model.TeamsEmployeeBelongsTo != null && Model.TeamsEmployeeBelongsTo.Any())
                     {
-                        <select class="form-select" disabled>
-                            <option value="">Изберете екип</option>
+                        <ul class="list-group">
                             @foreach (var team in Model.TeamsEmployeeBelongsTo)
                             {
-                                <option>@team.Team.Name</option>
+                                <li class="list-group-item">@team.Team.Name</li>
                             }
-                        </select>
+                        </ul>
                     }
                     else
                     {
                         <span>Този служител не е част от екип.</span>
                     }
                 </dd>
+
 
                 <dt class="col-sm-3">Потребител:</dt>
                 <dd class="col-sm-9">@Model.User.UserName</dd>
