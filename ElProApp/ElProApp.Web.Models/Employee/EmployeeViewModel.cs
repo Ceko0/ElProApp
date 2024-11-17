@@ -5,7 +5,6 @@
     using Data.Models;
     using AutoMapper;
     using Microsoft.AspNetCore.Identity;
-    using ElProApp.Web.Models.Team;
 
     /// <summary>
     /// ViewModel for displaying employee details.

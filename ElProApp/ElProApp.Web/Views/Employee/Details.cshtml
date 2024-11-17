@@ -30,19 +30,21 @@
                 <dd class="col-sm-9">
                     @if (Model.TeamsEmployeeBelongsTo != null && Model.TeamsEmployeeBelongsTo.Any())
                     {
-                        <ul class="list-group">
-                            @foreach (var team in Model.TeamsEmployeeBelongsTo)
+                        <select class="form-select" onchange="location.href=this.value;">
+                            <option selected disabled>Изберете екип за информация</option>
+                            @foreach (var teamMapping in Model.TeamsEmployeeBelongsTo)
                             {
-                                <li class="list-group-item">@team.Team.Name</li>
+                                <option value="@Url.Action("Details", "Team", new { id = teamMapping.Team.Id })">
+                                    @teamMapping.Team.Name
+                                </option>
                             }
-                        </ul>
+                        </select>
                     }
                     else
                     {
                         <span>Този служител не е част от екип.</span>
                     }
                 </dd>
-
 
                 <dt class="col-sm-3">Потребител:</dt>
                 <dd class="col-sm-9">@Model.User.UserName</dd>
