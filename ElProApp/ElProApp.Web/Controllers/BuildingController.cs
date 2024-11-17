@@ -5,13 +5,11 @@
 
     using ElProApp.Services.Data.Interfaces;
     using Models.Building;
-    using ElProApp.Services.Data.Methods;
 
-    public class BuildingController(IBuildingService _buildingService, IBuildingTeamMappingService _buildingTeamMappingService, GetMethods _get) : Controller
+    public class BuildingController(IBuildingService _buildingService, IBuildingTeamMappingService _buildingTeamMappingService) : Controller
     {
         private readonly IBuildingService buildingService = _buildingService;
         private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
-        private GetMethods get = _get;
 
         [HttpGet]
         public async Task<IActionResult> All() => View(await buildingService.GetAllAsync());
@@ -41,14 +39,13 @@
             }
         }
 
-
         [HttpGet]
         public IActionResult Details(string id)
         {
             try
             {
                 var model = buildingService.GetById(id);
-
+                
                 return View(model);
             }
             catch
@@ -62,8 +59,7 @@
         {
             try
             {
-                var model = await buildingService.GetEditByIdAsync(id);
-                model.TeamsOnBuilding = await get.GetAllBuildingTeamMappingAttached().Where(x => x.BuildingId == model.Id).ToListAsync();
+                var model = await buildingService.GetEditByIdAsync(id);               
 
                 return View(model);
             }

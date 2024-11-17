@@ -15,7 +15,7 @@
                 <tr>
                     <th>Име на сградата</th>
                     <th>Локация</th>
-                    <th>Брой екипи на сградата</th>
+                    <th>Екипи към сградата</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -25,7 +25,25 @@
                     <tr>
                         <td>@building.Name</td>
                         <td>@building.Location</td>
-                        <td>@building.TeamsOnBuilding.Count</td>
+                        <td>
+                            @if (building.TeamsOnBuilding.Any())
+                            {
+                                <ul>
+                                    @foreach (var team in building.TeamsOnBuilding)
+                                    {
+                                        <li>
+                                            <a asp-controller="Team" asp-action="Details" asp-route-id="@team.Team.Id">
+                                                @team.Team.Name
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span>Няма екипи към тази сграда.</span>
+                            }
+                        </td>
                         <td>
                             <a asp-action="Details" asp-route-id="@building.Id" class="btn btn-warning btn-sm">Информация</a>
                         </td>

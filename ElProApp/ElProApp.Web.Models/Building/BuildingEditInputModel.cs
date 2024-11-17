@@ -1,6 +1,6 @@
 ﻿
 namespace ElProApp.Web.Models.Building
-{ 
+{
     using System.ComponentModel.DataAnnotations;
     using AutoMapper;
     using ElProApp.Data.Models;
@@ -10,7 +10,7 @@ namespace ElProApp.Web.Models.Building
     using static ElProApp.Common.EntityValidationErrorMessage.Building;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
 
-    public class BuildingEditInputModel : IMapTo<JobDone>, IHaveCustomMappings
+    public class BuildingEditInputModel : IMapTo<Building>, IHaveCustomMappings
     {
         public Guid Id { get; set; }
 
@@ -26,7 +26,7 @@ namespace ElProApp.Web.Models.Building
 
         public ICollection<BuildingTeamMapping> TeamsOnBuilding = new List<BuildingTeamMapping>();
 
-        public ICollection<Guid> selectedTeamEntities = new List<Guid>();
+        public ICollection<Guid> selectedTeamEntities { get; set; } = new List<Guid>();
 
         public void CreateMappings(IProfileExpression configuration)
         {

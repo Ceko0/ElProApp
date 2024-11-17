@@ -9,14 +9,16 @@ namespace ElProApp.Services.Data
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Building;
-    using ElProApp.Services.Data.Methods;
+    using Microsoft.Extensions.DependencyInjection;
 
     internal class BuildingService(IRepository<Building, Guid> _BuildingRepository
-        , IBuildingTeamMappingService _buildingTeamMappingService)
+        , IBuildingTeamMappingService _buildingTeamMappingService
+        , IServiceProvider _serviceProvider)
         : IBuildingService
     {
         private readonly IRepository<Building, Guid> buildingRepository = _BuildingRepository;
         private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         public async Task<string> AddAsync(BuildingInputModel model)
         {
@@ -33,12 +35,12 @@ namespace ElProApp.Services.Data
             Guid validId = ConvertAndTestIdToGuid(id);
             var model = await buildingRepository
                 .GetAllAttached()
-                .Where(x => x.IsDeleted != true)
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.TeamsOnBuilding)
                 .ThenInclude( t => t.Team)
                 .To<BuildingEditInputModel>()
                 .FirstOrDefaultAsync(x => x.Id == validId);
-
+                       
             if (model == null) throw new InvalidOperationException("Team is deleted.");
 
             return model;
@@ -52,12 +54,14 @@ namespace ElProApp.Services.Data
                 AutoMapperConfig.MapperInstance.Map(model, entity);
                 await buildingRepository.SaveAsync();
 
-                var existingTeamIds = entity.TeamsOnBuilding.Select(t => t.TeamId).ToList();
-                foreach (var teamId in existingTeamIds)
+                var BuildingTeamMappingService = _serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+
+                var existingTeamIds = await buildingTeamMappingService.GetAllAttachedAsync();
+                foreach (var buildingTeamMapping in existingTeamIds)
                 {
-                    if (!model.selectedTeamEntities.Contains(teamId))
+                    if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
                     {
-                        var mappingToRemove = entity.TeamsOnBuilding.FirstOrDefault(m => m.TeamId == teamId);
+                        var mappingToRemove = entity.TeamsOnBuilding.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
                         if (mappingToRemove != null)
                         {
                             await buildingTeamMappingService.RemoveAsync(mappingToRemove);

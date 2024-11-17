@@ -20,16 +20,13 @@
             @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
             {
                 <ul class="list-group list-group-flush">
-
-                    @{
-                        var teamIndex = 1;
-                    }
                     @foreach (var teamMapping in Model.TeamsOnBuilding)
-                    { 
+                    {
                         <li class="list-group-item">
-                            <strong>Екип @teamIndex:</strong> @teamMapping.Team.Name
+                            <a asp-controller="Team" asp-action="Details" asp-route-id="@teamMapping.Team.Id" class="btn btn-link">
+                                @teamMapping.Team.Name
+                            </a>
                         </li>
-                        teamIndex++;
                     }
                 </ul>
             }
