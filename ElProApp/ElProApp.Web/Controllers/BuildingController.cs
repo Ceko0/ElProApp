@@ -1,7 +1,6 @@
 ﻿namespace ElProApp.Web.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Mvc;    
 
     using ElProApp.Services.Data.Interfaces;
     using Models.Building;
@@ -40,11 +39,11 @@
         }
 
         [HttpGet]
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
             try
             {
-                var model = buildingService.GetById(id);
+                var model = await buildingService.GetByIdAsync(id);
                 
                 return View(model);
             }

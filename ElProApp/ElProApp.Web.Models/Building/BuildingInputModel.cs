@@ -1,6 +1,5 @@
 ﻿namespace ElProApp.Web.Models.Building
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
@@ -10,6 +9,7 @@
     using static Common.EntityValidationConstants.Building;
     using static Common.EntityValidationErrorMessage.Building;
     using static Common.EntityValidationErrorMessage.Master;
+    using AutoMapper;
 
     public class BuildingInputModel : IMapTo<Building>
     {
@@ -27,5 +27,8 @@
         public string Location { get; set; } = null!;
 
         public ICollection<BuildingTeamMapping> TeamsOnBuilding = new List<BuildingTeamMapping>();
+
+        public ICollection<Guid> selectedTeamEntities = new List<Guid>();
+
     }
 }

@@ -6,7 +6,7 @@
     public interface IBuildingService
     {
         Task<string> AddAsync(BuildingInputModel model);
-        BuildingViewModel GetById(string id);
+        Task<BuildingViewModel> GetByIdAsync(string id);
         Task<BuildingEditInputModel> GetEditByIdAsync(string id);
         Task<bool> EditByModelAsync(BuildingEditInputModel model);
         Task<ICollection<BuildingViewModel>> GetAllAsync();

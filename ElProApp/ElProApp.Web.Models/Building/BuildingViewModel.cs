@@ -8,7 +8,7 @@
     using ElProApp.Data.Models;
     using AutoMapper;
 
-    public class BuildingViewModel : IMapFrom<Building> , IHaveCustomMappings
+    public class BuildingViewModel : IMapFrom<Building>
     {
         public Guid Id { get; set; }
 
@@ -20,10 +20,6 @@
 
         public ICollection<Guid> selectedTeamEntities = new List<Guid>();
 
-        public void CreateMappings(IProfileExpression configuration)
-        {
-            configuration.CreateMap<Building, BuildingViewModel>()
-                .ForMember(b => b.TeamsOnBuilding, x => x.MapFrom(s => s.TeamsOnBuilding));
-        }
+       
     }
 }

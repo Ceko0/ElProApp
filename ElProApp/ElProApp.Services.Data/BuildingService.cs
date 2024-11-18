@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace ElProApp.Services.Data
+﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +8,7 @@ namespace ElProApp.Services.Data
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Building;
     using Microsoft.Extensions.DependencyInjection;
+    using ElProApp.Data.Models.Mappings;
 
     internal class BuildingService(IRepository<Building, Guid> _BuildingRepository
         , IBuildingTeamMappingService _buildingTeamMappingService
@@ -36,12 +35,12 @@ namespace ElProApp.Services.Data
             var model = await buildingRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
-                .Include(x => x.TeamsOnBuilding)
-                .ThenInclude( t => t.Team)
                 .To<BuildingEditInputModel>()
                 .FirstOrDefaultAsync(x => x.Id == validId);
-                       
+
             if (model == null) throw new InvalidOperationException("Team is deleted.");
+
+            model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
 
             return model;
         }
@@ -56,12 +55,12 @@ namespace ElProApp.Services.Data
 
                 var BuildingTeamMappingService = _serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
 
-                var existingTeamIds = await buildingTeamMappingService.GetAllAttachedAsync();
-                foreach (var buildingTeamMapping in existingTeamIds)
+                var BuildingTeamMappings = await buildingTeamMappingService.GetAllAttached().Include( x => x.Team).Where(m => m.BuildingId == model.Id).ToListAsync();
+                foreach (var buildingTeamMapping in BuildingTeamMappings)
                 {
                     if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
                     {
-                        var mappingToRemove = entity.TeamsOnBuilding.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
+                        var mappingToRemove = BuildingTeamMappings.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
                         if (mappingToRemove != null)
                         {
                             await buildingTeamMappingService.RemoveAsync(mappingToRemove);
@@ -84,25 +83,32 @@ namespace ElProApp.Services.Data
         }
 
         public async Task<ICollection<BuildingViewModel>> GetAllAsync()
-            => await buildingRepository.GetAllAttached()
-                .Include(x => x.TeamsOnBuilding)
-                .ThenInclude(tb => tb.Team)
+        {
+            var model = await buildingRepository.GetAllAttached()
                 .Where(x => !x.IsDeleted)
                 .To<BuildingViewModel>()
                 .ToListAsync();
 
+            foreach (var building in model)
+            {
+                building.TeamsOnBuilding = await GetBuildingTeamMapping(building.Id);
+            }
+
+            return model;
+        }
+
         public IQueryable<Building> GetAllAttached()
             => buildingRepository.GetAllAttached();
 
-        public BuildingViewModel GetById(string id)
+        public async Task<BuildingViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
             var model = buildingRepository
                 .GetAllAttached()
-                .Include(x => x.TeamsOnBuilding)
-                .ThenInclude(tb => tb.Team)
                 .To<BuildingViewModel>()
                 .FirstOrDefault(x => x.Id == validId);
+
+            model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
 
             return model!;
         }
@@ -128,5 +134,12 @@ namespace ElProApp.Services.Data
                 throw new ArgumentException("Invalid ID format.");
             return validId;
         }
+
+        private async Task<List<BuildingTeamMapping>> GetBuildingTeamMapping(Guid id) => await buildingTeamMappingService
+                                .GetAllAttached()
+                                .Include(x => x.Building)
+                                .Include(x => x.Team)
+                                .Where(x => x.BuildingId == id).ToListAsync();
+
     }
 }

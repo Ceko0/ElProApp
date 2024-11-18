@@ -22,14 +22,14 @@
             // Configures the relationship between Building and BuildingTeamMapping.
             builder
                 .HasOne(btm => btm.Building) // Each BuildingTeamMapping has one Building
-                .WithMany(b => b.TeamsOnBuilding) // A Building can have many BuildingTeamMappings
+                .WithMany() // A Building can have many BuildingTeamMappings
                 .HasForeignKey(btm => btm.BuildingId) // Foreign key defined in BuildingTeamMapping
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
 
             // Configures the relationship between Team and BuildingTeamMapping.
             builder
                 .HasOne(btm => btm.Team) // Each BuildingTeamMapping has one Team
-                .WithMany(t => t.BuildingWithTeam) // A Team can have many BuildingTeamMappings
+                .WithMany() // A Team can have many BuildingTeamMappings
                 .HasForeignKey(btm => btm.TeamId) // Foreign key defined in BuildingTeamMapping
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
         }
