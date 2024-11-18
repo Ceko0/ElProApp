@@ -22,14 +22,14 @@
             // Configures the relationship between Employee and EmployeeTeamMapping.
             builder
                 .HasOne(et => et.Employee) // Each EmployeeTeamMapping has one Employee
-                .WithMany(e => e.TeamsEmployeeBelongsTo) // An Employee can be part of many EmployeeTeamMappings
+                .WithMany() // An Employee can be part of many EmployeeTeamMappings
                 .HasForeignKey(et => et.EmployeeId) // Foreign key defined in EmployeeTeamMapping
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
 
             // Configures the relationship between Team and EmployeeTeamMapping.
             builder
                 .HasOne(et => et.Team) // Each EmployeeTeamMapping has one Team
-                .WithMany(t => t.EmployeesInTeam) // A Team can have many EmployeeTeamMappings
+                .WithMany() // A Team can have many EmployeeTeamMappings
                 .HasForeignKey(et => et.TeamId) // Foreign key defined in EmployeeTeamMapping
                 .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
         }

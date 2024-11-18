@@ -7,17 +7,37 @@
     using Interfaces;
     using Mapping;
     using Web.Models.JobDone;
-    using ElProApp.Services.Data.Methods;
+    using Microsoft.Extensions.DependencyInjection;
+    using System.Linq;
 
-
-    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository) : IJobDoneService
+    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository
+        , IServiceProvider _serviceProvider)
+        : IJobDoneService
     {
         private readonly IRepository<JobDone, Guid> jobDoneRepository = _jobDoneRepository;
-        private readonly GetMethods get = null!;
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
+        public async Task<JobDoneInputModel> AddAsync()
+        {
+            var TeamService = serviceProvider.GetRequiredService<ITeamService>();
+            var jobService = serviceProvider.GetRequiredService<IJobService>();
+
+            var model = new JobDoneInputModel();
+            model.teams = await TeamService.GetAllAttached().ToListAsync();
+            model.jobs = await jobService.GetAllAttached().ToListAsync();
+            return model;
+        }
         public async Task<string> AddAsync(JobDoneInputModel model)
         {
+            var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+
+            await jobDoneTeamMppingService.AddAsync(model.Id, model.TeamId);
+
             var jobDone = AutoMapperConfig.MapperInstance.Map<JobDone>(model);
+
+            var JobService = serviceProvider.GetRequiredService<IJobService>();
+            var currentJob = await JobService.GetAllAttached().Include(x => x.JobsDone).FirstOrDefaultAsync(x => x.Id == model.JobId);
+            currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
             return jobDone.Id.ToString();
@@ -47,11 +67,10 @@
             }
         }
 
-        public async Task<ICollection<JobDoneViewModel>> GetAllAsync() => await jobDoneRepository.GetAllAttached()
-                                   .Include(x => x.TeamsDoTheJob)
-                                   .ThenInclude(tj => tj.Team)
-                                   .To<JobDoneViewModel>()
-                                   .ToListAsync();
+        public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
+            => await jobDoneRepository.GetAllAttached()
+                .To<JobDoneViewModel>()
+                .ToListAsync();
 
         public IQueryable<JobDone> GetAllAttached()
             => jobDoneRepository
@@ -60,13 +79,11 @@
         public async Task<JobDoneViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await jobDoneRepository.GetByIdAsync(validId);
+            var entity = await jobDoneRepository.GetAllAttached().Include(x => x.Job).FirstOrDefaultAsync(x => x.Id == validId);
 
             if (entity != null)
             {
                 JobDoneViewModel? model = AutoMapperConfig.MapperInstance.Map<JobDoneViewModel>(entity);
-                model.TeamsDoTheJob = await get.GetAllJobDoneTeamMappingsAttached()
-                    .Where(x => x.JobDoneId == entity.Id).ToListAsync();
                 return model;
             }
 

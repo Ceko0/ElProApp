@@ -19,8 +19,7 @@ namespace ElProApp.Web.Controllers
             => View(await jobDoneService.GetAllAsync());
 
         [HttpGet]
-        public IActionResult Add(string id) 
-            => View(new JobDoneInputModel());
+        public async Task<IActionResult> Add() => View(await jobDoneService.AddAsync());
 
         [HttpPost]
         public async Task<IActionResult> Add(JobDoneInputModel model)
@@ -40,7 +39,8 @@ namespace ElProApp.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(string id) => View( await jobDoneService.GetByIdAsync(id));
+        public async Task<IActionResult> Details(string id) 
+            => View( await jobDoneService.GetByIdAsync(id));
 
         [HttpGet]
         public IActionResult Edit(string id)

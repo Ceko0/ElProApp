@@ -10,6 +10,7 @@
     using Services.Data.Interfaces;
     using Services.Mapping;
     using ElProApp.Data.Models;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Service class for managing employee-related operations, including adding, editing, deleting, and retrieving employee information.
@@ -17,13 +18,13 @@
     public class EmployeeService(IRepository<Employee, Guid> _employeeRepository
             , UserManager<IdentityUser> _userManager
             , IHttpContextAccessor _httpContextAccessor
-            , IEmployeeTeamMappingService _employeeTeamMappingService)
+            , IServiceProvider _serviceProvider)
             : IEmployeeService
     {
         private readonly IRepository<Employee, Guid> employeeRepository = _employeeRepository;
         private readonly UserManager<IdentityUser> userManager = _userManager;
         private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
-        private readonly IEmployeeTeamMappingService employeeTeamMappingService = _employeeTeamMappingService;
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         /// <summary>
         /// Adds a new employee based on the provided model.
@@ -54,9 +55,16 @@
             Guid validId = ConvertAndTestIdToGuid(id);
             var entity = await employeeRepository.GetByIdAsync(validId);            
             entity.User = await GetUserAsync(entity.UserId);
+
+            if (entity == null) throw new ArgumentException("Missing entity.");
+
+            var model = AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity);
+
+            var employeeTeamMappingService = serviceProvider.GetRequiredService<EmployeeTeamMappingService>();
             var teams = employeeTeamMappingService.GetAllByEmployeeId(id).ToList();
-            entity.TeamsEmployeeBelongsTo = teams;
-            return entity != null ? AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity) : throw new ArgumentException("Missing entity.");
+            model.TeamsEmployeeBelongsTo = teams;
+            
+            return model;
         }
 
         /// <summary>
@@ -105,11 +113,7 @@
         /// <returns>A list of view models representing all active employees.</returns>
         public async Task<ICollection<EmployeeViewModel>> GetAllAsync() 
             => await employeeRepository
-                            .GetAllAttached()
-                            .Include(e => e.TeamsEmployeeBelongsTo)
-                            .ThenInclude(te => te.Team)
-                            .Include(e => e.TeamsEmployeeBelongsTo)
-                            .ThenInclude( te => te.Employee)
+                            .GetAllAttached()                            
                             .Where(x => !x.IsDeleted)
                             .To<EmployeeViewModel>()
                             .ToListAsync();

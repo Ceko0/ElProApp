@@ -9,7 +9,6 @@
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
     using Mappings;
-    using ElProApp.Services.Mapping;
 
     /// <summary>
     /// Represents a team within the system, including its unique identifier, name, 
@@ -38,23 +37,5 @@
         /// </summary>
         [Comment("Indicates if the team is active or soft deleted.")]
         public bool IsDeleted { get; set; }
-
-        /// <summary>
-        /// Collection of mappings representing the buildings assigned to this team.
-        /// </summary>
-        [Comment("Collection representing the many-to-many relationship between teams and buildings.")]
-        public virtual IEnumerable<BuildingTeamMapping> BuildingWithTeam { get; set; } = new List<BuildingTeamMapping>();
-
-        /// <summary>
-        /// Collection of mappings representing the jobs completed by this team.
-        /// </summary>
-        [Comment("Collection representing the many-to-many relationship between teams and completed jobs.")]
-        public virtual IEnumerable<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = new List<JobDoneTeamMapping>();
-
-        /// <summary>
-        /// Collection of mappings representing employees who are members of this team.
-        /// </summary>
-        [Comment("Collection representing the many-to-many relationship between teams and employees.")]
-        public virtual IEnumerable<EmployeeTeamMapping> EmployeesInTeam { get; set; } = new List<EmployeeTeamMapping>();
     }
 }

@@ -34,6 +34,7 @@
         private readonly IEmployeeService employeeService = _employeeService;
         private readonly IJobDoneService jobDoneService = _jobDoneService;
 
+
         public async Task<TeamInputModel> AddAsync()
         {
             var model = new TeamInputModel()
@@ -42,7 +43,7 @@
 
                 AvailableEmployees = await employeeService.GetAllAsync(),
 
-                JobsDoneByTeam = await jobDoneService.GetAllAsync(),
+                JobsDoneByTeam = await jobDoneService.GetAllAsync()
             };
 
             return model;
@@ -63,7 +64,7 @@
 
             if (model.SelectedBuildingId != Guid.Empty)
             {
-                BuildingViewModel building = buildingService.GetById(model.SelectedBuildingId.ToString()!) 
+                BuildingViewModel building = await buildingService.GetByIdAsync(model.SelectedBuildingId.ToString()!)
                     ?? throw new InvalidOperationException("The selected building does not exist.");
                 await teamRepository.AddAsync(team);
                 string stringUserId = GetUserId();
@@ -75,18 +76,12 @@
 
                 var buildingTeamMapping = await buildingTeamMappingService.AddAsync(building.Id, team.Id);
 
-                _ = building.TeamsOnBuilding.Append(buildingTeamMapping);
-                _ = team.BuildingWithTeam.Append(buildingTeamMapping);
-
-                _ = employeEntity.TeamsEmployeeBelongsTo.Append(employeeTeamMapping);
-                _ = team.EmployeesInTeam.Append(employeeTeamMapping);
-
                 foreach (var employeeId in model.SelectedEmployeeIds)
                 {
                     var employeeMapping = await employeeTeamMappingService.AddAsync(employeeId, team.Id);
                     var employee = await employeeService.GetByIdAsync(employeeId.ToString());
                     employee?.TeamsEmployeeBelongsTo.Append(employeeMapping);
-                    _ = team.EmployeesInTeam.Append(employeeTeamMapping);
+                    
                 }
             }
 
@@ -137,6 +132,10 @@
             model.EmployeesInTeam = await employeeService.GetAllAsync();
             model.JobsDoneByTeam = await jobDoneService.GetAllAsync();
 
+            var existingBuildingMappings = await buildingTeamMappingService.GetByTeamIdAsync(model.Id);
+            var existingEmployeeMappings = await employeeTeamMappingService.GetByTeamIdAsync(model.Id);
+            var existingJobDoneMappings = await jobDoneTeamMappingService.GetByTeamIdAsync(model.Id);
+
             try
             {
                 var entity = await teamRepository.GetByIdAsync(model.Id);
@@ -147,39 +146,6 @@
                         await jobDoneTeamMappingService.AddAsync(jobDoneId, model.Id);
                 }
 
-                foreach (var buildingId in model.BuildingWithTeamIds)
-                {
-                    if (!buildingTeamMappingService.Any(buildingId, model.Id))
-                        await buildingTeamMappingService.AddAsync(buildingId, model.Id);
-                }
-
-                foreach (var employeeId in model.EmployeesInTeamIds)
-                {
-                    if (!employeeTeamMappingService.Any(employeeId, model.Id))
-                        await employeeTeamMappingService.AddAsync(employeeId, model.Id);
-                }
-
-                var existingEmployeeMappings = await employeeTeamMappingService.GetByTeamIdAsync(model.Id);
-                var employeesToRemove = existingEmployeeMappings
-                    .Where(mapping => !model.EmployeesInTeamIds.Contains(mapping.EmployeeId))
-                    .ToList();
-
-                foreach (var mapping in employeesToRemove)
-                {
-                    await employeeTeamMappingService.RemoveAsync(mapping);
-                }
-
-                var existingBuildingMappings = await buildingTeamMappingService.GetByTeamIdAsync(model.Id);
-                var buildingsToRemove = existingBuildingMappings
-                    .Where(mapping => !model.BuildingWithTeamIds.Contains(mapping.BuildingId))
-                    .ToList();
-
-                foreach (var mapping in buildingsToRemove)
-                {
-                    await buildingTeamMappingService.RemoveAsync(mapping);
-                }
-
-                var existingJobDoneMappings = await jobDoneTeamMappingService.GetByTeamIdAsync(model.Id);
                 var jobsToRemove = existingJobDoneMappings
                     .Where(mapping => !model.JobsDoneByTeamIds.Contains(mapping.JobDoneId))
                     .ToList();
@@ -189,7 +155,37 @@
                     await jobDoneTeamMappingService.RemoveAsync(mapping);
                 }
 
-                AutoMapperConfig.MapperInstance.Map(model, entity);
+                foreach (var buildingId in model.BuildingWithTeamIds)
+                {
+                    if (!buildingTeamMappingService.Any(buildingId, model.Id))
+                        await buildingTeamMappingService.AddAsync(buildingId, model.Id);
+                }
+
+                var buildingsToRemove = existingBuildingMappings
+                    .Where(mapping => !model.BuildingWithTeamIds.Contains(mapping.BuildingId))
+                    .ToList();
+
+                foreach (var mapping in buildingsToRemove)
+                {
+                    await buildingTeamMappingService.RemoveAsync(mapping);
+                }
+
+                foreach (var employeeId in model.EmployeesInTeamIds)
+                {
+                    if (!employeeTeamMappingService.Any(employeeId, model.Id))
+                        await employeeTeamMappingService.AddAsync(employeeId, model.Id);
+                }
+
+                var employeesToRemove = existingEmployeeMappings
+                    .Where(mapping => !model.EmployeesInTeamIds.Contains(mapping.EmployeeId))
+                    .ToList();
+
+                foreach (var mapping in employeesToRemove)
+                {
+                    await employeeTeamMappingService.RemoveAsync(mapping);
+                }
+
+                Team team = AutoMapperConfig.MapperInstance.Map(model,entity);
 
                 await teamRepository.SaveAsync();
                 return true;
@@ -207,13 +203,7 @@
         /// <returns>IEnumerable of TeamAllViewModel.</returns>
         public async Task<ICollection<TeamViewModel>> GetAllAsync()
                 => await teamRepository
-                .GetAllAttached()
-                .Include(x => x.JobsDoneByTeam)
-                .ThenInclude(jd => jd.JobDone)
-                .Include(x => x.BuildingWithTeam)
-                .ThenInclude(b => b.Building)
-                .Include(x => x.EmployeesInTeam)
-                .ThenInclude(e => e.Employee)
+                .GetAllAttached()               
                 .To<TeamViewModel>()
                 .ToListAsync();
 
@@ -231,12 +221,6 @@
         {
             Guid validId = ConvertAndTestIdToGuid(id);
             TeamViewModel? model = await teamRepository.GetAllAttached()
-                                    .Include(t => t.BuildingWithTeam)
-                                    .ThenInclude(t => t.Building)
-                                    .Include(t => t.JobsDoneByTeam)
-                                    .ThenInclude(t => t.JobDone)
-                                    .Include(t => t.EmployeesInTeam)
-                                    .ThenInclude(t => t.Employee)
                                     .To<TeamViewModel>()
                                     .FirstOrDefaultAsync(t => t.Id == validId);
             return model ?? throw new ArgumentException("Missing entity.");

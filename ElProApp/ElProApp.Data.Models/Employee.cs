@@ -76,11 +76,5 @@
         /// </summary>
         [Comment("Navigation property to the IdentityUser associated with this employee.")]
         public IdentityUser User { get; set; } = null!;
-
-        /// <summary>
-        /// Collection representing the many-to-many relationship between employees and teams.
-        /// </summary>
-        [Comment("Collection representing the many-to-many relationship between employees and teams.")]
-        public virtual IEnumerable<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new List<EmployeeTeamMapping>();
     }
 }

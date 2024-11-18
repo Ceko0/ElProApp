@@ -1,11 +1,8 @@
 ﻿namespace ElProApp.Data.Models
 {
     using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    using Models.Mappings;
     using static Common.EntityValidationConstants.Building;
     using static Common.EntityValidationErrorMessage.Building;
     using static Common.EntityValidationErrorMessage.Master;
@@ -47,10 +44,5 @@
         [Comment("Indicates if the building is active or soft deleted.")]
         public bool IsDeleted { get; set; }
 
-        /// <summary>
-        /// Navigation property for the teams working in this building.
-        /// </summary>
-        [Comment("Collection of teams associated with the building through BuildingTeamMapping.")]
-        public virtual IEnumerable<BuildingTeamMapping> TeamsOnBuilding { get; set; } = new List<BuildingTeamMapping>();
     }
 }

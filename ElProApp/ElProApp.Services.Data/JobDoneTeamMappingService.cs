@@ -14,17 +14,7 @@
      
         public async Task<ICollection<JobDoneTeamMapping>> GetAllAsync()
             => await jobDoneTeamMappingRepository
-                .GetAllAttached()
-                .Include(x => x.Team)
-                .ThenInclude(t => t.EmployeesInTeam)
-                .Include(x => x.Team)
-                .ThenInclude(t => t.JobsDoneByTeam)
-                .Include(x => x.Team)
-                .ThenInclude(t => t.BuildingWithTeam)
-                .Include(x => x.JobDone)
-                .ThenInclude(jd => jd.Job)
-                .Include(x => x.JobDone)
-                .ThenInclude(jd => jd.TeamsDoTheJob)
+                .GetAllAttached()                
                 .ToListAsync();
 
         public IQueryable<JobDoneTeamMapping> GetAllAttached()
