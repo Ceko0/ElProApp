@@ -60,7 +60,7 @@
 
             var model = AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity);
 
-            var employeeTeamMappingService = serviceProvider.GetRequiredService<EmployeeTeamMappingService>();
+            var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var teams = employeeTeamMappingService.GetAllByEmployeeId(id).ToList();
             model.TeamsEmployeeBelongsTo = teams;
             
@@ -111,13 +111,22 @@
         /// Retrieves a list of all employees who are not marked as deleted.
         /// </summary>
         /// <returns>A list of view models representing all active employees.</returns>
-        public async Task<ICollection<EmployeeViewModel>> GetAllAsync() 
-            => await employeeRepository
-                            .GetAllAttached()                            
+        public async Task<ICollection<EmployeeViewModel>> GetAllAsync()
+        {
+            var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
+            var model = await employeeRepository
+                            .GetAllAttached()
                             .Where(x => !x.IsDeleted)
                             .To<EmployeeViewModel>()
                             .ToListAsync();
 
+            foreach(var emploee in model)
+            {
+                emploee.TeamsEmployeeBelongsTo = employeeTeamMappingService.GetAllByEmployeeId(emploee.Id.ToString());
+            }
+        
+            return model;
+        }
         public IQueryable<Employee> GetAllAttached() 
             => employeeRepository
             .GetAllAttached();

@@ -60,9 +60,7 @@
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<Employee, EmployeeViewModel>()
-                .ForMember(d => d.User, x => x.MapFrom(s => s.User));
-            configuration.CreateMap<Employee, EmployeeViewModel>()
-                .ForMember(d => d.TeamsEmployeeBelongsTo, x => x.MapFrom(s => s.TeamsEmployeeBelongsTo));
+                .ForMember(d => d.User, x => x.MapFrom(s => s.User));          
         }
     }
 }
