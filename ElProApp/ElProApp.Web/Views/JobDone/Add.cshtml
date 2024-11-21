@@ -1,33 +1,49 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model JobDoneInputModel
 
+<h1 class="mb-4">Add New Job</h1>
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Добави нова изпълнена задача</h1>
+<form asp-action="Add" method="post">
+    <div class="form-group mb-3">
+        <label asp-for="Quantity" class="form-label"></label>
+        <input asp-for="Quantity" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
 
-    <form asp-action="Add" method="post">
-        <div class="form-group">
-            <label asp-for="quantity" class="control-label">Количество</label>
-            <input asp-for="quantity" class="form-control" />
-            <span asp-validation-for="quantity" class="text-danger"></span>
-        </div>
+    <div class="form-group mb-3">
+        <label asp-for="DaysForJob" class="form-label"></label>
+        <input asp-for="DaysForJob" class="form-control" />
+        <span asp-validation-for="DaysForJob" class="text-danger"></span>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="DaysForJob" class="control-label">Дни за изпълнение</label>
-            <input asp-for="DaysForJob" class="form-control" />
-            <span asp-validation-for="DaysForJob" class="text-danger"></span>
-        </div>
+    <div class="form-group mb-3">
+        <label asp-for="JobId" class="form-label">Select Job</label>
+        <select asp-for="JobId" class="form-control custom-select">
+            <option value="">Select a job</option>
+            @foreach (var job in Model.jobs)
+            {
+                <option value="@job.Id">@job.Name</option>
+            }
+        </select>
+        <span asp-validation-for="JobId" class="text-danger"></span>
+    </div>
 
-        <div class="form-group">
-            <label asp-for="JobId" class="control-label">Работа</label>
-            <select asp-for="JobId" class="form-control">
-                <option>Изберете работа...</option>               
-            </select>
-            <span asp-validation-for="JobId" class="text-danger"></span>
-        </div>
+    <div class="form-group mb-3">
+        <label asp-for="TeamId" class="form-label">Select Team</label>
+        <select asp-for="TeamId" class="form-control custom-select">
+            <option value="">Select a team</option>
+            @foreach (var team in Model.teams)
+            {
+                <option value="@team.Id">@team.Name</option>
+            }
+        </select>
+        <span asp-validation-for="TeamId" class="text-danger"></span>
+    </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Добави</button>
-    </form>
+    <button type="submit" class="btn btn-primary">Add</button>
+    <a asp-action="All" class="btn btn-secondary ms-2">Back to All Jobs</a>
+</form>
 
-    <a asp-action="All" class="btn btn-secondary mt-3">Обратно към всички</a>
-</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

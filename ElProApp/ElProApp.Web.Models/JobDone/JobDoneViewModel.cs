@@ -25,8 +25,6 @@ namespace ElProApp.Web.Models.JobDone
         public void CreateMappings(IProfileExpression configuration)
         {
             configuration.CreateMap<JobDone, JobDoneViewModel>()
-                .ForMember(d => d.TeamsDoTheJob, x => x.MapFrom(s => s.TeamsDoTheJob));
-            configuration.CreateMap<JobDone, JobDoneViewModel>()
                 .ForMember(d => d.Job, x => x.MapFrom(s => s.Job));
         }
     }

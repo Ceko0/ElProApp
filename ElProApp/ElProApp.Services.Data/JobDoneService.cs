@@ -31,8 +31,6 @@
         {
             var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
 
-            await jobDoneTeamMppingService.AddAsync(model.Id, model.TeamId);
-
             var jobDone = AutoMapperConfig.MapperInstance.Map<JobDone>(model);
 
             var JobService = serviceProvider.GetRequiredService<IJobService>();
@@ -40,6 +38,8 @@
             currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
+
+            await jobDoneTeamMppingService.AddAsync(model.Id, model.TeamId);
             return jobDone.Id.ToString();
         }
 
@@ -68,10 +68,22 @@
         }
 
         public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
-            => await jobDoneRepository.GetAllAttached()
+        {
+            var model = await jobDoneRepository.GetAllAttached()
                 .To<JobDoneViewModel>()
                 .ToListAsync();
+            var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+            foreach (var entity in model)
+            {
+                entity.TeamsDoTheJob = await jobDoneTeamMapping
+                    .GetAllAttached()
+                    .Include(x => x.Team)
+                    .Where(x => x.JobDoneId == entity.Id)
+                    .ToListAsync();
+            }
 
+            return model;
+        }
         public IQueryable<JobDone> GetAllAttached()
             => jobDoneRepository
             .GetAllAttached();
@@ -79,11 +91,20 @@
         public async Task<JobDoneViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await jobDoneRepository.GetAllAttached().Include(x => x.Job).FirstOrDefaultAsync(x => x.Id == validId);
+            var entity = await jobDoneRepository
+                .GetAllAttached()
+                .Include(x => x.Job)
+                .FirstOrDefaultAsync(x => x.Id == validId);
 
             if (entity != null)
             {
                 JobDoneViewModel? model = AutoMapperConfig.MapperInstance.Map<JobDoneViewModel>(entity);
+                var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+                model.TeamsDoTheJob = await jobDoneTeamMapping
+                    .GetAllAttached()
+                    .Include( x=> x.Team)
+                    .Where(x => x.JobDoneId == entity.Id)
+                    .ToListAsync();
                 return model;
             }
 

@@ -15,53 +15,48 @@
 
         @if (Model.BuildingWithTeam != null && Model.BuildingWithTeam.Any())
         {
-            var selectItems = Model.BuildingWithTeam
-            .Where(b => b != null && b.Id != Guid.Empty)
-            .Select(b => new SelectListItem
-                {
-                    Value = b.Id.ToString(),
-                    Text = b.Name
-                }).ToList();
-
-            <select asp-for="BuildingWithTeamIds" class="form-control" multiple="multiple">
-                @foreach (var item in selectItems)
-                {
-                    <option value="@item.Value">@item.Text</option>
-                }
-            </select>
-        }
-        else
-        {
-            <p>Няма свързани обекти с екипа.</p>
-        }
-
-        @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
-        {
-            var selectItemsJobsDone = Model.JobsDoneByTeam
-            .Where(j => j != null && j.Job != null && j.Job.Id != Guid.Empty)
-            .Select(j => new SelectListItem
-                {
-                    Value = j.Job.Id.ToString(),
-                    Text = j.Job.Name,
-                    Selected = Model.JobsDoneByTeamIds.Contains(j.Job.Id)
-                }).ToList();
-
             <div class="form-group">
-                <label>Извършени дейности от екипа</label>
-                @foreach (var item in selectItemsJobsDone)
+                <label>Сгради, свързани с екипа</label>
+                @foreach (var building in Model.BuildingWithTeam)
                 {
+                    var isSelected = Model.BuildingWithTeamIds.Contains(building.Id);
                     <div class="form-check">
-                        <input type="checkbox" name="JobsDoneByTeamIds" value="@item.Value" class="form-check-input" @(item.Selected ? "checked" : "") />
-                        <label class="form-check-label">@item.Text</label>
+                        <input type="checkbox"
+                               name="BuildingWithTeamIds"
+                               value="@building.Id"
+                               class="form-check-input"
+                        @(isSelected ? "checked" : "") />
+                        <label class="form-check-label">@building.Name</label>
                     </div>
                 }
             </div>
         }
         else
         {
-            <p>Няма извършени дейности от екипа.</p>
+            <p>Няма налични сгради.</p>
         }
 
+        @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
+        {
+            <div class="form-group">
+                <label>Извършени дейности от екипа</label>
+                <ul class="list-group">
+                    @foreach (var job in Model.JobsDoneByTeam)
+                    {
+                        if (job != null && job.Job != null)
+                        {
+                            <li class="list-group-item">
+                                @job.Job.Name
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <p>Няма извършени дейности от екипа.</p>
+        }
 
         @if (Model.EmployeesInTeam != null && Model.EmployeesInTeam.Any())
         {
@@ -89,8 +84,6 @@
         {
             <p>Няма служители в екипа.</p>
         }
-
-
 
         <button type="submit" class="btn btn-primary">Запази промените</button>
     </form>

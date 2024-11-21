@@ -1,5 +1,5 @@
 ﻿namespace ElProApp.Web.Controllers
-{  
+{
     using Microsoft.AspNetCore.Mvc;
 
     using ElProApp.Services.Data.Interfaces;
@@ -38,8 +38,12 @@
         public async Task<IActionResult> Details(string id) => View(await jobService.GetByIdAsync(id));
 
         [HttpGet]
-        public IActionResult Edit(string id)
-            => View(new JobEditInputModel());
+        public async Task<IActionResult> Edit(string id)
+        {
+            var model = await jobService.EditByIdAsync(id);
+            
+            return View(model);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Edit(JobEditInputModel model)

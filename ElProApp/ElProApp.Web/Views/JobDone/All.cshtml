@@ -21,15 +21,15 @@
         @foreach (var jobDone in Model)
         {
             <tr>
-                <td>@jobDone.quantity</td>
-                <td>@jobDone.DaysForJob</td>
-                <td>@jobDone.Job.Name</td>
+                <td>@jobDone.Job.Name</td>                   
                 <td>
                     @foreach (var team in jobDone.TeamsDoTheJob)
                     {
                         <span class="badge bg-primary">@team.Team.Name</span>
                     }
                 </td>
+                <td>@jobDone.quantity</td>
+                <td>@jobDone.DaysForJob</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">Детайли</a>
                     <a asp-action="Edit" asp-route-id="@jobDone.Id" class="btn btn-warning btn-sm">Редактиране</a>

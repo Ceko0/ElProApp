@@ -12,10 +12,9 @@
     <table class="table table-striped mt-4">
         <thead>
             <tr>
-                <th>Име</th>
-                <th>Обекти</th>
+                <th>Име на екипа</th>
                 <th>Служители</th>
-                <th>Свършена работа</th>
+                <th>Сгради</th>
                 <th>Детайли</th>
             </tr>
         </thead>
@@ -28,27 +27,12 @@
                         <td>@team.Name</td>
 
                         <td>
-                            @if (team.BuildingWithTeam != null && team.BuildingWithTeam.Any())
-                            {
-                                <span>
-                                    @string.Join(", ", team.BuildingWithTeam
-                                             .Where(b => b.Building != null)
-                                             .Select(b => b.Building.Name))
-                                </span>
-                            }
-                            else
-                            {
-                                <span>Няма налични обекти</span>
-                            }
-                        </td>
-
-                        <td>
                             @if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any())
                             {
                                 <ul>
-                                    @foreach (var employee  in team.EmployeesInTeam)
+                                    @foreach (var employee in team.EmployeesInTeam)
                                     {
-                                        <li>@employee.Employee.FirstName @employee.Employee.LastName </li>
+                                        <li>@employee.Employee.FirstName @employee.Employee.LastName</li>
                                     }
                                 </ul>
                             }
@@ -59,17 +43,18 @@
                         </td>
 
                         <td>
-                            @if (team.JobsDoneByTeam != null && team.JobsDoneByTeam.Any())
+                            @if (team.BuildingWithTeam != null && team.BuildingWithTeam.Any())
                             {
-                                <span>
-                                    @string.Join(", ", team.JobsDoneByTeam
-                                             .Where(j => j.JobDone?.Job != null)
-                                             .Select(j => j.JobDone.Job.Name))
-                                </span>
+                                <ul>
+                                    @foreach (var building in team.BuildingWithTeam.Where(b => b.Building != null))
+                                    {
+                                        <li>@building.Building.Name</li>
+                                    }
+                                </ul>
                             }
                             else
                             {
-                                <span>Няма налични свършени работи</span>
+                                <span>Няма налични сгради</span>
                             }
                         </td>
 
@@ -79,7 +64,7 @@
                                 if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
                                 {
                                     <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
-                                }                                
+                                }
                             }
                         </td>
                     </tr>
@@ -88,7 +73,7 @@
             else
             {
                 <tr>
-                    <td colspan="5" class="text-center">Няма налични екипи</td>
+                    <td colspan="4" class="text-center">Няма налични екипи</td>
                 </tr>
             }
         </tbody>

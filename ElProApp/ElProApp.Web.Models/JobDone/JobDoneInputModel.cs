@@ -10,13 +10,12 @@
 
     public class JobDoneInputModel : IMapTo<JobDone>
     {
-
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
         [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
-        public decimal quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
@@ -25,8 +24,11 @@
         //[Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         public Guid JobId { get; set; }
 
-        public Job Job { get; set; } = new();
+        public Guid TeamId { get; set; }
 
-        public virtual ICollection<JobDoneTeamMapping> TeamsDoTheJob { get; set; } = new List<JobDoneTeamMapping>();
+        public virtual ICollection<Job> jobs { get; set; } = new List<Job>();
+        public virtual ICollection<Team> teams { get; set; } = new List<Team>();
+
+
     }
 }

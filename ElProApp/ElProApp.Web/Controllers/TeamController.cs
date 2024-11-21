@@ -7,12 +7,10 @@
     using ElProApp.Web.Models.Team;
 
     [Authorize]
-    public class TeamController(ITeamService _teamService, IBuildingService _buildingService, IJobDoneService _JobDoneService , IEmployeeService _employeeService) : Controller
+    public class TeamController(ITeamService _teamService) : Controller
     {
         private readonly ITeamService teamService = _teamService;
-        private readonly IEmployeeService employeeService = _employeeService;
-        private readonly IJobDoneService jobDoneServices = _JobDoneService;
-        private readonly IBuildingService buildingService = _buildingService;
+        
 
         [HttpGet]
         public async Task<IActionResult> All()
@@ -66,8 +64,6 @@
                 return View(model);
             }
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(string id)

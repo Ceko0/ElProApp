@@ -18,21 +18,36 @@
         <span asp-validation-for="SelectedBuildingId" class="text-danger"></span>
     </div>
 
+    <!-- Свършена работа -->
     <div class="form-group">
-        <label>Jobs Done</label>
+        <label>Работи за изпълнение</label>
         <div>
-            @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
+            @if (Model.AllJobs != null && Model.AllJobs.Any())
             {
-                <ul>
-                    @foreach (var job in Model.JobsDoneByTeam)
+                <ul class="list-group">
+                    @foreach (var job in Model.AllJobs)
                     {
-                        <li>@job.Job.Name</li>
+                        <li class="list-group-item">
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <label>@job.Name</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Количество</label>
+                                    <input type="number" name="JobQuantities[@job.Id]" class="form-control" placeholder="Количество" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Нужни дни</label>
+                                    <input type="number" name="JobDaysRequired[@job.Id]" class="form-control" placeholder="Нужни дни" />
+                                </div>
+                            </div>
+                        </li>
                     }
                 </ul>
             }
             else
             {
-                <p>Няма налични завършени работи.</p>
+                <p>Няма налични работи.</p>
             }
         </div>
     </div>

@@ -5,6 +5,7 @@ namespace ElProApp.Services.Data.Interfaces
 {
     public interface IJobDoneService
     {
+        Task<JobDoneInputModel> AddAsync();
         Task<string> AddAsync(JobDoneInputModel model);
         Task<JobDoneViewModel> GetByIdAsync(string id);
         Task<JobDoneEditInputModel> EditByIdAsync(string id);

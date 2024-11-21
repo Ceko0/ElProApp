@@ -13,6 +13,7 @@
     using static ElProApp.Common.EntityValidationErrorMessage.Team;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
     using ElProApp.Data.Models.Mappings;
+    using ElProApp.Web.Models.Job;
 
     // ViewModel for adding a team
     public class TeamInputModel : IMapTo<Team>
@@ -37,5 +38,7 @@
 
         // List of all available employees to display as checkboxes
         public ICollection<EmployeeViewModel> AvailableEmployees { get; set; } = new List<EmployeeViewModel>();
+
+        public ICollection<JobViewModel> AllJobs { get; set; } = new List<JobViewModel>();
     }
 }

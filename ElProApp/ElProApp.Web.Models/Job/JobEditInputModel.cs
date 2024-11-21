@@ -3,7 +3,7 @@
     using ElProApp.Data.Models;
     using ElProApp.Services.Mapping;
 
-    public class JobEditInputModel : IMapFrom<Job>
+    public class JobEditInputModel : IMapFrom<Job> ,IMapTo<Job>
     {
         public Guid Id { get; set; }
 

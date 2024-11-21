@@ -4,15 +4,14 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
     using ElProApp.Data.Models;
     using static Common.EntityValidationConstants.Team;
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
     using ElProApp.Web.Models.Building;
-    using ElProApp.Web.Models.JobDone;
     using ElProApp.Web.Models.Employee;
+    using ElProApp.Web.Models.JobDone;
 
     public class TeamEditInputModel : IMapTo<Team>
     {        
@@ -32,5 +31,6 @@
         public List<Guid> BuildingWithTeamIds { get; set; } = new List<Guid>();
         public List<Guid> JobsDoneByTeamIds { get; set; } = new List<Guid>();
         public List<Guid> EmployeesInTeamIds { get; set; } = new List<Guid>();
+
     }
 }
