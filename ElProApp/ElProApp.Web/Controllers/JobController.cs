@@ -4,8 +4,9 @@
 
     using ElProApp.Services.Data.Interfaces;
     using Models.Job;
+    using Microsoft.AspNetCore.Authorization;
 
-
+    [Authorize]
     public class JobController(IJobService _jobService) : Controller
     {
         private readonly IJobService jobService = _jobService;

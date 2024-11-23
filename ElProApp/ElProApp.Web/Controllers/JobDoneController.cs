@@ -6,8 +6,6 @@ namespace ElProApp.Web.Controllers
     using Microsoft.AspNetCore.Mvc;
 
     using ElProApp.Services.Data.Interfaces;
-    using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-    using ElProApp.Services.Data;
 
     [Authorize]
     public class JobDoneController(IJobDoneService _jobDoneService) : Controller

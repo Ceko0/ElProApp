@@ -4,7 +4,9 @@
 
     using ElProApp.Services.Data.Interfaces;
     using Models.Building;
+    using Microsoft.AspNetCore.Authorization;
 
+    [Authorize]
     public class BuildingController(IBuildingService _buildingService, IBuildingTeamMappingService _buildingTeamMappingService) : Controller
     {
         private readonly IBuildingService buildingService = _buildingService;
