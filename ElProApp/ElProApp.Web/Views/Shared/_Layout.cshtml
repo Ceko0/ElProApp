@@ -125,6 +125,30 @@
             @RenderBody()
         </main>
     </div>
+    @if (User.IsInRole("Admin"))
+    {       
+        <div class="dropdown" style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); background-color: transparent; padding: 20px;">
+            <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Админ панел
+            </button>
+            <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
+                <li><a class="dropdown-item" href="@Url.Action("All", "Employee")">Служители</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("All", "Job")">Работи</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("All", "JobDone")">Свършена работа</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("All", "Building")">Сгради</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("All", "Team")">Екипи</a></li>
+            </ul>
+        </div>
+
+    }  
+
+    <script>
+        
+        function toggleSidebar() {
+          const sidebar = document.querySelector('.sidebar');
+          sidebar.classList.toggle('show'); 
+        }
+    </script>
 
     <footer class="border-top footer text-muted">
         <div class="container">
@@ -135,5 +159,11 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
+        }
+    </script>
 </body>
 </html>
