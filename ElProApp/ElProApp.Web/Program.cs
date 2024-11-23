@@ -44,6 +44,13 @@
                 .AddEntityFrameworkStores<ElProAppDbContext>()
                 .AddDefaultTokenProviders();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.LoginPath = new PathString("/Identity/Account/Login");
+                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
+            });
+
 
             // Register repositories and services
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
