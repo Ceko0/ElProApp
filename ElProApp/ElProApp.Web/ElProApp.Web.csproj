@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.5" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
@@ -37,6 +37,13 @@
     <ProjectReference Include="..\ElProApp.Services.Mapping\ElProApp.Services.Mapping.csproj" />
     <ProjectReference Include="..\ElProApp.Web.Infrasreucture\ElProApp.Web.Infrastructure.csproj" />
     <ProjectReference Include="..\ElProApp.Web.Models\ElProApp.Web.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\AdminPanel\Controllers\" />
+    <Folder Include="Areas\AdminPanel\Data\" />
+    <Folder Include="Areas\AdminPanel\Models\" />
+    <Folder Include="Areas\AdminPanel\Views\" />
   </ItemGroup>
 
 </Project>
