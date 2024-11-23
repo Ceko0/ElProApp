@@ -1,5 +1,14 @@
 ﻿namespace ElProApp.Services.Data
 {
+
+    using System.Collections.Generic;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
@@ -9,12 +18,7 @@
     using ElProApp.Web.Models.Employee;
     using ElProApp.Web.Models.JobDone;
     using ElProApp.Web.Models.Team;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
-    using System.Collections.Generic;
-    using System.Security.Claims;
-    using System.Threading.Tasks;
+
 
     public class TeamService(IRepository<Team, Guid> _teamRepository
         , IHttpContextAccessor _httpContextAccessor
@@ -25,6 +29,10 @@
         private readonly IRepository<Team, Guid> teamRepository = _teamRepository;
         private readonly IServiceProvider serviceProvider = _serviceProvider;
 
+        /// <summary>
+        /// Creates a new TeamInputModel with a list of available buildings, employees, and jobs.
+        /// </summary>
+        /// <returns>A TeamInputModel with all the necessary data for adding a new team.</returns>
         public async Task<TeamInputModel> AddAsync()
         {
             var model = new TeamInputModel()
@@ -135,7 +143,7 @@
                     .Where(x => x.TeamId == entity.Id)
                     .Select(x => x.JobDoneId)),
                 EmployeesInTeamIds = new List<Guid>(
-                    GetAllEmployeeTeamMppings()
+                    GetAllEmployeeTeamMаppings()
                     .Where(x => x.TeamId == entity.Id)
                     .Select(x => x.EmployeeId))
             };
@@ -164,7 +172,7 @@
                 .ToListAsync());
 
             var existingBuildingMappings = await GetAllBuildingTeamMappings().Where(x => x.TeamId == model.Id).ToListAsync();
-            var existingEmployeeMappings = await GetAllEmployeeTeamMppings().Where(x => x.TeamId == model.Id).ToListAsync();
+            var existingEmployeeMappings = await GetAllEmployeeTeamMаppings().Where(x => x.TeamId == model.Id).ToListAsync();
             var existingJobDoneMappings = await GetAllJobDoneTeamMappings().Where(x => x.TeamId == model.Id).ToListAsync();
 
             var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
@@ -245,13 +253,20 @@
 
             foreach(var viewmodel in model)
             {
-                viewmodel.EmployeesInTeam = await GetAllEmployeeTeamMppings().Include(x => x.Employee).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
+                viewmodel.EmployeesInTeam = await GetAllEmployeeTeamMаppings().Include(x => x.Employee).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
                 viewmodel.JobsDoneByTeam = await GetAllJobDoneTeamMappings().Include(x => x.JobDone).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
                 viewmodel.BuildingWithTeam = await GetAllBuildingTeamMappings().Include(x => x.Building).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
             }
 
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all teams that are attached to the repository.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IQueryable{Team}"/> representing the collection of all teams.
+        /// </returns>
         public IQueryable<Team> GetAllAttached()
             => teamRepository
             .GetAllAttached();
@@ -269,7 +284,7 @@
                                     .To<TeamViewModel>()
                                     .FirstOrDefaultAsync(t => t.Id == validId);
 
-            model.EmployeesInTeam = await GetAllEmployeeTeamMppings().Include(x => x.Employee).Where(x => x.TeamId == model.Id).ToListAsync();
+            model.EmployeesInTeam = await GetAllEmployeeTeamMаppings().Include(x => x.Employee).Where(x => x.TeamId == model.Id).ToListAsync();
             model.JobsDoneByTeam = await GetAllJobDoneTeamMappings().Include(x => x.JobDone).Where(x => x.TeamId == model.Id).ToListAsync();
             model.BuildingWithTeam = await GetAllBuildingTeamMappings().Include(x => x.Building).Where(x => x.TeamId == model.Id).ToListAsync();
 
@@ -296,6 +311,14 @@
             }
         }
 
+        /// <summary>
+        /// Checks if a team with the specified ID exists in the repository.
+        /// </summary>
+        /// <param name="id">The ID of the team to check for existence.</param>
+        /// <returns>
+        /// A boolean value indicating whether a team with the specified ID exists.
+        /// <c>true</c> if the team exists, <c>false</c> otherwise.
+        /// </returns>
         public async Task<bool> Any(Guid id)
         {
             var team = await teamRepository.FirstOrDefaultAsync(x => x.Id == id);
@@ -316,60 +339,83 @@
             return validId;
         }
 
+        /// <summary>
+        /// Retrieves the current logged-in user ID from the claims.
+        /// </summary>
+        /// <returns>User ID as a string.</returns>
         private string GetUserId()
         {
             var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) throw new InvalidOperationException("Failed to retrieve UserId. Please try again.");
             return userId;
         }
-
+        /// <summary>
+        /// Retrieves all buildings attached to the service.
+        /// </summary>
         private IQueryable<Building> GetAllBuildings()
         {
             var service = serviceProvider.GetRequiredService<IBuildingService>();
             var model = service.GetAllAttached();
-
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all employees attached to the service.
+        /// </summary>
         private IQueryable<Employee> GetAllEmployees()
         {
             var service = serviceProvider.GetRequiredService<IEmployeeService>();
             var model = service.GetAllAttached();
-
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all job done records attached to the service.
+        /// </summary>
         private IQueryable<JobDone> GetAllJobDones()
         {
             var service = serviceProvider.GetRequiredService<IJobDoneService>();
             var model = service.GetAllAttached();
-
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all jobs attached to the service.
+        /// </summary>
         private IQueryable<Job> GetAllJobs()
         {
             var service = serviceProvider.GetRequiredService<IJobService>();
-            var model= service.GetAllAttached();
-
+            var model = service.GetAllAttached();
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all building-team mappings attached to the service.
+        /// </summary>
         private IQueryable<BuildingTeamMapping> GetAllBuildingTeamMappings()
         {
             var service = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
             var model = service.GetAllAttached();
-
             return model;
         }
-        private IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMppings()
+
+        /// <summary>
+        /// Retrieves all employee-team mappings attached to the service.
+        /// </summary>
+        private IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMаppings()
         {
             var service = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var model = service.GetAllAttached();
-
             return model;
         }
+
+        /// <summary>
+        /// Retrieves all job done-team mappings attached to the service.
+        /// </summary>
         private IQueryable<JobDoneTeamMapping> GetAllJobDoneTeamMappings()
         {
             var service = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
             var model = service.GetAllAttached();
-
             return model;
         }
     }

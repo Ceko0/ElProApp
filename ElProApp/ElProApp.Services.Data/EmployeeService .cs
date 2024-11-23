@@ -3,9 +3,8 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Http;
     using ElProApp.Data.Repository.Interfaces;
-    using System.Security.Claims; 
+    using System.Security.Claims;
     using Microsoft.EntityFrameworkCore;
-
     using Web.Models.Employee;
     using Services.Data.Interfaces;
     using Services.Mapping;
@@ -53,7 +52,7 @@
         public async Task<EmployeeViewModel?> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await employeeRepository.GetByIdAsync(validId);            
+            var entity = await employeeRepository.GetByIdAsync(validId);
             entity.User = await GetUserAsync(entity.UserId);
 
             if (entity == null) throw new ArgumentException("Missing entity.");
@@ -63,7 +62,7 @@
             var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var teams = employeeTeamMappingService.GetAllByEmployeeId(id).ToList();
             model.TeamsEmployeeBelongsTo = teams;
-            
+
             return model;
         }
 
@@ -120,14 +119,19 @@
                             .To<EmployeeViewModel>()
                             .ToListAsync();
 
-            foreach(var emploee in model)
+            foreach (var emploee in model)
             {
                 emploee.TeamsEmployeeBelongsTo = employeeTeamMappingService.GetAllByEmployeeId(emploee.Id.ToString());
             }
-        
+
             return model;
         }
-        public IQueryable<Employee> GetAllAttached() 
+
+        /// <summary>
+        /// Retrieves all employees including attached entities.
+        /// </summary>
+        /// <returns>An IQueryable collection of employees.</returns>
+        public IQueryable<Employee> GetAllAttached()
             => employeeRepository
             .GetAllAttached();
 
@@ -162,10 +166,43 @@
         }
 
         /// <summary>
-        /// Converts a string ID to a Guid and validates its format.
+        /// Retrieves the employee associated with a user ID.
         /// </summary>
-        /// <param name="id">The string format ID of the employee.</param>
-        /// <returns>A valid Guid.</returns>
+        /// <param name="id">The user ID to search for.</param>
+        /// <returns>The associated <see cref="Employee"/> object.</returns>
+        public Employee GetByUserId(string id)
+        {
+            var entity = employeeRepository.GetAllAttached().Where(x => x.UserId == id).ToArray();
+            return entity[0];
+        }
+
+        /// <summary>
+        /// Adds an admin employee based on the provided details.
+        /// </summary>
+        /// <param name="firstName">The first name of the employee.</param>
+        /// <param name="lastName">The last name of the employee.</param>
+        /// <param name="identityUserId">The identity user ID.</param>
+        /// <returns>The ID of the newly created admin employee.</returns>
+        public async Task<string> AddAdminEmployeeAsync(string firstName, string lastName, string identityUserId)
+        {
+            var employee = new Employee()
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Wages = 0,
+                UserId = identityUserId
+            };
+
+            await employeeRepository.AddAsync(employee);
+            return employee.Id.ToString();
+        }
+
+        /// <summary>
+        /// Converts and validates the provided ID to a valid <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="id">The ID to validate and convert.</param>
+        /// <returns>The converted <see cref="Guid"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown if the ID format is invalid.</exception>
         private static Guid ConvertAndTestIdToGuid(string id)
         {
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId)) throw new ArgumentException("Invalid ID format.");
@@ -175,7 +212,7 @@
         /// <summary>
         /// Retrieves the currently logged-in user through UserManager if no employee-specific UserId is set.
         /// </summary>
-        /// <returns>The IdentityUser representing the current user.</returns>
+        /// <returns>The <see cref="IdentityUser"/> representing the current user.</returns>
         private async Task<IdentityUser> GetCurrentUserAsync()
         {
             var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -183,15 +220,14 @@
 
             return await userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException("Invalid user.");
         }
-        private async Task<IdentityUser> GetUserAsync(string id) 
-            => await userManager.FindByIdAsync(id) 
+
+        /// <summary>
+        /// Retrieves the user associated with the specified ID.
+        /// </summary>
+        /// <param name="id">The ID of the user.</param>
+        /// <returns>The <see cref="IdentityUser"/> object associated with the given ID.</returns>
+        private async Task<IdentityUser> GetUserAsync(string id)
+            => await userManager.FindByIdAsync(id)
             ?? throw new InvalidOperationException("Invalid user.");
-
-        public Employee GetByUserId(string id)
-        {
-            var entity = employeeRepository.GetAllAttached().Where(x => x.UserId == id).ToArray();
-
-            return entity[0];
-        }
     }
 }

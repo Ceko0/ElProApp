@@ -1,7 +1,6 @@
 ﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
-
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
     using Interfaces;
@@ -10,13 +9,19 @@
     using Microsoft.Extensions.DependencyInjection;
     using System.Linq;
 
-    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository
-        , IServiceProvider _serviceProvider)
+    /// <summary>
+    /// Service class for managing job done operations, including adding, editing, retrieving, and deleting job done records.
+    /// </summary>
+    public class JobDoneService(IRepository<JobDone, Guid> _jobDoneRepository, IServiceProvider _serviceProvider)
         : IJobDoneService
     {
         private readonly IRepository<JobDone, Guid> jobDoneRepository = _jobDoneRepository;
         private readonly IServiceProvider serviceProvider = _serviceProvider;
 
+        /// <summary>
+        /// Initializes a new job done input model with lists of teams and jobs.
+        /// </summary>
+        /// <returns>A <see cref="JobDoneInputModel"/> containing lists of available teams and jobs.</returns>
         public async Task<JobDoneInputModel> AddAsync()
         {
             var TeamService = serviceProvider.GetRequiredService<ITeamService>();
@@ -27,6 +32,12 @@
             model.jobs = await jobService.GetAllAttached().ToListAsync();
             return model;
         }
+
+        /// <summary>
+        /// Adds a new job done record.
+        /// </summary>
+        /// <param name="model">The input model containing data for the job done.</param>
+        /// <returns>The ID of the newly created job done record as a string.</returns>
         public async Task<string> AddAsync(JobDoneInputModel model)
         {
             var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
@@ -38,11 +49,15 @@
             currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
-
             await jobDoneTeamMppingService.AddAsync(model.Id, model.TeamId);
             return jobDone.Id.ToString();
         }
 
+        /// <summary>
+        /// Retrieves the job done edit input model for a specific job done record by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the job done record to retrieve.</param>
+        /// <returns>A <see cref="JobDoneEditInputModel"/> for editing the job done record.</returns>
         public async Task<JobDoneEditInputModel> EditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
@@ -51,6 +66,11 @@
             return AutoMapperConfig.MapperInstance.Map<JobDoneEditInputModel>(entity);
         }
 
+        /// <summary>
+        /// Updates the job done record with the data from the provided edit model.
+        /// </summary>
+        /// <param name="model">The edit input model containing updated job done data.</param>
+        /// <returns>True if the update was successful, otherwise false.</returns>
         public async Task<bool> EditByModelAsync(JobDoneEditInputModel model)
         {
             try
@@ -67,6 +87,10 @@
             }
         }
 
+        /// <summary>
+        /// Retrieves all job done records.
+        /// </summary>
+        /// <returns>A collection of <see cref="JobDoneViewModel"/> representing all job done records.</returns>
         public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
         {
             var model = await jobDoneRepository.GetAllAttached()
@@ -84,10 +108,19 @@
 
             return model;
         }
-        public IQueryable<JobDone> GetAllAttached()
-            => jobDoneRepository
-            .GetAllAttached();
 
+        /// <summary>
+        /// Retrieves all job done records, including the associated job and team information.
+        /// </summary>
+        /// <returns>An <see cref="IQueryable"/> collection of <see cref="JobDone"/> records with attached data.</returns>
+        public IQueryable<JobDone> GetAllAttached()
+            => jobDoneRepository.GetAllAttached();
+
+        /// <summary>
+        /// Retrieves a specific job done record by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the job done record to retrieve.</param>
+        /// <returns>A <see cref="JobDoneViewModel"/> representing the job done record, or throws an exception if not found.</returns>
         public async Task<JobDoneViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
@@ -102,7 +135,7 @@
                 var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
                 model.TeamsDoTheJob = await jobDoneTeamMapping
                     .GetAllAttached()
-                    .Include( x=> x.Team)
+                    .Include(x => x.Team)
                     .Where(x => x.JobDoneId == entity.Id)
                     .ToListAsync();
                 return model;
@@ -111,6 +144,11 @@
             throw new ArgumentException("Missing entity.");
         }
 
+        /// <summary>
+        /// Soft deletes a job done record by marking it as deleted.
+        /// </summary>
+        /// <param name="id">The ID of the job done record to delete.</param>
+        /// <returns>True if the delete operation was successful, otherwise false.</returns>
         public async Task<bool> SoftDeleteAsync(string id)
         {
             try
@@ -125,6 +163,12 @@
             }
         }
 
+        /// <summary>
+        /// Converts and validates a string ID to a valid <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="id">The string ID to convert and validate.</param>
+        /// <returns>A valid <see cref="Guid"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown if the ID format is invalid.</exception>
         private static Guid ConvertAndTestIdToGuid(string id)
         {
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId))

@@ -1,16 +1,16 @@
 ﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
-
+    using Microsoft.Extensions.DependencyInjection;
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Building;
-    using Microsoft.Extensions.DependencyInjection;
     using ElProApp.Data.Models.Mappings;
 
-    internal class BuildingService(IRepository<Building, Guid> _BuildingRepository
+
+    public class BuildingService(IRepository<Building, Guid> _BuildingRepository
         , IBuildingTeamMappingService _buildingTeamMappingService
         , IServiceProvider _serviceProvider)
         : IBuildingService
@@ -19,6 +19,12 @@
         private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
         private readonly IServiceProvider serviceProvider = _serviceProvider;
 
+        /// <summary>
+        /// Adds a new building based on the provided input model.
+        /// </summary>
+        /// <param name="model">The input model containing building details.</param>
+        /// <returns>The ID of the newly added building.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if a building with the same name already exists.</exception>
         public async Task<string> AddAsync(BuildingInputModel model)
         {
             if ((await buildingRepository.FirstOrDefaultAsync(x => x.Name == model.Name)) != null)
@@ -29,6 +35,12 @@
             return building.Id.ToString();
         }
 
+        /// <summary>
+        /// Retrieves the edit input model for a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building.</param>
+        /// <returns>The edit input model for the specified building.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the building is deleted.</exception>
         public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
@@ -45,6 +57,11 @@
             return model;
         }
 
+        /// <summary>
+        /// Updates a building based on the provided edit input model.
+        /// </summary>
+        /// <param name="model">The input model containing updated building details.</param>
+        /// <returns>True if the update was successful, otherwise false.</returns>
         public async Task<bool> EditByModelAsync(BuildingEditInputModel model)
         {
             try
@@ -53,9 +70,9 @@
                 AutoMapperConfig.MapperInstance.Map(model, entity);
                 await buildingRepository.SaveAsync();
 
-                var BuildingTeamMappingService = _serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+                var BuildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
 
-                var BuildingTeamMappings = await buildingTeamMappingService.GetAllAttached().Include( x => x.Team).Where(m => m.BuildingId == model.Id).ToListAsync();
+                var BuildingTeamMappings = await buildingTeamMappingService.GetAllAttached().Include(x => x.Team).Where(m => m.BuildingId == model.Id).ToListAsync();
                 foreach (var buildingTeamMapping in BuildingTeamMappings)
                 {
                     if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
@@ -82,6 +99,10 @@
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of all buildings.
+        /// </summary>
+        /// <returns>A collection of view models representing all buildings.</returns>
         public async Task<ICollection<BuildingViewModel>> GetAllAsync()
         {
             var model = await buildingRepository.GetAllAttached()
@@ -97,9 +118,18 @@
             return model;
         }
 
+        /// <summary>
+        /// Retrieves all attached buildings.
+        /// </summary>
+        /// <returns>An <see cref="IQueryable{Building}"/> collection of all attached buildings.</returns>
         public IQueryable<Building> GetAllAttached()
             => buildingRepository.GetAllAttached();
 
+        /// <summary>
+        /// Retrieves a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building.</param>
+        /// <returns>The view model representing the building.</returns>
         public async Task<BuildingViewModel> GetByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
@@ -113,6 +143,11 @@
             return model!;
         }
 
+        /// <summary>
+        /// Soft deletes a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> SoftDeleteAsync(string id)
         {
             try
@@ -127,7 +162,12 @@
             }
         }
 
-
+        /// <summary>
+        /// Converts a string ID to a valid GUID and validates it.
+        /// </summary>
+        /// <param name="id">The string ID to convert.</param>
+        /// <returns>The valid GUID.</returns>
+        /// <exception cref="ArgumentException">Thrown if the ID format is invalid.</exception>
         private static Guid ConvertAndTestIdToGuid(string id)
         {
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId))
@@ -135,11 +175,15 @@
             return validId;
         }
 
+        /// <summary>
+        /// Retrieves all team mappings for a building.
+        /// </summary>
+        /// <param name="id">The ID of the building.</param>
+        /// <returns>A list of <see cref="BuildingTeamMapping"/> objects associated with the building.</returns>
         private async Task<List<BuildingTeamMapping>> GetBuildingTeamMapping(Guid id) => await buildingTeamMappingService
                                 .GetAllAttached()
                                 .Include(x => x.Building)
                                 .Include(x => x.Team)
                                 .Where(x => x.BuildingId == id).ToListAsync();
-
     }
 }
