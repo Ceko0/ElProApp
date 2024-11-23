@@ -1,0 +1,14 @@
+﻿@using ElProApp.Web.Models
+@model ErrorViewModel
+
+<div class="error-container">
+    <h1>403 Нямаш Права</h1>
+    <p>@Model.ErrorMessage</p>
+
+    @if (Model.ShowRequestId)
+    {
+        <p>Request ID: @Model.RequestId</p>
+    }
+
+    <a href="@Url.Action("Index", "Home")">Към начална страница</a>
+</div>

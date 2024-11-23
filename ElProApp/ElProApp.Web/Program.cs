@@ -48,7 +48,6 @@
             {
                 options.Cookie.HttpOnly = true;
                 options.LoginPath = new PathString("/Identity/Account/Login");
-                options.AccessDeniedPath = new PathString("/Identity/Account/AccessDenied");
             });
 
 
@@ -68,11 +67,12 @@
 
             // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
-            {
-                // Use the error handling page for non-development environments
-                app.UseExceptionHandler("/Home/Error");
+            {           
                 app.UseHsts(); // Enable HTTP Strict Transport Security
             }
+
+            app.UseExceptionHandler("/Home/Error");  // Catch general exceptions
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
             // Enable HTTPS redirection and static file serving
             app.UseHttpsRedirection();
@@ -93,7 +93,7 @@
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapControllerRoute(
                 name: "Areas",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
             app.MapRazorPages();
 
             // Optional: Show developer exception page in development
