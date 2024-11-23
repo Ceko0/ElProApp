@@ -106,7 +106,6 @@
         {
             var model = await jobDoneRepository.GetAllAttached()
                 .To<JobDoneViewModel>()
-                .Include(x => x.Job)
                 .ToListAsync();
 
             var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
