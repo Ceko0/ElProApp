@@ -51,6 +51,9 @@
         /// <returns>The newly created <see cref="JobDoneTeamMapping"/> object.</returns>
         public async Task<JobDoneTeamMapping> AddAsync(Guid jobDoneId, Guid teamId)
         {
+            if (jobDoneId == Guid.Empty) throw new ArgumentNullException(nameof(jobDoneId), "Invalid jobDoneId.");
+            if (teamId == Guid.Empty) throw new ArgumentNullException(nameof(teamId), "Invalid teamId.");
+
             var model = new JobDoneTeamMapping()
             {
                 Id = Guid.NewGuid(),
@@ -71,7 +74,9 @@
         /// <returns>True if the mapping exists; otherwise, false.</returns>
         public bool Any(Guid jobDoneId, Guid teamId)
         {
-            var model = jobDoneTeamMappingRepository.GetAllAttached().Where(x => x.JobDoneId == jobDoneId && x.TeamId == teamId);
+            var model = jobDoneTeamMappingRepository
+                .GetAllAttached()
+                .Where(x => x.JobDoneId == jobDoneId && x.TeamId == teamId);
 
             return model.Any();
         }
@@ -82,6 +87,12 @@
         /// <param name="mapping">The job done team mapping to remove.</param>
         /// <returns>True if the mapping was successfully removed; otherwise, false.</returns>
         public async Task<bool> RemoveAsync(JobDoneTeamMapping mapping)
-            => await jobDoneTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.JobDoneId, mapping.TeamId);
+        {
+            if (mapping == null) throw new ArgumentNullException(nameof(mapping), "Mapping cannot be null.");
+
+            return await jobDoneTeamMappingRepository
+                .DeleteByCompositeKeyAsync(mapping.JobDoneId, mapping.TeamId);
+        }
+
     }
 }

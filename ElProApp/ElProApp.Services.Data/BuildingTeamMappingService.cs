@@ -4,14 +4,16 @@
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Service for managing building-team mappings.
     /// </summary>
-    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> _buildingTeamMappingRepository)
+    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> _buildingTeamMappingRepository,IServiceProvider _serviceProvider)
         : IBuildingTeamMappingService
     {
         private readonly IRepository<BuildingTeamMapping, Guid> buildingTeamMappingRepository = _buildingTeamMappingRepository;
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         /// <summary>
         /// Adds a new building-team mapping.
@@ -25,6 +27,15 @@
             if (buildingId == Guid.Empty) throw new ArgumentNullException("Invalid buildingId");
             if (teamId == Guid.Empty) throw new ArgumentNullException("Invalid TeamId");
 
+            var buildingService = serviceProvider.GetService<BuildingService>()!;
+            var teamService = serviceProvider.GetService<TeamService>()!;
+
+            var buildingExists = await buildingService.GetAllAttached().FirstOrDefaultAsync(b => b.Id == buildingId);
+            if (buildingExists == null) throw new InvalidOperationException("Building not found");
+
+            var teamExists = await teamService.GetAllAttached().FirstOrDefaultAsync(t => t.Id == teamId);
+            if (teamExists == null) throw new InvalidOperationException("Team not found");
+
             var buildingTeamMapping = new BuildingTeamMapping()
             {
                 BuildingId = buildingId,
@@ -34,6 +45,7 @@
 
             return buildingTeamMapping;
         }
+
 
         /// <summary>
         /// Retrieves all building-team mappings for a specific team.
@@ -84,10 +96,13 @@
         /// <returns>True if the mapping exists, otherwise false.</returns>
         public bool Any(Guid buildingId, Guid teamId)
         {
-            var model = buildingTeamMappingRepository.GetAllAttached().Where(x => x.TeamId == teamId && x.BuildingId == buildingId);
+            if (buildingId == Guid.Empty || teamId == Guid.Empty)
+                throw new ArgumentException("BuildingId and TeamId must not be empty.");
 
+            var model = buildingTeamMappingRepository.GetAllAttached().Where(x => x.TeamId == teamId && x.BuildingId == buildingId);
             return model.Any();
         }
+
 
         /// <summary>
         /// Removes a building-team mapping.
@@ -95,6 +110,15 @@
         /// <param name="mapping">The <see cref="BuildingTeamMapping"/> to remove.</param>
         /// <returns>True if the mapping was removed successfully, otherwise false.</returns>
         public async Task<bool> RemoveAsync(BuildingTeamMapping mapping)
-            => await buildingTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.BuildingId, mapping.TeamId);
+        {
+            var mappingExists = await buildingTeamMappingRepository
+                .GetAllAttached()
+                .AnyAsync(x => x.BuildingId == mapping.BuildingId && x.TeamId == mapping.TeamId);
+
+            if (!mappingExists) throw new InvalidOperationException("Mapping not found.");
+
+            return await buildingTeamMappingRepository.DeleteByCompositeKeyAsync(mapping.BuildingId, mapping.TeamId);
+        }
+
     }
 }

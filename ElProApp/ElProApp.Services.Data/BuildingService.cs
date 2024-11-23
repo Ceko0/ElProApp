@@ -27,13 +27,25 @@
         /// <exception cref="InvalidOperationException">Thrown if a building with the same name already exists.</exception>
         public async Task<string> AddAsync(BuildingInputModel model)
         {
-            if ((await buildingRepository.FirstOrDefaultAsync(x => x.Name == model.Name)) != null)
-                throw new InvalidOperationException("A building with this name already exists!");
-            var building = AutoMapperConfig.MapperInstance.Map<Building>(model);
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Building model cannot be null.");
+            }
 
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                throw new ArgumentException("Building name must be provided.");
+            }
+
+            var existingBuilding = await buildingRepository.FirstOrDefaultAsync(x => x.Name == model.Name);
+            if (existingBuilding != null)
+                throw new InvalidOperationException("A building with this name already exists!");
+
+            var building = AutoMapperConfig.MapperInstance.Map<Building>(model);
             await buildingRepository.AddAsync(building);
             return building.Id.ToString();
         }
+
 
         /// <summary>
         /// Retrieves the edit input model for a building by its ID.
@@ -43,19 +55,28 @@
         /// <exception cref="InvalidOperationException">Thrown if the building is deleted.</exception>
         public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException("Building ID must be provided.");
+            }
+
             Guid validId = ConvertAndTestIdToGuid(id);
+
             var model = await buildingRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
                 .To<BuildingEditInputModel>()
                 .FirstOrDefaultAsync(x => x.Id == validId);
 
-            if (model == null) throw new InvalidOperationException("Team is deleted.");
+            if (model == null)
+            {
+                throw new InvalidOperationException("Building not found or is deleted.");
+            }
 
             model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
-
             return model;
         }
+
 
         /// <summary>
         /// Updates a building based on the provided edit input model.
@@ -64,39 +85,45 @@
         /// <returns>True if the update was successful, otherwise false.</returns>
         public async Task<bool> EditByModelAsync(BuildingEditInputModel model)
         {
-            try
+            if (model == null)
             {
-                var entity = await buildingRepository.GetByIdAsync(model.Id);
-                AutoMapperConfig.MapperInstance.Map(model, entity);
-                await buildingRepository.SaveAsync();
+                throw new ArgumentNullException(nameof(model), "Building edit model cannot be null.");
+            }
 
-                var BuildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+            var entity = await buildingRepository.GetByIdAsync(model.Id);
+            if (entity == null)
+            {
+                throw new InvalidOperationException("Building not found.");
+            }
 
-                var BuildingTeamMappings = await buildingTeamMappingService.GetAllAttached().Include(x => x.Team).Where(m => m.BuildingId == model.Id).ToListAsync();
-                foreach (var buildingTeamMapping in BuildingTeamMappings)
+            AutoMapperConfig.MapperInstance.Map(model, entity);
+            await buildingRepository.SaveAsync();
+
+            var buildingTeamMappings = await buildingTeamMappingService
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .Where(m => m.BuildingId == model.Id)
+                .ToListAsync();
+
+            foreach (var buildingTeamMapping in buildingTeamMappings)
+            {
+                if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
                 {
-                    if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
+                    var mappingToRemove = buildingTeamMappings.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
+                    if (mappingToRemove != null)
                     {
-                        var mappingToRemove = BuildingTeamMappings.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
-                        if (mappingToRemove != null)
-                        {
-                            await buildingTeamMappingService.RemoveAsync(mappingToRemove);
-                        }
+                        await buildingTeamMappingService.RemoveAsync(mappingToRemove);
                     }
                 }
-
-                foreach (var teamId in model.selectedTeamEntities)
-                {
-                    if (!buildingTeamMappingService.Any(model.Id, teamId))
-                        await buildingTeamMappingService.AddAsync(model.Id, teamId);
-                }
-
-                return true;
             }
-            catch (Exception)
+
+            foreach (var teamId in model.selectedTeamEntities)
             {
-                return false;
+                if (!buildingTeamMappingService.Any(model.Id, teamId))
+                    await buildingTeamMappingService.AddAsync(model.Id, teamId);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -150,17 +177,23 @@
         /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> SoftDeleteAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException("Building ID must be provided.");
+            }
+
             try
             {
                 Guid validId = ConvertAndTestIdToGuid(id);
                 bool isDeleted = await buildingRepository.SoftDeleteAsync(validId);
                 return isDeleted;
             }
-            catch
-            {
+            catch (Exception)
+            {                
                 return false;
             }
         }
+
 
         /// <summary>
         /// Converts a string ID to a valid GUID and validates it.

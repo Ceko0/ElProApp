@@ -42,10 +42,18 @@
         {
             var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
 
+            var jobService = serviceProvider.GetRequiredService<IJobService>();
+            var currentJob = await jobService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.JobId);
+            if (currentJob == null)
+                throw new InvalidOperationException("Job not found.");
+
+            var teamService = serviceProvider.GetRequiredService<ITeamService>();
+            var team = await teamService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.TeamId);
+            if (team == null)
+                throw new InvalidOperationException("Team not found.");
+
             var jobDone = AutoMapperConfig.MapperInstance.Map<JobDone>(model);
 
-            var JobService = serviceProvider.GetRequiredService<IJobService>();
-            var currentJob = await JobService.GetAllAttached().Include(x => x.JobsDone).FirstOrDefaultAsync(x => x.Id == model.JobId);
             currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
@@ -76,11 +84,14 @@
             try
             {
                 var entity = await jobDoneRepository.GetByIdAsync(model.Id);
+                if (entity == null)
+                    throw new InvalidOperationException("JobDone record not found.");
+
                 AutoMapperConfig.MapperInstance.Map(model, entity);
 
                 await jobDoneRepository.SaveAsync();
                 return true;
-            }
+            }            
             catch (Exception)
             {
                 return false;
@@ -95,15 +106,21 @@
         {
             var model = await jobDoneRepository.GetAllAttached()
                 .To<JobDoneViewModel>()
+                .Include(x => x.Job)
                 .ToListAsync();
+
             var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+            var allTeamMappings = await jobDoneTeamMapping
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .Where(x => model.Select(m => m.Id).Contains(x.JobDoneId))
+                .ToListAsync();
+
             foreach (var entity in model)
             {
-                entity.TeamsDoTheJob = await jobDoneTeamMapping
-                    .GetAllAttached()
-                    .Include(x => x.Team)
+                entity.TeamsDoTheJob = allTeamMappings
                     .Where(x => x.JobDoneId == entity.Id)
-                    .ToListAsync();
+                    .ToList();
             }
 
             return model;
@@ -154,11 +171,15 @@
             try
             {
                 Guid validId = ConvertAndTestIdToGuid(id);
+                var entity = await jobDoneRepository.GetByIdAsync(validId);
+                if (entity == null)
+                    throw new InvalidOperationException("JobDone record not found.");
+
                 bool isDeleted = await jobDoneRepository.SoftDeleteAsync(validId);
                 return isDeleted;
-            }
-            catch
-            {
+            }          
+            catch (Exception)
+            {                
                 return false;
             }
         }

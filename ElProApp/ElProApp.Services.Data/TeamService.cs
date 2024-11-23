@@ -55,11 +55,9 @@
         /// <returns>ID of the newly created team as a string.</returns>
         public async Task<string> AddAsync(TeamInputModel model)
         {
-
             var buildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
             var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-
 
             if (await teamRepository.FirstOrDefaultAsync(x => x.Name == model.Name) != null)
                 throw new InvalidOperationException("A team with this name already exists!");
@@ -70,28 +68,24 @@
 
             if (model.SelectedBuildingId != Guid.Empty)
             {
-                BuildingViewModel building = await GetAllBuildings().To<BuildingViewModel>().FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
+                var building = await GetAllBuildings().To<BuildingViewModel>().FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
                     ?? throw new InvalidOperationException("The selected building does not exist.");
-                await teamRepository.AddAsync(team);
-
-
-                var buildingTeamMapping = await buildingTeamMappingService.AddAsync(building.Id, team.Id);
-
+                await buildingTeamMappingService.AddAsync(building.Id, team.Id);
             }
 
             var userId = ConvertAndTestIdToGuid(GetUserId());
 
-            var employeEntity = await GetAllEmployees().FirstOrDefaultAsync(x => x.Id == userId);
-            if (employeEntity != null)
+            var employeeEntity = await GetAllEmployees().FirstOrDefaultAsync(x => x.Id == userId);
+            if (employeeEntity != null)
             {
-                var employeeTeamMapping = await employeeTeamMappingService.AddAsync(employeEntity.Id, team.Id);
+                await employeeTeamMappingService.AddAsync(employeeEntity.Id, team.Id);
             }
 
             if (model.SelectedEmployeeIds.Count > 0)
             {
                 foreach (var employeeId in model.SelectedEmployeeIds)
                 {
-                    var employeeMapping = await employeeTeamMappingService.AddAsync(employeeId, team.Id);
+                    await employeeTeamMappingService.AddAsync(employeeId, team.Id);
                 }
             }
 
@@ -113,40 +107,35 @@
             Guid validId = ConvertAndTestIdToGuid(id);
             Team entity = await teamRepository.GetByIdAsync(validId);
             if (entity.IsDeleted) throw new InvalidOperationException("Team is deleted.");
+
             var userId = ConvertAndTestIdToGuid(GetUserId());
-            var employeeTeamMapping = employeeTeamMappingService.GetAllAttached().Where(x => x.TeamId == entity.Id && x.EmployeeId == userId);
+            var employeeTeamMapping = await employeeTeamMappingService.GetAllAttached()
+                .Where(x => x.TeamId == entity.Id && x.EmployeeId == userId)
+                .FirstOrDefaultAsync();
 
             if (employeeTeamMapping == null) throw new AccessViolationException("User does not have permission to edit this team.");
 
-            var model = new TeamEditInputModel()
+            var model = new TeamEditInputModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                BuildingWithTeam = new List<BuildingViewModel>(
-                    await GetAllBuildings()
-                    .To<BuildingViewModel>()
-                    .ToListAsync()),
-                JobsDoneByTeam = new List<JobDoneViewModel>(
-                    await GetAllJobDones()
-                    .To<JobDoneViewModel>()
-                    .ToListAsync()),
-                EmployeesInTeam = new List<EmployeeViewModel>(
-                    await GetAllEmployees()
-                    .To<EmployeeViewModel>()
-                    .ToListAsync()),
-                BuildingWithTeamIds = new List<Guid>(
-                    GetAllBuildingTeamMappings()
+                BuildingWithTeam = await GetAllBuildings().To<BuildingViewModel>().ToListAsync(),
+                JobsDoneByTeam = await GetAllJobDones().To<JobDoneViewModel>().ToListAsync(),
+                EmployeesInTeam = await GetAllEmployees().To<EmployeeViewModel>().ToListAsync(),
+                BuildingWithTeamIds = await GetAllBuildingTeamMappings()
                     .Where(x => x.TeamId == entity.Id)
-                    .Select(x => x.BuildingId)),
-                JobsDoneByTeamIds = new List<Guid>(
-                    GetAllJobDoneTeamMappings()
+                    .Select(x => x.BuildingId)
+                    .ToListAsync(),
+                JobsDoneByTeamIds = await GetAllJobDoneTeamMappings()
                     .Where(x => x.TeamId == entity.Id)
-                    .Select(x => x.JobDoneId)),
-                EmployeesInTeamIds = new List<Guid>(
-                    GetAllEmployeeTeamMаppings()
+                    .Select(x => x.JobDoneId)
+                    .ToListAsync(),
+                EmployeesInTeamIds = await GetAllEmployeeTeamMаppings()
                     .Where(x => x.TeamId == entity.Id)
-                    .Select(x => x.EmployeeId))
+                    .Select(x => x.EmployeeId)
+                    .ToListAsync()
             };
+
             return model;
         }
 
@@ -158,18 +147,9 @@
         /// <returns>Boolean indicating success or failure.</returns>
         public async Task<bool> EditByModelAsync(TeamEditInputModel model)
         {
-            model.BuildingWithTeam = new List<BuildingViewModel>(
-                   await GetAllBuildings()
-                   .To<BuildingViewModel>()
-                   .ToListAsync());
-            model.JobsDoneByTeam = new List<JobDoneViewModel>(
-                await GetAllJobDones()
-                .To<JobDoneViewModel>()
-                .ToListAsync());
-            model.EmployeesInTeam = new List<EmployeeViewModel>(
-                await GetAllEmployees()
-                .To<EmployeeViewModel>()
-                .ToListAsync());
+            model.BuildingWithTeam = await GetAllBuildings().To<BuildingViewModel>().ToListAsync();
+            model.JobsDoneByTeam = await GetAllJobDones().To<JobDoneViewModel>().ToListAsync();
+            model.EmployeesInTeam = await GetAllEmployees().To<EmployeeViewModel>().ToListAsync();
 
             var existingBuildingMappings = await GetAllBuildingTeamMappings().Where(x => x.TeamId == model.Id).ToListAsync();
             var existingEmployeeMappings = await GetAllEmployeeTeamMаppings().Where(x => x.TeamId == model.Id).ToListAsync();
@@ -279,17 +259,25 @@
         /// <returns>TeamViewModel mapped from the retrieved team.</returns>
         public async Task<TeamViewModel> GetByIdAsync(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentException("The ID cannot be null or empty.");
+
             Guid validId = ConvertAndTestIdToGuid(id);
+
             TeamViewModel? model = await teamRepository.GetAllAttached()
                                     .To<TeamViewModel>()
                                     .FirstOrDefaultAsync(t => t.Id == validId);
+
+            if (model == null)
+                throw new ArgumentException("Team not found.");
 
             model.EmployeesInTeam = await GetAllEmployeeTeamMаppings().Include(x => x.Employee).Where(x => x.TeamId == model.Id).ToListAsync();
             model.JobsDoneByTeam = await GetAllJobDoneTeamMappings().Include(x => x.JobDone).Where(x => x.TeamId == model.Id).ToListAsync();
             model.BuildingWithTeam = await GetAllBuildingTeamMappings().Include(x => x.Building).Where(x => x.TeamId == model.Id).ToListAsync();
 
-            return model ?? throw new ArgumentException("Missing entity.");
+            return model;
         }
+
 
         /// <summary>
         /// Performs a soft delete of a team, marking it as deleted without removing it from the database.
@@ -299,17 +287,19 @@
         /// <returns>Boolean indicating success or failure.</returns>
         public async Task<bool> SoftDeleteAsync(string id)
         {
+            Guid validId = ConvertAndTestIdToGuid(id);
+
             try
             {
-                Guid validId = ConvertAndTestIdToGuid(id);
                 bool isDeleted = await teamRepository.SoftDeleteAsync(validId);
                 return isDeleted;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new InvalidOperationException($"Error occurred while soft deleting team with id {validId}.", ex);
             }
         }
+
 
         /// <summary>
         /// Checks if a team with the specified ID exists in the repository.
@@ -321,10 +311,13 @@
         /// </returns>
         public async Task<bool> Any(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("The ID cannot be empty.");
+
             var team = await teamRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (team == null) return false;
-            return true;
+            return team != null;
         }
+
 
         /// <summary>
         /// Converts a string ID to a GUID and verifies its validity.
