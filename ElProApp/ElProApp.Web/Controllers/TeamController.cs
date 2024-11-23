@@ -2,16 +2,21 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
-
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Web.Models.Team;
 
+    /// <summary>
+    /// Controller for managing team entries and operations.
+    /// </summary>
     [Authorize]
     public class TeamController(ITeamService _teamService) : Controller
     {
         private readonly ITeamService teamService = _teamService;
-        
 
+        /// <summary>
+        /// Displays a list of all teams.
+        /// </summary>
+        /// <returns>A view with the list of all teams.</returns>
         [HttpGet]
         public async Task<IActionResult> All()
         {
@@ -19,6 +24,11 @@
             return View(teams);
         }
 
+        /// <summary>
+        /// Displays the details of a team by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the team.</param>
+        /// <returns>A view with the details of the specified team.</returns>
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
@@ -38,19 +48,30 @@
             }
         }
 
+        /// <summary>
+        /// Displays the form for adding a new team.
+        /// Accessible only by administrators.
+        /// </summary>
+        /// <returns>A view for adding a new team.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Add()
         {
-         
-           var model = await teamService.AddAsync();
-
+            var model = await teamService.AddAsync();
             return View(model);
         }
 
+        /// <summary>
+        /// Processes the request to add a new team.
+        /// Accessible only by administrators.
+        /// </summary>
+        /// <param name="model">The team model containing the new team details.</param>
+        /// <returns>Redirects to the team details view or stays on the page if there's an error.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Add(TeamInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);            
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
@@ -65,6 +86,11 @@
             }
         }
 
+        /// <summary>
+        /// Displays the form for editing an existing team.
+        /// </summary>
+        /// <param name="id">The ID of the team to edit.</param>
+        /// <returns>A view for editing the team details.</returns>
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -84,6 +110,11 @@
             }
         }
 
+        /// <summary>
+        /// Processes the request to update the team details.
+        /// </summary>
+        /// <param name="model">The model with updated team data.</param>
+        /// <returns>Redirects to the team list or stays on the page if there's an error.</returns>
         [HttpPost]
         public async Task<IActionResult> Edit(TeamEditInputModel model)
         {
@@ -102,8 +133,15 @@
             return RedirectToAction(nameof(All));
         }
 
+        /// <summary>
+        /// Processes the request to soft delete a team.
+        /// Accessible only by administrators.
+        /// </summary>
+        /// <param name="id">The ID of the team to delete.</param>
+        /// <returns>Redirects to the team list or shows an error message.</returns>
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> SoftDelete(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
