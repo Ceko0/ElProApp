@@ -24,8 +24,6 @@
             return View(teams);
         }
 
-        /// <summary>
-        /// Displays the details of a team by its ID.
         /// </summary>
         /// <param name="id">The ID of the team.</param>
         /// <returns>A view with the details of the specified team.</returns>
