@@ -1,14 +1,13 @@
 ﻿namespace ElProApp.Data.Models
 {
     using System;
-    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
 
     using static Common.EntityValidationConstants.Team;
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
-    using Mappings;
+
 
     /// <summary>
     /// Represents a team within the system, including its unique identifier, name, 
