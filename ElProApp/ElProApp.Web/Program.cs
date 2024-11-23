@@ -10,6 +10,7 @@
     using ElProApp.Data.Models;
     using ElProApp.Web.Infrastructure.Extensions;
     using ElProApp.Services.Data;
+    using static ElProApp.Web.Infrastructure.Extensions.ApplicationBuilderExtensions;
 
     public class Program
     {
@@ -23,13 +24,9 @@
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
             // Configure default identity settings
-            builder.Services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ElProAppDbContext>()
-                .AddDefaultTokenProviders();
-
-            // Configure identity options such as password requirements and lockout settings
-            builder.Services.Configure<IdentityOptions>(options =>
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
+                // Настройка на опциите за Identity
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -43,7 +40,10 @@
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedAccount = false;
-            });
+            })
+                .AddEntityFrameworkStores<ElProAppDbContext>()
+                .AddDefaultTokenProviders();
+
 
             // Register repositories and services
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
@@ -78,10 +78,15 @@
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.SeedAdmin("admin@abv.bg", "admin", "admin@");
+
             // Map controller routes and Razor Pages
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+            app.MapControllerRoute(
+                name: "Areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
             // Optional: Show developer exception page in development
