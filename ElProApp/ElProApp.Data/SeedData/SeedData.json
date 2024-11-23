@@ -34,8 +34,8 @@
       "Id": "b3219f94-7541-4f5c-8238-35fdc97e9b43",
       "FirstName": "John",
       "LastName": "Doe",
-      "Wages": 3000.50,
-      "MoneyToTake": 500.00,
+      "Wages": 300.50,
+      "MoneyToTake": 50.00,
       "IsDeleted": false,
       "UserId": "3f11c6e3-ec7b-4c56-b2f4-ecf77c3d4b88" // Примерен GUID за идентификация
     },
@@ -43,8 +43,8 @@
       "Id": "c53db596-5871-4048-9b39-72a7dcd8143c",
       "FirstName": "Jane",
       "LastName": "Smith",
-      "Wages": 3200.75,
-      "MoneyToTake": 750.00,
+      "Wages": 200.75,
+      "MoneyToTake": 70.00,
       "IsDeleted": false,
       "UserId": "cc8c5c1f-b0c9-4e3f-8eb3-e70c5e74d63b" // Примерен GUID за идентификация
     }
@@ -67,12 +67,12 @@
     {
       "Id": "9f57e3a4-102a-4d3d-b19b-7e4f6e8a2b4c",
       "Name": "Electrical Installation",
-      "Price": 150.00
+      "Price": 15.00
     },
     {
       "Id": "fa6cd2c1-0f5e-4e4f-a3be-0a3df39b2e76",
       "Name": "Plumbing Repair",
-      "Price": 85.50
+      "Price": 8.55
     }
   ],
   "JobDones": [

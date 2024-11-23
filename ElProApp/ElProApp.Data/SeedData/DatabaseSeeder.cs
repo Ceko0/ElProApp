@@ -19,7 +19,7 @@
 
         private void SeedInitialData()
         {
-            var jsonData = File.ReadAllText("D:..\\ElProApp.Data\\SeedData\\SeedData.json");
+            var jsonData = File.ReadAllText($@"..\ElProApp.Data\SeedData\SeedData.json");
             var initialData = JsonConvert.DeserializeObject<InitialData>(jsonData);
 
             foreach (var team in initialData.Teams)
@@ -93,7 +93,7 @@
 
         private void SeedMappingData()
         {
-            var jsonData = File.ReadAllText("D:\\ProgramsScool\\ElProApp\\ElProApp\\ElProApp.Data\\SeedData\\MappingSeedData.json");
+            var jsonData = File.ReadAllText($@"..\ElProApp.Data\SeedData\SeedData.json");
             var mappingData = JsonConvert.DeserializeObject<MappingData>(jsonData);
 
             foreach (var mapping in mappingData.Mappings)
