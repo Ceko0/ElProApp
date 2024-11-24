@@ -113,7 +113,7 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Edit">Редактиране </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li>                        
                         </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -132,11 +132,12 @@
                 Админ панел
             </button>
             <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
-                <li><a class="dropdown-item" href="@Url.Action("All", "Employee")">Служители</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("All", "Job")">Работи</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("All", "JobDone")">Свършена работа</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("All", "Building")">Сгради</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("All", "Team")">Екипи</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("AllEmployees", "Admin",new { area = "Admin" })">Служители</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("AllJobs", "Admin",new { area = "Admin" })">Работи</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("AllJobDones", "Admin",new { area = "Admin" })">Свършена работа</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("AllBuildings", "Admin",new { area = "Admin" })">Сгради</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("AllTeams", "Admin",new { area = "Admin" })">Екипи</a></li>
+                <li><a class="dropdown-item" href="@Url.Action("UpdateUserRoles", "Admin",new { area = "Admin" })">Длъжност</a></li>
             </ul>
         </div>
 

@@ -1,14 +1,21 @@
-﻿@using ElProApp.Web.Models
-@model ErrorViewModel
+﻿@{
+    ViewData["Title"] = "500 - Вътрешна грешка в сървъра";    
+}
 
-<div class="error-container">
-    <h1>500 Грешна заявка</h1>
-    <p>@Model.ErrorMessage</p>
-
-    @if (Model.ShowRequestId)
-    {
-        <p>Request ID: @Model.RequestId</p>
-    }
-
-    <a href="@Url.Action("Index", "Home")">Към начална страница</a>
-</div>
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>500 - Вътрешна грешка в сървъра</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <h1 class="display-1 text-danger">500</h1>
+        <h2>Вътрешна грешка в сървъра</h2>
+        <p class="lead">Извиняваме се, но нещо се обърка. Опитайте отново по-късно.</p>
+        <a href="/" class="btn btn-primary">Обратно към началната страница</a>
+    </div>
+</body>
+</html>

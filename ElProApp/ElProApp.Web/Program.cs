@@ -87,8 +87,7 @@
                 app.UseHsts(); // Enable HTTP Strict Transport Security
             }
 
-            app.UseExceptionHandler("/Home/Error");  // Catch general exceptions
-            app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
 
             // Enable HTTPS redirection and static file serving
             app.UseHttpsRedirection();
@@ -105,11 +104,17 @@
 
             // Map controller routes and Razor Pages
             app.MapControllerRoute(
+               name: "Areas",
+               pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "Error",
+                pattern: "{controller=Home}/{action=Index}/{statusCode?}");
+
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            app.MapControllerRoute(
-                name: "Areas",
-                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+           
             app.MapRazorPages();
 
             // Optional: Show developer exception page in development
