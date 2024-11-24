@@ -59,5 +59,12 @@
         [Required]
         [Comment("Foreign key for the team responsible for completing the job.")]
         public Guid TeamId { get; set; }
+
+        /// <summary>
+        /// Indicates if the jobdone is active (false) or soft deleted (true).
+        /// <para>This property helps in managing logical deletion without removing records from the database.</para>
+        /// </summary>
+        [Comment("Indicates if the jobdone is active or soft deleted.")]
+        public bool IsDeleted { get; set; }
     }
 }

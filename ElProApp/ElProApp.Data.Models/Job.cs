@@ -37,7 +37,12 @@
         [RegularExpression(@"^\d{1,4}(\.\d{1,2})?$", ErrorMessage = ErrorMassagePrice)]
         [Comment("The price of the job with up to 6 digits before the decimal point and up to 2 digits after.")]
         public decimal Price { get; set; }
-
+        /// <summary>
+        /// Indicates if the job is active (false) or soft deleted (true).
+        /// <para>This property helps in managing logical deletion without removing records from the database.</para>
+        /// </summary>
+        [Comment("Indicates if the job is active or soft deleted.")]
+        public bool IsDeleted { get; set; }
         /// <summary>
         /// Collection representing the many-to-many relationship between jobs and teams that have completed the job.
         /// </summary>
