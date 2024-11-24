@@ -18,16 +18,19 @@
     using ElProApp.Web.Models.Employee;
     using ElProApp.Web.Models.JobDone;
     using ElProApp.Web.Models.Team;
+    using Microsoft.AspNetCore.Identity;
 
 
     public class TeamService(IRepository<Team, Guid> _teamRepository
         , IHttpContextAccessor _httpContextAccessor
-        , IServiceProvider _serviceProvider)
+        , IServiceProvider _serviceProvider
+        , UserManager<IdentityUser> _userManager)
         : ITeamService
     {
         private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
         private readonly IRepository<Team, Guid> teamRepository = _teamRepository;
         private readonly IServiceProvider serviceProvider = _serviceProvider;
+        private readonly UserManager<IdentityUser> userManager = _userManager;
 
         /// <summary>
         /// Creates a new TeamInputModel with a list of available buildings, employees, and jobs.
@@ -37,11 +40,11 @@
         {
             var model = new TeamInputModel()
             {
-                BuildingWithTeam = await GetAllBuildings().To<BuildingViewModel>().ToListAsync(),
+                BuildingWithTeam = await GetAllBuildings().Where(x => !x.IsDeleted).To<BuildingViewModel>().ToListAsync(),
 
-                AvailableEmployees = await GetAllEmployees().To<EmployeeViewModel>().ToListAsync(),
+                AvailableEmployees = await GetAllEmployees().Where(x => !x.IsDeleted).To<EmployeeViewModel>().ToListAsync(),
 
-                JobsDoneByTeam = await GetAllJobDones().To<JobDoneViewModel>().ToListAsync()
+                JobsDoneByTeam = await GetAllJobDones().Where(x => !x.IsDeleted).To<JobDoneViewModel>().ToListAsync()
             };
 
             return model;
@@ -68,14 +71,14 @@
 
             if (model.SelectedBuildingId != Guid.Empty)
             {
-                var building = await GetAllBuildings().To<BuildingViewModel>().FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
+                var building = await GetAllBuildings().Where(x => !x.IsDeleted).To<BuildingViewModel>().FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
                     ?? throw new InvalidOperationException("The selected building does not exist.");
                 await buildingTeamMappingService.AddAsync(building.Id, team.Id);
             }
 
             var userId = ConvertAndTestIdToGuid(GetUserId());
 
-            var employeeEntity = await GetAllEmployees().FirstOrDefaultAsync(x => x.Id == userId);
+            var employeeEntity = await GetAllEmployees().Where(x => !x.IsDeleted).FirstOrDefaultAsync(x => x.Id == userId);
             if (employeeEntity != null)
             {
                 await employeeTeamMappingService.AddAsync(employeeEntity.Id, team.Id);
@@ -106,14 +109,18 @@
 
             Guid validId = ConvertAndTestIdToGuid(id);
             Team entity = await teamRepository.GetByIdAsync(validId);
-            if (entity.IsDeleted) throw new InvalidOperationException("Team is deleted.");
-
+            if (entity == null || entity.IsDeleted)
+                throw new InvalidOperationException("Team is deleted or not found.");
+           
             var userId = ConvertAndTestIdToGuid(GetUserId());
             var employeeTeamMapping = await employeeTeamMappingService.GetAllAttached()
                 .Where(x => x.TeamId == entity.Id && x.EmployeeId == userId)
-                .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
-            if (employeeTeamMapping == null) throw new AccessViolationException("User does not have permission to edit this team.");
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (!roles.Contains("Admin") && employeeTeamMapping == null) throw new AccessViolationException("User does not have permission to edit this team.");
 
             var model = new TeamEditInputModel
             {
@@ -147,9 +154,9 @@
         /// <returns>Boolean indicating success or failure.</returns>
         public async Task<bool> EditByModelAsync(TeamEditInputModel model)
         {
-            model.BuildingWithTeam = await GetAllBuildings().To<BuildingViewModel>().ToListAsync();
-            model.JobsDoneByTeam = await GetAllJobDones().To<JobDoneViewModel>().ToListAsync();
-            model.EmployeesInTeam = await GetAllEmployees().To<EmployeeViewModel>().ToListAsync();
+            model.BuildingWithTeam = await GetAllBuildings().Where(x => !x.IsDeleted).To<BuildingViewModel>().ToListAsync();
+            model.JobsDoneByTeam = await GetAllJobDones().Where(x => !x.IsDeleted).To<JobDoneViewModel>().ToListAsync();
+            model.EmployeesInTeam = await GetAllEmployees().Where(x => !x.IsDeleted).To<EmployeeViewModel>().ToListAsync();
 
             var existingBuildingMappings = await GetAllBuildingTeamMappings().Where(x => x.TeamId == model.Id).ToListAsync();
             var existingEmployeeMappings = await GetAllEmployeeTeamMаppings().Where(x => x.TeamId == model.Id).ToListAsync();
@@ -228,10 +235,11 @@
         {
             var model = await teamRepository
                 .GetAllAttached()
+                .Where(x => !x.IsDeleted)
                 .To<TeamViewModel>()
                 .ToListAsync();
 
-            foreach(var viewmodel in model)
+            foreach (var viewmodel in model)
             {
                 viewmodel.EmployeesInTeam = await GetAllEmployeeTeamMаppings().Include(x => x.Employee).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
                 viewmodel.JobsDoneByTeam = await GetAllJobDoneTeamMappings().Include(x => x.JobDone).Where(x => x.TeamId == viewmodel.Id).ToListAsync();
@@ -249,7 +257,8 @@
         /// </returns>
         public IQueryable<Team> GetAllAttached()
             => teamRepository
-            .GetAllAttached();
+            .GetAllAttached()
+            .Where(x => !x.IsDeleted);
 
         /// <summary>
         /// Retrieves a specific team by its ID.
@@ -265,8 +274,9 @@
             Guid validId = ConvertAndTestIdToGuid(id);
 
             TeamViewModel? model = await teamRepository.GetAllAttached()
-                                    .To<TeamViewModel>()
-                                    .FirstOrDefaultAsync(t => t.Id == validId);
+                .Where(x => !x.IsDeleted)
+                .To<TeamViewModel>()
+                .FirstOrDefaultAsync(t => t.Id == validId);
 
             if (model == null)
                 throw new ArgumentException("Team not found.");
@@ -315,6 +325,8 @@
                 throw new ArgumentException("The ID cannot be empty.");
 
             var team = await teamRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (team == null || team.IsDeleted)
+                throw new InvalidOperationException("Team is deleted or not found.");
             return team != null;
         }
 
@@ -348,7 +360,7 @@
         private IQueryable<Building> GetAllBuildings()
         {
             var service = serviceProvider.GetRequiredService<IBuildingService>();
-            var model = service.GetAllAttached();
+            var model = service.GetAllAttached().Where(x => !x.IsDeleted);
             return model;
         }
 
@@ -358,7 +370,7 @@
         private IQueryable<Employee> GetAllEmployees()
         {
             var service = serviceProvider.GetRequiredService<IEmployeeService>();
-            var model = service.GetAllAttached();
+            var model = service.GetAllAttached().Where(x => !x.IsDeleted);
             return model;
         }
 
@@ -368,7 +380,7 @@
         private IQueryable<JobDone> GetAllJobDones()
         {
             var service = serviceProvider.GetRequiredService<IJobDoneService>();
-            var model = service.GetAllAttached();
+            var model = service.GetAllAttached().Where(x => !x.IsDeleted);
             return model;
         }
 
@@ -378,7 +390,7 @@
         private IQueryable<Job> GetAllJobs()
         {
             var service = serviceProvider.GetRequiredService<IJobService>();
-            var model = service.GetAllAttached();
+            var model = service.GetAllAttached().Where(x => !x.IsDeleted);
             return model;
         }
 

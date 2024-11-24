@@ -24,7 +24,7 @@
         private readonly IRepository<Employee, Guid> employeeRepository = _employeeRepository;
         private readonly UserManager<IdentityUser> userManager = _userManager;
         private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
-        private readonly IServiceProvider serviceProvider = _serviceProvider;        
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         /// <summary>
         /// Adds a new employee based on the provided model.
@@ -44,7 +44,7 @@
             employee.UserId = userId;
 
             await employeeRepository.AddAsync(employee);
-            await employeeRepository.SaveAsync();  // Ensure the changes are saved to the database.
+            await employeeRepository.SaveAsync();
 
             return employee.Id.ToString();
         }
@@ -60,7 +60,7 @@
 
             Guid validId = ConvertAndTestIdToGuid(id);
             var entity = await employeeRepository.GetByIdAsync(validId);
-            if (entity == null) throw new ArgumentException("Employee not found.");
+            if (entity == null || entity.IsDeleted) throw new ArgumentException("Employee is deleted or not found.");
 
             entity.User = await GetUserAsync(entity.UserId);
 
@@ -105,15 +105,16 @@
 
             try
             {
-                var entity = await employeeRepository.GetByIdAsync(model.Id) ?? throw new ArgumentException("Entity not found.");
+                var entity = await employeeRepository.GetByIdAsync(model.Id);
+                if (entity == null || entity.IsDeleted) throw new InvalidOperationException("Employee is deleted or not found.");
+
                 AutoMapperConfig.MapperInstance.Map(model, entity);
 
                 await employeeRepository.SaveAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log the exception (optional)
                 return false;
             }
         }
@@ -146,9 +147,9 @@
         public IQueryable<Employee> GetAllAttached()
         {
             return employeeRepository
-                   .GetAllAttached()  
-                   .Include(e => e.User)                
-                   .Where(e => !e.IsDeleted); 
+                   .GetAllAttached()
+                   .Include(e => e.User)
+                   .Where(e => !e.IsDeleted);
         }
 
         /// <summary>
@@ -168,7 +169,6 @@
             }
             catch (Exception)
             {
-                // Log the exception (optional)
                 return false;
             }
         }
@@ -193,7 +193,7 @@
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Invalid user ID.");
 
-            var entity = employeeRepository.GetAllAttached().Where(x => x.UserId == id).FirstOrDefault();
+            var entity = employeeRepository.GetAllAttached().Where(x => x.UserId == id && !x.IsDeleted).FirstOrDefault();
             if (entity == null) throw new InvalidOperationException("Employee not found for the specified user.");
 
             return entity;
@@ -215,12 +215,12 @@
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Wages = 0,  // Assuming default wage is 0 for admin employees.
+                Wages = 10,  
                 UserId = identityUserId
             };
 
             await employeeRepository.AddAsync(employee);
-            await employeeRepository.SaveAsync();  // Ensure the changes are saved to the database.
+            await employeeRepository.SaveAsync();  
 
             return employee.Id.ToString();
         }

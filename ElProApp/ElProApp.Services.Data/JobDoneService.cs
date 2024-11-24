@@ -28,8 +28,8 @@
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
             var model = new JobDoneInputModel();
-            model.teams = await TeamService.GetAllAttached().ToListAsync();
-            model.jobs = await jobService.GetAllAttached().ToListAsync();
+            model.teams = await TeamService.GetAllAttached().Where( x=> !x.IsDeleted).ToListAsync();
+            model.jobs = await jobService.GetAllAttached().Where(x => !x.IsDeleted).ToListAsync();
             return model;
         }
 
@@ -43,12 +43,12 @@
             var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
-            var currentJob = await jobService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.JobId);
+            var currentJob = await jobService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.JobId && !x.IsDeleted);
             if (currentJob == null)
                 throw new InvalidOperationException("Job not found.");
 
             var teamService = serviceProvider.GetRequiredService<ITeamService>();
-            var team = await teamService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.TeamId);
+            var team = await teamService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.TeamId && !x.IsDeleted);
             if (team == null)
                 throw new InvalidOperationException("Team not found.");
 
@@ -70,7 +70,8 @@
         {
             Guid validId = ConvertAndTestIdToGuid(id);
             var entity = await jobDoneRepository.GetByIdAsync(validId);
-
+            if (entity == null || entity.IsDeleted)
+                throw new InvalidOperationException("Jobdone is deleted or not found.");
             return AutoMapperConfig.MapperInstance.Map<JobDoneEditInputModel>(entity);
         }
 
@@ -84,8 +85,8 @@
             try
             {
                 var entity = await jobDoneRepository.GetByIdAsync(model.Id);
-                if (entity == null)
-                    throw new InvalidOperationException("JobDone record not found.");
+                if (entity == null || entity.IsDeleted)
+                    throw new InvalidOperationException("Jobdone is deleted or not found.");
 
                 AutoMapperConfig.MapperInstance.Map(model, entity);
 
@@ -105,11 +106,12 @@
         public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
         {
             var model = await jobDoneRepository.GetAllAttached()
+                .Where( x=> !x.IsDeleted)
                 .To<JobDoneViewModel>()
                 .ToListAsync();
 
-            var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-            var allTeamMappings = await jobDoneTeamMapping
+            var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+            var allTeamMappings = await jobDoneTeamMappingService
                 .GetAllAttached()
                 .Include(x => x.Team)
                 .Where(x => model.Select(m => m.Id).Contains(x.JobDoneId))
@@ -130,7 +132,7 @@
         /// </summary>
         /// <returns>An <see cref="IQueryable"/> collection of <see cref="JobDone"/> records with attached data.</returns>
         public IQueryable<JobDone> GetAllAttached()
-            => jobDoneRepository.GetAllAttached();
+            => jobDoneRepository.GetAllAttached().Where(x => !x.IsDeleted);
 
         /// <summary>
         /// Retrieves a specific job done record by its ID.
@@ -143,13 +145,14 @@
             var entity = await jobDoneRepository
                 .GetAllAttached()
                 .Include(x => x.Job)
+                .Where(x => !x.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == validId);
 
             if (entity != null)
             {
                 JobDoneViewModel? model = AutoMapperConfig.MapperInstance.Map<JobDoneViewModel>(entity);
-                var jobDoneTeamMapping = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-                model.TeamsDoTheJob = await jobDoneTeamMapping
+                var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+                model.TeamsDoTheJob = await jobDoneTeamMappingService
                     .GetAllAttached()
                     .Include(x => x.Team)
                     .Where(x => x.JobDoneId == entity.Id)

@@ -39,13 +39,13 @@
 
             var entity = await jobRepository.GetByIdAsync(validId);
 
-            if (entity != null)
+            if (entity != null && !entity.IsDeleted)
             {
                 var model = AutoMapperConfig.MapperInstance.Map<JobViewModel>(entity);
                 return model;
             }
 
-            throw new ArgumentException("Missing entity.");
+            throw new ArgumentException("Missing or deleted entity.");
         }
 
         /// <summary>
@@ -57,6 +57,9 @@
         {
             Guid validId = ConvertAndTestIdToGuid(id);
             var entity = await jobRepository.GetByIdAsync(validId);
+
+            if (entity == null || entity.IsDeleted)
+                throw new InvalidOperationException("Job is deleted or not found.");
 
             return AutoMapperConfig.MapperInstance.Map<JobEditInputModel>(entity);
         }
@@ -71,6 +74,8 @@
             try
             {
                 var entity = await jobRepository.GetByIdAsync(model.Id);
+                if (entity == null || entity.IsDeleted)
+                    throw new InvalidOperationException("Job is deleted or not found.");
                 AutoMapperConfig.MapperInstance.Map(model, entity);
 
                 await jobRepository.SaveAsync();
@@ -89,6 +94,7 @@
         public async Task<ICollection<JobViewModel>> GetAllAsync()
         {
             return await jobRepository.GetAllAttached()
+                .Where(x => !x.IsDeleted)
                 .To<JobViewModel>()
                 .ToListAsync();
         }
@@ -98,7 +104,9 @@
         /// </summary>
         /// <returns>An <see cref="IQueryable{Job}"/> representing all jobs.</returns>
         public IQueryable<Job> GetAllAttached()
-            => jobRepository.GetAllAttached();
+            => jobRepository
+            .GetAllAttached()
+            .Where(x => !x.IsDeleted);
 
         /// <summary>
         /// Soft deletes a job by its ID.

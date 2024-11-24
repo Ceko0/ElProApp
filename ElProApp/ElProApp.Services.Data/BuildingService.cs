@@ -150,7 +150,7 @@
         /// </summary>
         /// <returns>An <see cref="IQueryable{Building}"/> collection of all attached buildings.</returns>
         public IQueryable<Building> GetAllAttached()
-            => buildingRepository.GetAllAttached();
+            => buildingRepository.GetAllAttached().Where(x => !x.IsDeleted);
 
         /// <summary>
         /// Retrieves a building by its ID.
@@ -162,6 +162,7 @@
             Guid validId = ConvertAndTestIdToGuid(id);
             var model = buildingRepository
                 .GetAllAttached()
+                .Where(x => !x.IsDeleted)
                 .To<BuildingViewModel>()
                 .FirstOrDefault(x => x.Id == validId);
 
@@ -189,7 +190,7 @@
                 return isDeleted;
             }
             catch (Exception)
-            {                
+            {
                 return false;
             }
         }

@@ -1,4 +1,4 @@
-﻿namespace ElProApp.Services.Data
+﻿ namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
     using ElProApp.Data.Models.Mappings;
@@ -64,13 +64,13 @@
             if (employeeId == Guid.Empty) throw new ArgumentNullException("Invalid employeeId");
             if (teamId == Guid.Empty) throw new ArgumentNullException("Invalid teamId");
 
-            var employeeService = serviceProvider.GetService<BuildingService>()!;
-            var teamService = serviceProvider.GetService<TeamService>()!;
+            var employeeService = serviceProvider.GetService<IEmployeeService>()!;
+            var teamService = serviceProvider.GetService<ITeamService>()!;
 
-            var buildingExists = await employeeService.GetAllAttached().FirstOrDefaultAsync(b => b.Id == employeeId);
-            if (buildingExists == null) throw new InvalidOperationException("Employee not found");
+            var employeeExists = await employeeService.GetAllAttached().FirstOrDefaultAsync(b => b.Id == employeeId && !b.IsDeleted);
+            if (employeeExists == null) throw new InvalidOperationException("Employee not found");
 
-            var teamExists = await teamService.GetAllAttached().FirstOrDefaultAsync(t => t.Id == teamId);
+            var teamExists = await teamService.GetAllAttached().FirstOrDefaultAsync(t => t.Id == teamId && !t.IsDeleted);
             if (teamExists == null) throw new InvalidOperationException("Team not found");            
 
             var employeeTeamMappingEntity = new EmployeeTeamMapping()
