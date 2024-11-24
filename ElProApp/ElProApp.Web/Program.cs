@@ -11,6 +11,7 @@
     using ElProApp.Web.Infrastructure.Extensions;
     using ElProApp.Services.Data;
     using static ElProApp.Web.Infrastructure.Extensions.ApplicationBuilderExtensions;
+    using static ElProApp.Common.ApplicationConstants;
 
     public class Program
     {
@@ -61,7 +62,22 @@
 
             // Build the application
             var app = builder.Build();
+            app.Use(async (context, next) =>
+            {
+                using var scope = app.Services.CreateScope();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
+                string[] roleNames = { AdminRoleName, OfficeManagerRoleName, TechnicianRoleName,WorkerRoleName, UserRoleName };
+                foreach (var roleName in roleNames)
+                {
+                    if (!await roleManager.RoleExistsAsync(roleName))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(roleName));
+                    }
+                }
+
+                await next.Invoke();
+            });
             // Configure AutoMapper mappings
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 

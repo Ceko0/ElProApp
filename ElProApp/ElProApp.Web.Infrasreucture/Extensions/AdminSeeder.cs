@@ -29,7 +29,7 @@
 
             var employeeService = serviceProvider.GetService<IEmployeeService>();
 
-            Task.Run(async() =>
+            Task.Run(async () =>
             {
                 bool roleExist = await roleManager.RoleExistsAsync(AdminRoleName);
                 if (roleExist)
@@ -37,39 +37,34 @@
                     return app;
                 }
 
-                IdentityRole adminRole = new IdentityRole(AdminRoleName);
-
-                var result = await roleManager.CreateAsync(adminRole);
-                if (!result.Succeeded) throw new InvalidOperationException($"Failed to create the {AdminRoleName} role");
-
                 var adminUser = await userStore.FindByNameAsync(UserName, CancellationToken.None);
-                if (adminUser == null) adminUser = await CreateAdminUserAsync(Email, UserName, Password, userStore, userManager,employeeService);
+                if (adminUser == null) adminUser = await CreateAdminUserAsync(Email, UserName, Password, userStore, userManager, employeeService);
 
-                result = await userManager.AddToRoleAsync(adminUser, AdminRoleName);
+                var result = await userManager.AddToRoleAsync(adminUser, AdminRoleName);
                 if (!result.Succeeded) throw new InvalidOperationException($"Failed to adding {UserName} to the {AdminRoleName} role");
                 return app;
             })
                 .GetAwaiter()
                 .GetResult();
-           
+
             return app;
         }
 
-        private static async Task<IdentityUser> CreateAdminUserAsync(string Email, string UserName , string Password ,IUserStore<IdentityUser> userStore,UserManager<IdentityUser> userManager,IEmployeeService employeeService)
+        private static async Task<IdentityUser> CreateAdminUserAsync(string Email, string UserName, string Password, IUserStore<IdentityUser> userStore, UserManager<IdentityUser> userManager, IEmployeeService employeeService)
         {
-            IdentityUser AdminUser= new IdentityUser
+            IdentityUser AdminUser = new IdentityUser
             {
                 Email = Email
             };
-            
-            await userStore.SetUserNameAsync(AdminUser , UserName ,CancellationToken.None);
-            var result = await userManager.CreateAsync(AdminUser,Password);
+
+            await userStore.SetUserNameAsync(AdminUser, UserName, CancellationToken.None);
+            var result = await userManager.CreateAsync(AdminUser, Password);
             if (!result.Succeeded) throw new InvalidOperationException($"Failed to create {nameof(IdentityUser)}");
 
             var identityUserId = await userManager.GetUserIdAsync(AdminUser);
 
             var employeeId = await employeeService.AddAdminEmployeeAsync(UserName, UserName, identityUserId.ToString());
-            if(employeeId == null) throw new InvalidOperationException($"Failed to create {nameof(Employee)}");
+            if (employeeId == null) throw new InvalidOperationException($"Failed to create {nameof(Employee)}");
             return AdminUser;
         }
     }
