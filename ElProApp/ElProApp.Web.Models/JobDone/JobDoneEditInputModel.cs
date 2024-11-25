@@ -1,14 +1,14 @@
 ﻿namespace ElProApp.Web.Models.JobDone
 { 
     using System.ComponentModel.DataAnnotations;
-
+    using AutoMapper;
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using Services.Mapping;
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
 
-    public class JobDoneEditInputModel : IMapTo<JobDone> , IMapFrom<JobDone>
+    public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone>
     {
 
         public Guid Id { get; set; }
@@ -22,7 +22,6 @@
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
         public int DaysForJob { get; set; }
 
-        //[Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         public Guid JobId { get; set; }
 
         public Job Job { get; set; } = new();

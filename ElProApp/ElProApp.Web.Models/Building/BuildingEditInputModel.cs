@@ -2,7 +2,7 @@
 namespace ElProApp.Web.Models.Building
 {
     using System.ComponentModel.DataAnnotations;
-    using AutoMapper;
+   
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
