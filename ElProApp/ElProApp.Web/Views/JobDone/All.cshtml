@@ -1,5 +1,5 @@
 ﻿@using ElProApp.Web.Models.JobDone
-@model IEnumerable<JobDoneViewModel>
+@model ICollection<JobDoneViewModel>
 @{
     ViewData["Title"] = "Всички изпълнени задачи";
 }
@@ -9,36 +9,28 @@
 
     <table class="table table-striped mt-4">
         <thead>
-        <tr>
-            <th>Количество</th>
-            <th>Дни за изпълнение</th>
-            <th>Работа</th>
-            <th>Екипи</th>
-            <th>Действия</th>
-        </tr>
+            <tr>
+                <th>Работа</th>
+                <th>Екипи</th>
+                <th>Количество</th>
+                <th>Дни за изпълнение</th>               
+            </tr>
         </thead>
         <tbody>
-        @foreach (var jobDone in Model)
-        {
-            <tr>
-                <td>@jobDone.Job.Name</td>                   
-                <td>
-                    @foreach (var team in jobDone.TeamsDoTheJob)
-                    {
-                        <span class="badge bg-primary">@team.Team.Name</span>
-                    }
-                </td>
-                <td>@jobDone.quantity</td>
-                <td>@jobDone.DaysForJob</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">Детайли</a>
-                    <a asp-action="Edit" asp-route-id="@jobDone.Id" class="btn btn-warning btn-sm">Редактиране</a>
-                    <form asp-action="SoftDelete" asp-route-id="@jobDone.Id" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
-                    </form>
-                </td>
-            </tr>
-        }
+            @foreach (var jobDone in Model)
+            {
+                <tr>
+                    <td>@jobDone.Job.Name</td>
+                    <td>
+                        @foreach (var team in jobDone.TeamsDoTheJob)
+                        {
+                            <span class="badge bg-primary">@team.Team.Name</span>
+                        }
+                    </td>
+                    <td>@jobDone.quantity</td>
+                    <td>@jobDone.DaysForJob</td>                    
+                </tr>
+            }
         </tbody>
     </table>
 </div>

@@ -1,14 +1,13 @@
 ﻿@using ElProApp.Web.Models.Job
-@model IEnumerable<JobViewModel>
+@model ICollection<JobViewModel>
 
-<h1>All Jobs</h1>
+<h1>Списък с работа</h1>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Actions</th>
+            <th>Име</th>
+            <th>Цена за 1 бр / 1 метър</th>           
         </tr>
     </thead>
     <tbody>
@@ -16,17 +15,9 @@
         {
             <tr>
                 <td>@job.Name</td>
-                <td>@job.Price.ToString("F2")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@job.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@job.Id">Edit</a> |
-                    <form asp-action="SoftDelete" asp-route-id="@job.Id" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-link">Delete</button>
-                    </form>
-                </td>
+                <td>@job.Price.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>               
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Add" class="btn btn-primary">Add New Job</a>

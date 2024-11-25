@@ -40,5 +40,8 @@
     <div class="mt-3">
         <a asp-action="Edit" asp-route-id="@Model.Id.ToString()" class="btn btn-warning">Редактирай</a>
         <a asp-action="All" class="btn btn-secondary">Обратно към всички сгради</a>
+        <form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете тази сграда?');">
+            <button type="submit" class="btn btn-danger">Изтриване</button>
+        </form>
     </div>
 </div>
