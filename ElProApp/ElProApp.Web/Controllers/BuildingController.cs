@@ -5,6 +5,7 @@
 
     using ElProApp.Services.Data.Interfaces;
     using Models.Building;
+    using ElProApp.Services.Data;
 
     /// <summary>
     /// Controller for managing building entries and operations.
@@ -125,6 +126,28 @@
             }
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> SoftDelete(string id)
+        {
+            var idCheck = string.IsNullOrWhiteSpace(id);
+            if (idCheck) throw new BadHttpRequestException("Building ID cannot be empty.");
+
+            var employee = await buildingService.GetByIdAsync(id);
+            if (employee == null)
+            {
+                return NotFound("Building not found.");
+            }
+
+            bool isDeleted = await buildingService.SoftDeleteAsync(id);
+            if (isDeleted)
+            {
+                return RedirectToAction(nameof(All));
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
         }
     }
 }
