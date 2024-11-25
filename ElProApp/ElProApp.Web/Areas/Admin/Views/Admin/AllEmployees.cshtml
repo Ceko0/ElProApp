@@ -1,0 +1,61 @@
+﻿@using ElProApp.Web.Models.Employee
+@using System.Security.Claims
+@model ICollection<EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Списък със служители";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък със служители</h1>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Име</th>
+                <th>Фамилия</th>
+                <th>Дневно възнаграждение</th>
+                <th>Заработка</th>
+                <th>Информация за екипи</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
+                    <td>@employee.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
+                    <td>
+                        @if (employee.TeamsEmployeeBelongsTo != null && employee.TeamsEmployeeBelongsTo.Any(te => te != null))
+                        {
+                            <select class="form-select" onchange="location.href=this.value;">
+                                <option selected disabled>Изберете екип за информация</option>
+                                @foreach (var teamMapping in employee.TeamsEmployeeBelongsTo.Where(te => te != null))
+                                {
+                                    <option value="@Url.Action("Details", "Team", new {Area = "", id = teamMapping?.Team.Id })">
+                                        @teamMapping?.Team?.Name
+                                    </option>
+                                }
+                            </select>
+                        }
+                        else
+                        {
+                            <p>Няма екипи за този служител.</p>
+                        }
+                    </td>
+                    <td>
+                        <a asp-area="" asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-info btn-sm">Информация</a>
+                        <a asp-area="" asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                        <form asp-area="" asp-controller="Employee" asp-action="SoftDelete" asp-route-id="@employee.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-area="" asp-controller="Employee" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+</div>

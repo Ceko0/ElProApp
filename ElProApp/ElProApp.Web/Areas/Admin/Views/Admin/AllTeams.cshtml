@@ -1,0 +1,79 @@
+﻿@using ElProApp.Web.Models.Team
+@using System.Security.Claims
+@model ICollection<TeamViewModel>
+
+@{
+    ViewData["Title"] = "Списък с екипи";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък с екипи</h1>
+
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Име на екипа</th>
+                <th>Служители</th>
+                <th>Сгради</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var team in Model)
+                {
+                    <tr>
+                        <td>@team.Name</td>
+
+                        <td>
+                            @if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any())
+                            {
+                                <ul>
+                                    @foreach (var employee in team.EmployeesInTeam)
+                                    {
+                                        <li>@employee.Employee.FirstName @employee.Employee.LastName</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span>Няма налични служители</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (team.BuildingWithTeam != null && team.BuildingWithTeam.Any())
+                            {
+                                <ul>
+                                    @foreach (var building in team.BuildingWithTeam.Where(b => b.Building != null))
+                                    {
+                                        <li>@building.Building.Name</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span>Няма налични сгради</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-area="" asp-controller="Team" asp-action="Details" asp-route-id="@team.Id" class="btn btn-info btn-sm">Информация</a>
+                            <a asp-area="" asp-controller="Team" asp-action="Edit" asp-route-id="@team.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                            <form asp-area="" asp-controller="Team" asp-action="SoftDelete" asp-route-id="@team.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">Няма налични екипи</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-area="" asp-controller="Team" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+</div>

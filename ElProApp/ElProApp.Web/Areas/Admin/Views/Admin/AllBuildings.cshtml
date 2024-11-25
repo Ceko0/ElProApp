@@ -1,0 +1,59 @@
+﻿@using ElProApp.Web.Models.Building
+@model ICollection<BuildingViewModel>
+
+@{
+    ViewData["Title"] = "Всички сгради";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък на всички сгради</h1>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Име на сградата</th>
+                    <th>Локация</th>
+                    <th>Екипи към сградата</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var building in Model)
+                {
+                    <tr>
+                        <td>@building.Name</td>
+                        <td>@building.Location</td>                        
+                        <td>
+                            @if (building.TeamsOnBuilding != null && building.TeamsOnBuilding.Any(te => te != null))
+                            {
+                                <select class="form-select" onchange="location.href=this.value;">
+                                    <option selected disabled>Изберете екип за информация</option>
+                                    @foreach (var teamMapping in building.TeamsOnBuilding.Where(te => te != null))
+                                    {
+                                        <option value="@Url.Action("Details", "Team", new {Area = "", id = teamMapping?.Team.Id })">
+                                            @teamMapping?.Team?.Name
+                                        </option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <p>Няма екипи за този служител.</p>
+                            }
+                        </td>
+                        <td>
+                            <a asp-area="" asp-controller="Building" asp-action="Details" asp-route-id="@building.Id" class="btn btn-info btn-sm">Информация</a>
+                            <a asp-area="" asp-controller="Building" asp-action="Edit" asp-route-id="@building.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                            <form asp-area="" asp-controller="Building" asp-action="SoftDelete" asp-route-id="@building.Id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-area="" asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+    </div>
+</div>

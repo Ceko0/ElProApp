@@ -1,0 +1,32 @@
+﻿@using ElProApp.Web.Models.Job
+@model ICollection<JobViewModel>
+
+<h1>Списък с работа</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Име</th>
+            <th>Цена за 1 бр / 1 метър</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Name</td>
+                <td>@job.Price.ToString("F2")</td>
+                <td>
+                    <a asp-area="" asp-controller="Job" asp-action="Details" asp-route-id="@job.Id" class="btn btn-info btn-sm">Информация</a>
+                    <a asp-area="" asp-controller="Job" asp-action="Edit" asp-route-id="@job.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                    <form asp-area="" asp-controller="Job" asp-action="SoftDelete" asp-route-id="@job.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-area="" asp-controller="Job" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
