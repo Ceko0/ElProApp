@@ -29,6 +29,8 @@
         /// </returns>
         Task<ICollection<JobDoneTeamMapping>> GetByTeamIdAsync(Guid id);
 
+        Task<ICollection<JobDoneTeamMapping>> GetByJobDoneIdAsync(Guid id);
+
         /// <summary>
         /// Adds a new mapping between a "Job Done" entry and a team.
         /// </summary>

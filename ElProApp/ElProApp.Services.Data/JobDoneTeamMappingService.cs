@@ -1,5 +1,6 @@
 ﻿namespace ElProApp.Services.Data
 {
+    using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
@@ -38,10 +39,26 @@
         /// <param name="Id">The ID of the team.</param>
         /// <returns>A collection of <see cref="JobDoneTeamMapping"/> related to the given team ID.</returns>
         public async Task<ICollection<JobDoneTeamMapping>> GetByTeamIdAsync(Guid Id)
-            => await jobDoneTeamMappingRepository
+        {
+            if (Id == Guid.Empty) throw new ArgumentNullException(nameof(Id), "Invalid teamId.");
+
+            var model = await jobDoneTeamMappingRepository
                 .GetAllAttached()
                 .Where(x => x.TeamId == Id)
                 .ToListAsync();
+            return model;
+        }
+
+        public async Task<ICollection<JobDoneTeamMapping>> GetByJobDoneIdAsync(Guid Id)
+         {
+            if (Id == Guid.Empty) throw new ArgumentNullException(nameof(Id), "Invalid jobDoneId.");
+
+            var model = await jobDoneTeamMappingRepository
+            .GetAllAttached()
+            .Where(x => x.JobDoneId == Id)
+            .ToListAsync();
+            return model;
+        }
 
         /// <summary>
         /// Adds a new job done team mapping for the given job done ID and team ID.
@@ -93,6 +110,5 @@
             return await jobDoneTeamMappingRepository
                 .DeleteByCompositeKeyAsync(mapping.JobDoneId, mapping.TeamId);
         }
-
     }
 }
