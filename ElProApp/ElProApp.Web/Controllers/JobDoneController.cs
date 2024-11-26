@@ -9,9 +9,10 @@
     /// Controller for managing completed jobs.
     /// </summary>
     [Authorize]
-    public class JobDoneController(IJobDoneService _jobDoneService) : Controller
+    public class JobDoneController(IJobDoneService _jobDoneService,IServiceProvider _serviceProvider) : Controller
     {
         private readonly IJobDoneService jobDoneService = _jobDoneService;
+        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         /// <summary>
         /// Displays a list of all completed jobs.
@@ -70,9 +71,16 @@
         /// <returns>A view for editing the completed job.</returns>
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult Edit(string id)
-            => View(new JobDoneEditInputModel());
+        public async Task<IActionResult> Edit(string id)
+        {
+            var model = await jobDoneService.EditByIdAsync(id);
 
+            var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+
+            model.TeamsDoTheJob = await jobDoneTeamMappingService.GetByJobDoneIdAsync(model.Id);
+            return View(model);
+        }
+        
         /// <summary>
         /// Processes the request to edit a completed job.
         /// Accessible only by administrators.
@@ -115,6 +123,6 @@
             }
             ModelState.AddModelError("", "Failed to delete the completed job.");
             return RedirectToAction(nameof(Details), new { id });
-        }
+        }    
     }
 }
