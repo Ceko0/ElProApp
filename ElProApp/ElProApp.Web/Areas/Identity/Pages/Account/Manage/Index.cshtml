@@ -24,7 +24,20 @@
         </form>
     </div>
 </div>
-
+<div class="mt-4">
+    <h4>Управление на профила</h4>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a asp-page="/Account/Manage/Email" class="text-decoration-none">Редакция на имейл</a>
+        </li>       
+        <li class="list-group-item">
+            <a asp-page="/Account/Manage/PersonalData" class="text-decoration-none">Лични данни</a>
+        </li>
+        <li class="list-group-item">
+            <a asp-page="/Account/Manage/ChangePassword" class="text-decoration-none">Смяна на парола</a>
+        </li>
+    </ul>
+</div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
