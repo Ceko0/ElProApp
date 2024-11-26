@@ -13,18 +13,28 @@
             <input asp-for="quantity" class="form-control" />
             <span asp-validation-for="quantity" class="text-danger"></span>
         </div>
-
         <div class="form-group">
             <label asp-for="DaysForJob" class="control-label">Дни за изпълнение</label>
             <input asp-for="DaysForJob" class="form-control" />
             <span asp-validation-for="DaysForJob" class="text-danger"></span>
         </div>
-
         <div class="form-group">
             <label class="control-label">Работа</label>
             <p class="form-control-plaintext">@Model.Job.Name</p>
+            <input type="hidden" asp-for="Job.Id" />
+            <input type="hidden" asp-for="Job.Name" />
+            <input type="hidden" asp-for="Job.Price" />
         </div>
+        <div class="form-group">
+            <label class="control-label">Екипи</label>
+            <ul class="list-group">
+                @foreach (var team in Model.TeamsDoTheJob)
+                {
+                    <li class="list-group-item">@team.Team.Name</li>
 
+                }
+            </ul>
+        </div>
         <button type="submit" class="btn btn-primary mt-3">Запази промените</button>
     </form>
 
