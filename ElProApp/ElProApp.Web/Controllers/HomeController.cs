@@ -1,48 +1,37 @@
 namespace ElProApp.Web.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
-    using System.Diagnostics;
-    using ElProApp.Web.Models;
-    using Microsoft.AspNetCore.Http;
-    using AspNetCoreGeneratedDocument;
 
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        /// <summary>
+        /// Displays the home page.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IActionResult"/> that represents the view for the home page.
+        /// </returns>
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        /// <summary>
+        /// Displays an error page based on the provided HTTP status code.
+        /// If no status code is provided, a generic error page is displayed.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code for which to display the error page.</param>
+        /// <returns>An action result that represents the appropriate error page for the given status code.</returns>
         public IActionResult Error(int? statusCode = null)
         {
-            if(!statusCode.HasValue) return View();
+            if (!statusCode.HasValue) return View();
 
-            switch (statusCode)
+            return statusCode switch
             {
-                case 404:
-                    return View("_Error404");
-                case 500:
-                    return View("_Error500");
-                case 403:
-                    return View("_Error403");
-                default:
-                    return View("Error");
-            }
+                404 => View("Error404"),
+                500 => View("Error500"),
+                403 => View("Error403"),
+                _ => View("Error"),
+            };
         }
-
-        
     }
 }
