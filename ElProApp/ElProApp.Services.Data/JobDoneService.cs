@@ -69,10 +69,24 @@
         public async Task<JobDoneEditInputModel> EditByIdAsync(string id)
         {
             Guid validId = ConvertAndTestIdToGuid(id);
-            var entity = await jobDoneRepository.GetByIdAsync(validId);
-            if (entity == null || entity.IsDeleted)
+            var model = await jobDoneRepository
+                .GetAllAttached()
+                .Include(x => x.Job)
+                .Where(x => !x.IsDeleted)
+                .To<JobDoneEditInputModel>()                
+                .FirstOrDefaultAsync(x => x.Id == validId);
+            if (model == null )
                 throw new InvalidOperationException("Jobdone is deleted or not found.");
-            return AutoMapperConfig.MapperInstance.Map<JobDoneEditInputModel>(entity);
+
+            var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+            model.TeamsDoTheJob = await jobDoneTeamMappingService
+                .GetAllAttached()
+                .Include( x=> x.Team)
+                .Include( x=> x.JobDone)
+                .Where(x => x.JobDoneId ==validId)
+                .ToListAsync();
+
+            return model!;
         }
 
         /// <summary>
@@ -132,7 +146,7 @@
         /// </summary>
         /// <returns>An <see cref="IQueryable"/> collection of <see cref="JobDone"/> records with attached data.</returns>
         public IQueryable<JobDone> GetAllAttached()
-            => jobDoneRepository.GetAllAttached().Where(x => !x.IsDeleted);
+            => jobDoneRepository.GetAllAttached().Include(x => x.Job).Where(x => !x.IsDeleted && !x.Job.IsDeleted);
 
         /// <summary>
         /// Retrieves a specific job done record by its ID.

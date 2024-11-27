@@ -102,7 +102,8 @@
             var buildingTeamMappings = await buildingTeamMappingService
                 .GetAllAttached()
                 .Include(x => x.Team)
-                .Where(m => m.BuildingId == model.Id)
+                .Include(x => x.Building)
+                .Where(m => m.BuildingId == model.Id && !m.Team.IsDeleted && !m.Building.IsDeleted)
                 .ToListAsync();
 
             foreach (var buildingTeamMapping in buildingTeamMappings)
@@ -218,6 +219,7 @@
                                 .GetAllAttached()
                                 .Include(x => x.Building)
                                 .Include(x => x.Team)
-                                .Where(x => x.BuildingId == id).ToListAsync();
+                                .Where(x => x.BuildingId == id && !x.Building.IsDeleted && !x.Team.IsDeleted).ToListAsync();
+
     }
 }

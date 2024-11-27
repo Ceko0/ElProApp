@@ -28,7 +28,7 @@
         /// </summary>
         /// <param name="id">The ID used for job-related associations, if any.</param>
         /// <returns>A view for adding a job.</returns>
-        [Authorize(Roles = "Admin")]
+        
         [HttpGet]
         public IActionResult Add(string id)
             => View(new JobInputModel());

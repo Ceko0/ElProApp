@@ -45,8 +45,8 @@
 
             var entity = employeeTeamMappingRepository
                 .GetAllAttached()
-                .Where(x => x.EmployeeId == validId)
                 .Include(x => x.Team)
+                .Where(x => x.EmployeeId == validId && !x.Team.IsDeleted)
                 .ToList();
 
             return entity;
