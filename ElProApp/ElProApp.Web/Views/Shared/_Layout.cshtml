@@ -2,15 +2,15 @@
 <html lang="bg">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>@ViewData["Title"] - ElProApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ElProApp.Web.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">El Pro Web App</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -19,114 +19,39 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Служител
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="All">Списък </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Add">Добавяне </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Details">Детайли </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Edit">Редактиране </a>
-                                </li>
-                            </ul>
+                        <li class="nav-item mx-auto">
+                            <form method="get" asp-area="" asp-controller="Search" asp-action="Search" class="d-flex align-items-center justify-content-center">
+                                <input type="text" name="query" class="form-control form-control-sm me-2" placeholder="Търсене..." />
+                                <select name="searchIn" class="form-control form-control-sm me-2">
+                                    <option value="">Търсене навсякъде</option>
+                                    <option value="Employee">Служители</option>
+                                    <option value="Building">Сгради</option>
+                                    <option value="Team">Екипи</option>
+                                    <option value="JobDone">Свършена работа</option>
+                                    <option value="Job">Работа</option>
+                                </select>
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </form>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Сграда
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="All">Списък </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Add">Добавяне </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Details">Детайли </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Building" asp-action="Edit">Редактиране </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                екип
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="All">Списък </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Add">Добавяне </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Details">Детайли </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="team" asp-action="Edit">Редактиране </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                свършена работа
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="All">Списък </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Add">Добавяне </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Details">Детайли </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="JobDone" asp-action="Edit">Редактиране </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="buildingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                работа
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="buildingDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="All">Списък </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Add">Добавяне </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Details">Детайли </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Job" asp-action="Edit">Редактиране </a>
-                                </li>
-                            </ul>
-                        </li>                        
-                        </ul>
-                    <partial name="_LoginPartial" />
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
+
     @if (User.IsInRole("Admin"))
-    {       
+    {
         <div class="dropdown" style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); background-color: transparent; padding: 20px;">
             <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Админ панел
@@ -140,14 +65,11 @@
                 <li><a class="dropdown-item" href="@Url.Action("UpdateUserRoles", "Admin",new { area = "Admin" })">Длъжност</a></li>
             </ul>
         </div>
-
-    }  
-
+    }
     <script>
-        
         function toggleSidebar() {
-          const sidebar = document.querySelector('.sidebar');
-          sidebar.classList.toggle('show'); 
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
         }
     </script>
 
@@ -156,15 +78,10 @@
             &copy; 2024 - El Pro Web App
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('show');
-        }
-    </script>
 </body>
 </html>
