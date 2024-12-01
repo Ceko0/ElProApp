@@ -3,7 +3,6 @@
     using System.ComponentModel.DataAnnotations;
 
     using ElProApp.Data.Models;
-    using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
     using static ElProApp.Common.EntityValidationErrorMessage.JobDobe;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
@@ -21,14 +20,14 @@
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
         public int DaysForJob { get; set; }
 
-        //[Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         public Guid JobId { get; set; }
 
         public Guid TeamId { get; set; }
 
+        public Guid BuildingId { get; set; }
+
         public virtual ICollection<Job> jobs { get; set; } = new List<Job>();
         public virtual ICollection<Team> teams { get; set; } = new List<Team>();
-
-
+        public virtual ICollection<Building> buildings { get; set; } = new List<Building>();
     }
 }

@@ -53,12 +53,14 @@
         public int DaysForJob { get; set; }
 
         /// <summary>
-        /// Foreign key for the team that completed the job. 
+        /// Foreign key for the building where was completing the job. 
         /// If you want to use many-to-many mapping, remove this property.
         /// </summary>
         [Required]
-        [Comment("Foreign key for the team responsible for completing the job.")]
-        public Guid TeamId { get; set; }
+        [Comment("Foreign key for the building where was completing the job.")]
+        public Guid BuildingId { get; set; }
+
+        public Building Building { get; set; } = null!;
 
         /// <summary>
         /// Indicates if the jobdone is active (false) or soft deleted (true).

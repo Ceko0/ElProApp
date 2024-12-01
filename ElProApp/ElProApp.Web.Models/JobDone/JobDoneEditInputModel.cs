@@ -2,8 +2,7 @@
 { 
     using System.ComponentModel.DataAnnotations;
     using AutoMapper;
-    using ElProApp.Data.Models;
-    using ElProApp.Data.Models.Mappings;
+    using ElProApp.Data.Models;    
     using Services.Mapping;
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
@@ -26,6 +25,12 @@
 
         public Job Job { get; set; } = new();
 
-        public virtual ICollection<JobDoneTeamMapping> TeamsDoTheJob { get; set; } = new List<JobDoneTeamMapping>();
+        public Guid BuildingId { get; set; }
+
+        public Building Building { get; set; } = null!;
+
+        public Guid TeamId { get; set; }
+
+        public Team Team { get; set; } = null!;
     }
 }

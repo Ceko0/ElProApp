@@ -27,7 +27,7 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <returns>A view for adding a completed job.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Add() => View(await jobDoneService.AddAsync());
 
@@ -37,7 +37,7 @@
         /// </summary>
         /// <param name="model">The completed job input model.</param>
         /// <returns>Redirects to job details or displays the same view if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
@@ -69,25 +69,22 @@
         /// </summary>
         /// <param name="id">The ID of the completed job to edit.</param>
         /// <returns>A view for editing the completed job.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
             var model = await jobDoneService.EditByIdAsync(id);
 
-            var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-
-            model.TeamsDoTheJob = await jobDoneTeamMappingService.GetByJobDoneIdAsync(model.Id);
             return View(model);
         }
-        
+
         /// <summary>
         /// Processes the request to edit a completed job.
         /// Accessible only by administrators.
         /// </summary>
         /// <param name="model">The edited completed job input model.</param>
         /// <returns>Redirects to job details or displays the same view if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpPost]
         public async Task<IActionResult> Edit(JobDoneEditInputModel model)
         {
@@ -112,7 +109,7 @@
         /// </summary>
         /// <param name="id">The ID of the completed job to delete.</param>
         /// <returns>Redirects to the list of completed jobs.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {

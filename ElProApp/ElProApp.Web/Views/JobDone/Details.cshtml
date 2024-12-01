@@ -10,21 +10,8 @@
             <p><strong>Количество:</strong> @Model.quantity</p>
             <p><strong>Дни за изпълнение:</strong> @Model.DaysForJob</p>
             <p><strong>Работа:</strong> @Model.Job.Name</p>
-
-            <h5 class="card-title mt-3">Екипи</h5>
-            @if ( Model.TeamsDoTheJob !=null && Model.TeamsDoTheJob.Any())
-            {
-                <ul class="list-group">
-                    @foreach (var team in Model.TeamsDoTheJob)
-                    {
-                        <li class="list-group-item">@team.Team.Name</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Няма свързани екипи с тази задача.</p>
-            }
+            <p><strong>Сграда:</strong> @Model.Building.Name</p>
+            <p><strong>Екип:</strong> @Model.Team.Name</p>            
         </div>
     </div>
 

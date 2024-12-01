@@ -6,9 +6,8 @@ namespace ElProApp.Web.Models.JobDone
     using Services.Mapping;
     
     using ElProApp.Data.Models;
-    using ElProApp.Data.Models.Mappings;
-
-    public class JobDoneViewModel : IMapFrom<JobDone> , IHaveCustomMappings
+    
+    public class JobDoneViewModel : IMapFrom<JobDone>
     {
         public Guid Id { get; set; } 
 
@@ -20,12 +19,13 @@ namespace ElProApp.Web.Models.JobDone
 
         public Job Job { get; set; } = new();
 
-        public virtual ICollection<JobDoneTeamMapping> TeamsDoTheJob { get; set; } = new List<JobDoneTeamMapping>();
+        public Guid TeamId { get; set; }
 
-        public void CreateMappings(IProfileExpression configuration)
-        {
-            configuration.CreateMap<JobDone, JobDoneViewModel>()
-                .ForMember(d => d.Job, x => x.MapFrom(s => s.Job));
-        }
+        public Team Team { get; set; } = null!;
+
+        public Guid BuildingId { get; set; }
+
+        public Building Building { get; set; } = null!;
+       
     }
 }

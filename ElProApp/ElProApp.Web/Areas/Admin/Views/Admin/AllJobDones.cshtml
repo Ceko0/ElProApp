@@ -10,10 +10,11 @@
     <table class="table table-striped mt-4">
         <thead>
             <tr>
-                <th>Количество</th>
+                <th>Работа</th>                
                 <th>Дни за изпълнение</th>
-                <th>Работа</th>
-                <th>Екипи</th>
+                <th>Количество</th>
+                <th>Екип</th>
+                <th>Сграда</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -24,12 +25,8 @@
                     <td>@jobDone.Job.Name</td>
                     <td>@jobDone.DaysForJob</td>
                     <td>@jobDone.quantity</td>
-                    <td>
-                        @foreach (var team in jobDone.TeamsDoTheJob)
-                        {
-                            <span class="badge bg-primary">@team.Team.Name</span>
-                        }
-                    </td>
+                    <td>@jobDone.Team.Name</td>
+                    <td>@jobDone.Building.Name</td>
                     <td>
                         <a asp-area="" asp-controller="JobDone" asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">Информация</a>
                         <a asp-area="" asp-controller="JobDone" asp-action="Edit" asp-route-id="@jobDone.Id" class="btn btn-warning btn-sm">Редактиране</a>

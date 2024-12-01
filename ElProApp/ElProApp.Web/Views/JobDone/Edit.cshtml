@@ -1,6 +1,7 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model JobDoneEditInputModel
 
+
 <div class="container mt-4">
     <h1 class="display-4 text-center">Редактиране на задача</h1>
 
@@ -26,13 +27,19 @@
             <input type="hidden" asp-for="Job.Price" />
         </div>
         <div class="form-group">
-            <label class="control-label">Екипи</label>
+            <label class="control-label">Екип</label>
             <ul class="list-group">
-                @foreach (var team in Model.TeamsDoTheJob)
-                {
-                    <li class="list-group-item">@team.Team.Name</li>
-
-                }
+                @Model.Team.Name
+                <input type="hidden" asp-for="TeamId" />
+                <input type="hidden" asp-for="Team.Name" />
+            </ul>
+        </div><div class="form-group">
+            <label class="control-label">Сграда</label>
+            <ul class="list-group">
+                @Model.Building.Name
+                <input type="hidden" asp-for="BuildingId" />
+                <input type="hidden" asp-for="Building.Name" />
+                <input type="hidden" asp-for="Building.Location" />
             </ul>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Запази промените</button>
