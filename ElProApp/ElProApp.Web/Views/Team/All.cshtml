@@ -32,7 +32,7 @@
                                 <ul>
                                     @foreach (var employee in team.EmployeesInTeam)
                                     {
-                                        <li>@employee.Employee.FirstName @employee.Employee.LastName</li>
+                                        <li>@employee.Employee.Name @employee.Employee.LastName</li>
                                     }
                                 </ul>
                             }
@@ -78,4 +78,5 @@
             }
         </tbody>
     </table>
+    <a asp-area="" asp-controller="Team" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
 </div>
