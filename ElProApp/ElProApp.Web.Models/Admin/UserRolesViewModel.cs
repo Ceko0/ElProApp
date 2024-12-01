@@ -1,5 +1,5 @@
-﻿namespace ElProApp.Web.Areas.Admin.Models
-{
+﻿namespace ElProApp.Web.Models.Admin 
+{ 
     public class UserRolesViewModel
     {
         public string UserId { get; set; } = null!;
