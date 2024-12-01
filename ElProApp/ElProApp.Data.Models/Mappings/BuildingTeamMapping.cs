@@ -47,12 +47,5 @@
         [Comment("The date when the record was created.")]
         [Column(TypeName = "date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
-
-        /// <summary>
-        /// The date when the record was deleted (logically deleted).
-        /// </summary>
-        [Comment("The date when the record was deleted (logically deleted).")]
-        [Column(TypeName = "date")]
-        public DateTime? DeletedDate { get; set; }
     }
 }
