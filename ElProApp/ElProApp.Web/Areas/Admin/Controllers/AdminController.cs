@@ -1,85 +1,38 @@
 ﻿namespace ElProApp.Web.Areas.Admin.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.EntityFrameworkCore;
-    using AutoMapper;
-    using Models;
+    using ElProApp.Web.Models.Admin;
     using Services.Data.Interfaces;
-    using ElProApp.Services.Mapping;
-    using ElProApp.Web.Models.Building;
-    using ElProApp.Web.Models.Employee;
-    using ElProApp.Web.Models.JobDone;
-    using ElProApp.Web.Models.Job;
-    using ElProApp.Web.Models.Team;
-    using ElProApp.Services.Data;
 
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin , OfficeManager")]
     public class AdminController(IServiceProvider _serviceProvider,
-            UserManager<IdentityUser> _userManager,
-            RoleManager<IdentityRole> _roleManager)
+            IAdminService _adminService)
             : Controller
     {
         private readonly IServiceProvider serviceProvider = _serviceProvider;
-        private readonly UserManager<IdentityUser> userManager = _userManager;
-        private readonly RoleManager<IdentityRole> roleManager = _roleManager;
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
+        private readonly IAdminService adminService = _adminService;
+                
         [HttpGet]
         public async Task<IActionResult> UpdateUserRoles()
         {
-            var users = userManager.Users.ToList();
-            var userRolesViewModel = new List<UserRolesViewModel>();
+            var model = await adminService.GetUsersRolesAsync();
 
-            foreach (var user in users)
-            {
-                var roles = await userManager.GetRolesAsync(user);
-                userRolesViewModel.Add(new UserRolesViewModel
-                {
-                    UserId = user.Id,
-                    UserName = user.UserName,
-                    Roles = roles
-                });
-            }
+            ViewBag.AllRoles = await adminService.GetAllRolesAsync();
 
-            var rolesList = roleManager.Roles.Select(r => r.Name).ToList();
-            ViewBag.AllRoles = rolesList;
-
-            return View(userRolesViewModel);
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateUserRoles(string userId, List<string> roles, string state)
         {
-            var user = await userManager.FindByIdAsync(userId);
+            var isSuccess = await adminService.PostUsersRolesAsync(userId,roles, state);
 
-            if (user == null)
-            {
-                return NotFound("Потребителят не е намерен.");
-            }
-
-            var currentRoles = await userManager.GetRolesAsync(user);
-
-            switch (state)
-            {
-                case "add":
-                    var rolesToAdd = roles.Except(currentRoles).ToList();
-                    await userManager.AddToRolesAsync(user, roles);
-                    break;
-                case "remove":
-                    var rolesToRemove = currentRoles.Except(roles).ToList();
-                    await userManager.RemoveFromRolesAsync(user, roles);
-                    break;
-            }
+            if (!isSuccess) return RedirectToAction("Index", "Home");
 
             return RedirectToAction(nameof(UpdateUserRoles));
-
         }
 
         [HttpGet]
