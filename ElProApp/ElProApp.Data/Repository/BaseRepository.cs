@@ -183,6 +183,9 @@
                 return false;
             }
 
+            var DeletedDateProperty = typeof(TType).GetProperty("DeletedDate");
+            if (DeletedDateProperty.PropertyType == typeof(DateTime)) DeletedDateProperty.SetValue(entity, DateTime.Now);
+
             var isDeletedProperty = typeof(TType).GetProperty("IsDeleted");
 
             if (isDeletedProperty != null && isDeletedProperty.PropertyType == typeof(bool))
@@ -210,6 +213,9 @@
             {
                 return false;
             }
+
+            var DeletedDateProperty = typeof(TType).GetProperty("DeletedDate");
+            DeletedDateProperty.SetValue(entity, DateTime.Now);
 
             var isDeletedProperty = typeof(TType).GetProperty("IsDeleted");
 
