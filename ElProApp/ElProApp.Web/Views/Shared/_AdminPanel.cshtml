@@ -1,13 +1,28 @@
-﻿<div class="dropdown" style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); background-color: transparent; padding: 20px;">
-    <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        Админ панел
-    </button>
-    <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
-        <li><a class="dropdown-item" href="@Url.Action("AllEmployees", "Admin", new { area = "Admin" })">Служители</a></li>
-        <li><a class="dropdown-item" href="@Url.Action("AllJobs", "Admin", new { area = "Admin" })">Работи</a></li>
-        <li><a class="dropdown-item" href="@Url.Action("AllJobDones", "Admin", new { area = "Admin" })">Свършена работа</a></li>
-        <li><a class="dropdown-item" href="@Url.Action("AllBuildings", "Admin", new { area = "Admin" })">Сгради</a></li>
-        <li><a class="dropdown-item" href="@Url.Action("AllTeams", "Admin", new { area = "Admin" })">Екипи</a></li>
-        <li><a class="dropdown-item" href="@Url.Action("UpdateUserRoles", "Admin", new { area = "Admin" })">Длъжност</a></li>
-    </ul>
-</div>
+﻿<li class="nav-item">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Админ панел
+        </button>
+        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
+            <li><a class="dropdown-item" href="@Url.Action("AllEmployees", "Admin", new { area = "Admin" })">Служители</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("AllJobs", "Admin", new { area = "Admin" })">Работи</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("AllJobDones", "Admin", new { area = "Admin" })">Свършена работа</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("AllBuildings", "Admin", new { area = "Admin" })">Сгради</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("AllTeams", "Admin", new { area = "Admin" })">Екипи</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("UpdateUserRoles", "Admin", new { area = "Admin" })">Длъжност</a></li>            
+        </ul>
+    </div>
+</li>
+<li class="nav-item">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Изтрити записи
+        </button>
+        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Employee" })">Изтрити Служители</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Building" })">Изтрити Сгради</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Team" })">Изтрити Екипи</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Job" })">Изтрити Работи</a></li>
+        </ul>
+    </div>
+</li>

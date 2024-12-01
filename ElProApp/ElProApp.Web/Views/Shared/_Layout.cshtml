@@ -10,38 +10,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">El Pro Web App</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item mx-auto">
-                            <form method="get" asp-area="" asp-controller="Search" asp-action="Search" class="d-flex align-items-center justify-content-center">
-                                <input type="text" name="query" class="form-control form-control-sm me-2" placeholder="Търсене..." />
-                                <select name="searchIn" class="form-control form-control-sm me-2">
-                                    <option value="">Търсене навсякъде</option>
-                                    <option value="Employee">Служители</option>
-                                    <option value="Building">Сгради</option>
-                                    <option value="Team">Екипи</option>
-                                    <option value="JobDone">Свършена работа</option>
-                                    <option value="Job">Работа</option>
-                                </select>
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav ms-auto">
-                        <partial name="_LoginPartial" />
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        @Html.Partial("_Navbar")
     </header>
 
     <div class="container-fluid">
@@ -50,22 +19,6 @@
         </main>
     </div>
 
-    @if (User.IsInRole("Admin"))
-    {
-        <div class="dropdown" style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); background-color: transparent; padding: 20px;">
-            <button class="btn btn-secondary dropdown-toggle vertical-text" type="button" id="adminPanelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Админ панел
-            </button>
-            <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
-                <li><a class="dropdown-item" href="@Url.Action("AllEmployees", "Admin",new { area = "Admin" })">Служители</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("AllJobs", "Admin",new { area = "Admin" })">Работи</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("AllJobDones", "Admin",new { area = "Admin" })">Свършена работа</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("AllBuildings", "Admin",new { area = "Admin" })">Сгради</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("AllTeams", "Admin",new { area = "Admin" })">Екипи</a></li>
-                <li><a class="dropdown-item" href="@Url.Action("UpdateUserRoles", "Admin",new { area = "Admin" })">Длъжност</a></li>
-            </ul>
-        </div>
-    }
     <script>
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');

@@ -1,33 +1,4 @@
-﻿.vertical-text {
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-    transform: rotate(0deg);
-}
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 250px;
-    height: 100%;
-    background-color: transparent !important;
-    padding: 20px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    display: none;
-    z-index: 1050;
-}
-html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.container {
-    flex: 1; 
-}
-
-footer {
+﻿footer {
     padding: 5px;
     width: 100%;
     position: fixed; 
@@ -36,9 +7,3 @@ footer {
     z-index: 999; 
     left: 0; 
 }
-
-body {
-    padding-bottom: 30px; 
-}
-
-

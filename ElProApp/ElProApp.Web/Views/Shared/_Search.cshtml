@@ -1,0 +1,16 @@
+﻿<li class="nav-item mx-auto">
+    <form method="get" asp-area="" asp-controller="Search" asp-action="Search" class="d-flex align-items-center justify-content-center">
+        <input type="text" name="query" class="form-control form-control-sm me-2" placeholder="Търсене..." />
+        <select name="searchIn" class="form-control form-control-sm me-2">
+            <option value="">Търсене навсякъде</option>
+            <option value="Employee">Служители</option>
+            <option value="Building">Сгради</option>
+            <option value="Team">Екипи</option>
+            <option value="JobDone">Свършена работа</option>
+            <option value="Job">Работа</option>
+        </select>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-search"></i>
+        </button>
+    </form>
+</li>
