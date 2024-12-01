@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElProApp.Data.Migrations
 {
     [DbContext(typeof(ElProAppDbContext))]
-    [Migration("20241201091218_intialDBContext")]
-    partial class intialDBContext
+    [Migration("20241201175553_intialDB")]
+    partial class intialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,14 @@ namespace ElProApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the building.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -60,11 +68,13 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the employee.");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasComment("The first name of the employee with a maximum of 20 characters.");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -79,6 +89,12 @@ namespace ElProApp.Data.Migrations
                     b.Property<decimal>("MoneyToTake")
                         .HasColumnType("decimal(18, 2)")
                         .HasComment("The money the employee has to take, must be a positive value.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasComment("The first name of the employee with a maximum of 20 characters.");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -103,6 +119,14 @@ namespace ElProApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the job.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -134,9 +158,17 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key for the building where was completing the job.");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
                     b.Property<int>("DaysForJob")
                         .HasColumnType("int")
                         .HasComment("Number of days spent completing the job.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
@@ -145,6 +177,12 @@ namespace ElProApp.Data.Migrations
                     b.Property<Guid>("JobId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key for the job being done.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasComment("The name of the job with a maximum of 50 characters.");
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(6, 2)")
@@ -169,6 +207,14 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key referencing the Team entity.");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
+
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
@@ -188,6 +234,14 @@ namespace ElProApp.Data.Migrations
                     b.Property<Guid>("TeamId")
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key referencing the Team entity.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -209,6 +263,14 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Foreign key referencing the Team entity.");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
+
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
@@ -225,6 +287,14 @@ namespace ElProApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Primary key and unique identifier for the team.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ElProApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class intialDBContext : Migration
+    public partial class intialDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,9 @@ namespace ElProApp.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the building."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the building with a minimum of 3 and a maximum of 50 characters."),
                     Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The location of the building with a minimum of 10 and a maximum of 100 characters."),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the building is active or soft deleted.")
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the building is active or soft deleted."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -71,7 +73,9 @@ namespace ElProApp.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the job with a maximum of 50 characters."),
                     Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The price of the job with up to 6 digits before the decimal point and up to 2 digits after."),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the job is active or soft deleted.")
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the job is active or soft deleted."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -84,7 +88,9 @@ namespace ElProApp.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Primary key and unique identifier for the team."),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The name of the team, limited by maximum length."),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the team is active or soft deleted.")
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the team is active or soft deleted."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -202,12 +208,14 @@ namespace ElProApp.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the employee."),
-                    FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The first name of the employee with a maximum of 20 characters."),
+                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The first name of the employee with a maximum of 20 characters."),
                     LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The last name of the employee with a maximum of 20 characters."),
                     Wages = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The wages of the employee with up to 6 digits before the decimal point and up to 2 digits after."),
                     MoneyToTake = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "The money the employee has to take, must be a positive value."),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the employee is active or soft deleted."),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false, comment: "Foreign key representing the user account associated with this employee.")
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false, comment: "Foreign key representing the user account associated with this employee."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -225,11 +233,14 @@ namespace ElProApp.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job done record."),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the job with a maximum of 50 characters."),
                     JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the job being done."),
                     Quantity = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "Quantity of work completed."),
                     DaysForJob = table.Column<int>(type: "int", nullable: false, comment: "Number of days spent completing the job."),
                     BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the building where was completing the job."),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the jobdone is active or soft deleted.")
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the jobdone is active or soft deleted."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -253,7 +264,9 @@ namespace ElProApp.Data.Migrations
                 {
                     BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Building entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -276,7 +289,9 @@ namespace ElProApp.Data.Migrations
                 {
                     EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Employee entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
@@ -299,7 +314,9 @@ namespace ElProApp.Data.Migrations
                 {
                     JobDoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the JobDone entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
                 constraints: table =>
                 {
