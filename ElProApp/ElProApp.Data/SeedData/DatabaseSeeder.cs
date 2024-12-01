@@ -13,13 +13,53 @@
 
         public void SeedDatabase()
         {
+            SeedUsers();
             SeedInitialData();
             SeedMappingData();
         }
 
+        private void SeedUsers()
+        {
+            var jsonData = File.ReadAllText(@"..\ElProApp.Data\SeedData\SeedData.json");
+            var initialData = JsonConvert.DeserializeObject<InitialData>(jsonData);
+
+            foreach (var user in initialData.IdentityUsers)
+            {
+                var existingUser = userManager.FindByIdAsync(user.Id).Result;
+
+                if (existingUser == null)
+                {
+                    var newUser = new IdentityUser
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        EmailConfirmed = false,
+                        PhoneNumber = user.PhoneNumber 
+                    };
+
+                    var result = userManager.CreateAsync(newUser, "123456").Result;
+
+                    if (result.Succeeded)
+                    {
+                        Console.WriteLine($"User with ID {user.Id} created successfully.");
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to create user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"User with ID {user.Id} already exists.");
+                }
+            }
+        }
+
         private void SeedInitialData()
         {
-            var jsonData = File.ReadAllText($@"..\ElProApp.Data\SeedData\SeedData.json");
+            var jsonData = File.ReadAllText(@"..\ElProApp.Data\SeedData\SeedData.json");
             var initialData = JsonConvert.DeserializeObject<InitialData>(jsonData);
 
             foreach (var team in initialData.Teams)
@@ -33,32 +73,9 @@
 
             foreach (var employee in initialData.Employees)
             {
-                var existingUser = userManager.FindByIdAsync(employee.UserId).Result;
-
-                if (existingUser == null)
+                if (!context.Employees.Any(x => x.Id == employee.Id))
                 {
-                    var user = new IdentityUser
-                    {
-                        Id = employee.UserId,
-                        UserName = $"{employee.User.UserName}",
-                        Email = $"{employee.FirstName}.{employee.LastName}@abv.com",
-                        EmailConfirmed = false
-                    };
-
-                    var result = userManager.CreateAsync(user, "123456").Result;
-
-                    if (result.Succeeded)
-                    {
-                        context.Employees.Add(employee);
-                    }
-                    else
-                    {
-                        throw new Exception($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"User with ID {employee.UserId} already exists.");
+                    context.Employees.Add(employee);
                 }
             }
             context.SaveChanges();
@@ -90,6 +107,7 @@
             }
             context.SaveChanges();
         }
+
 
         private void SeedMappingData()
         {

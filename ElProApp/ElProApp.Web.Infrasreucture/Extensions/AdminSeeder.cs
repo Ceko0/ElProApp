@@ -51,7 +51,22 @@
 
                 var result = await userManager.AddToRoleAsync(adminUser, AdminRoleName);
                 if (!result.Succeeded) throw new InvalidOperationException($"Failed to adding {UserName} to the {AdminRoleName} role");
-                return app;
+
+
+            var allUsers = userManager.Users.ToList();
+
+            foreach (var user in allUsers)
+            {
+                if ( user.UserName == "Cvetomir" ) await userManager.AddToRoleAsync(user, OfficeManagerRoleName);
+                if ( user.UserName == "Petyr") await userManager.AddToRoleAsync(user, TechnicianRoleName);
+                if (user.UserName == "admin") continue;
+                if (user.UserName == "Maria") await userManager.AddToRoleAsync(user, UserRoleName);
+                await userManager.AddToRoleAsync(user, WorkerRoleName);
+
+            }
+
+
+            return app;
         }
 
         private static async Task<IdentityUser> CreateAdminUserAsync(string Email, string UserName, string Password, IUserStore<IdentityUser> userStore, UserManager<IdentityUser> userManager, IEmployeeService employeeService)
@@ -69,6 +84,7 @@
 
             var employeeId = await employeeService.AddAdminEmployeeAsync(UserName, UserName, identityUserId.ToString());
             if (employeeId == null) throw new InvalidOperationException($"Failed to create {nameof(Employee)}");
+
             return AdminUser;
         }
     }
