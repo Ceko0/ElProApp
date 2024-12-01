@@ -49,14 +49,17 @@
             return model;
         }
 
-        public async Task<ICollection<JobDoneTeamMapping>> GetByJobDoneIdAsync(Guid Id)
+        public async Task<JobDoneTeamMapping> GetByJobDoneIdAsync(Guid Id)
          {
             if (Id == Guid.Empty) throw new ArgumentNullException(nameof(Id), "Invalid jobDoneId.");
 
             var model = await jobDoneTeamMappingRepository
             .GetAllAttached()
-            .Where(x => x.JobDoneId == Id)
-            .ToListAsync();
+            .Include(x => x.Team)
+            .Include( x => x.JobDone)
+            .ThenInclude(jd => jd.Building)
+            .FirstOrDefaultAsync(x => x.JobDoneId == Id);
+            
             return model;
         }
 
