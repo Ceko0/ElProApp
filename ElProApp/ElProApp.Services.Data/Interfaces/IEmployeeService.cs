@@ -90,5 +90,7 @@
         /// The unique ID of the newly added admin employee as a string.
         /// </returns>
         Task<string> AddAdminEmployeeAsync(string firstName, string lastName, string identityUserId);
+
+        Task<bool> SaveChangesAsync();
     }
 }

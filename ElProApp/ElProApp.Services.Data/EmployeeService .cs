@@ -225,6 +225,10 @@
             return employee.Id.ToString();
         }
 
+        public async Task<bool> SaveChangesAsync() 
+            => await employeeRepository.SaveAsync();
+        
+
         /// <summary>
         /// Converts and validates the provided ID to a valid <see cref="Guid"/>.
         /// </summary>
