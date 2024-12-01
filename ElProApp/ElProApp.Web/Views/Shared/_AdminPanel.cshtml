@@ -20,9 +20,10 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="adminPanelDropdown">
             <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Employee" })">Изтрити Служители</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Job" })">Изтрити Работи</a></li>
+            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "JobDone" })">Изтрити Свършени Работи</a></li>
             <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Building" })">Изтрити Сгради</a></li>
             <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Team" })">Изтрити Екипи</a></li>
-            <li><a class="dropdown-item" href="@Url.Action("DeletedEntities", "Admin", new { area = "Admin", entityType = "Job" })">Изтрити Работи</a></li>
         </ul>
     </div>
 </li>
