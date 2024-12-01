@@ -135,7 +135,7 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account.Manage
         }
 
 
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
+        public IActionResult OnPostSendVerificationEmailAsync()
         {
             StatusMessage = "Email verification is not required.";
             return RedirectToPage();
