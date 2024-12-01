@@ -28,7 +28,7 @@
         /// </summary>
         /// <param name="id">The ID used for job-related associations, if any.</param>
         /// <returns>A view for adding a job.</returns>
-        
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public IActionResult Add(string id)
             => View(new JobInputModel());
@@ -39,7 +39,7 @@
         /// </summary>
         /// <param name="model">The job input model containing job details.</param>
         /// <returns>Redirects to job details or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
         public async Task<IActionResult> Add(JobInputModel model)
         {
@@ -71,7 +71,7 @@
         /// </summary>
         /// <param name="id">The ID of the job to edit.</param>
         /// <returns>A view for editing the job.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -85,7 +85,7 @@
         /// </summary>
         /// <param name="model">The edited job model with updated job details.</param>
         /// <returns>Redirects to job details or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> Edit(JobEditInputModel model)
         {
@@ -110,7 +110,7 @@
         /// </summary>
         /// <param name="id">The ID of the job to delete.</param>
         /// <returns>Redirects to the list of jobs or displays an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {

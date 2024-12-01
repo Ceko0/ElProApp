@@ -29,7 +29,7 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <returns>A view for adding a building.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpGet]
         public async Task<IActionResult> Add() => View(new BuildingInputModel()
         {
@@ -42,7 +42,7 @@
         /// </summary>
         /// <param name="model">The building model containing the new building details.</param>
         /// <returns>Redirects to the building details view or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpPost]
         public async Task<IActionResult> Add(BuildingInputModel model)
         {
@@ -87,7 +87,7 @@
         /// </summary>
         /// <param name="id">The ID of the building to edit.</param>
         /// <returns>A view for editing the building details.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -108,7 +108,7 @@
         /// </summary>
         /// <param name="model">The model containing updated building data.</param>
         /// <returns>Redirects to the building details view or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpPost]
         public async Task<IActionResult> Edit(BuildingEditInputModel model)
         {
@@ -128,7 +128,7 @@
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {

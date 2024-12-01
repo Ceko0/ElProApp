@@ -29,6 +29,7 @@
         /// </summary>
         /// <param name="id">The ID of the team to retrieve details for.</param>
         /// <returns>Returns a view displaying the team's details if found, otherwise returns a BadRequest or NotFound result.</returns>
+        
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
@@ -53,7 +54,7 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <returns>A view for adding a new team.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Add()
         {
@@ -69,7 +70,7 @@
         /// </summary>
         /// <param name="model">The team model containing the new team details.</param>
         /// <returns>Redirects to the team details view or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
         public async Task<IActionResult> Add(TeamInputModel model)
         {
@@ -93,6 +94,7 @@
         /// </summary>
         /// <param name="id">The ID of the team to edit.</param>
         /// <returns>A view for editing the team details.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -117,6 +119,7 @@
         /// </summary>
         /// <param name="model">The model with updated team data.</param>
         /// <returns>Redirects to the team list or stays on the page if there's an error.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
         public async Task<IActionResult> Edit(TeamEditInputModel model)
         {
@@ -141,7 +144,7 @@
         /// </summary>
         /// <param name="id">The ID of the team to delete.</param>
         /// <returns>Redirects to the team list or shows an error message.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {

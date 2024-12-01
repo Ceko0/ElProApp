@@ -32,7 +32,6 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <returns>A view for adding an employee.</returns>
-        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Add()
             => View(new EmployeeInputModel());
@@ -43,13 +42,11 @@
         /// </summary>
         /// <param name="model">The employee model containing details to be added.</param>
         /// <returns>Redirects to employee details or stays on the page if there's an error.</returns>
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Add(EmployeeInputModel model)
         {
             try
-            {
-                // Ensure model is valid before adding
+            { 
                 if (!ModelState.IsValid)
                 {
                     return View(model);
@@ -140,7 +137,7 @@
         /// </summary>
         /// <param name="id">The ID of the employee to delete.</param>
         /// <returns>Redirects to the employee list or displays an error.</returns>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {
