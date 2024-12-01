@@ -213,7 +213,7 @@
 
             var employee = new Employee()
             {
-                FirstName = firstName,
+                Name = firstName,
                 LastName = lastName,
                 Wages = 10,  
                 UserId = identityUserId
