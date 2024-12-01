@@ -1,5 +1,4 @@
-﻿
-namespace ElProApp.Web.Models.Building
+﻿namespace ElProApp.Web.Models.Building
 {
     using System.ComponentModel.DataAnnotations;
    
