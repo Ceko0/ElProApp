@@ -40,7 +40,7 @@
                     var user = new IdentityUser
                     {
                         Id = employee.UserId,
-                        UserName = $"{employee.FirstName}.{employee.LastName}",
+                        UserName = $"{employee.User.UserName}",
                         Email = $"{employee.FirstName}.{employee.LastName}@abv.com",
                         EmailConfirmed = false
                     };
@@ -93,12 +93,12 @@
 
         private void SeedMappingData()
         {
-            var jsonData = File.ReadAllText($@"..\ElProApp.Data\SeedData\SeedData.json");
+            var jsonData = File.ReadAllText($@"..\ElProApp.Data\SeedData\MappingSeedData.json");
             var mappingData = JsonConvert.DeserializeObject<MappingData>(jsonData);
 
             foreach (var mapping in mappingData.Mappings)
             {
-                // Проверка и добавяне на мапинг на BuildingTeamMapping
+                
                 foreach (var buildingId in mapping.BuildingIds)
                 {
                     if (!context.BuildingTeamMappings.Any(x => x.BuildingId == buildingId && x.TeamId == mapping.TeamId))
@@ -112,7 +112,6 @@
                     }
                 }
 
-                // Проверка и добавяне на мапинг на EmployeeTeamMapping
                 foreach (var employeeId in mapping.EmployeeIds)
                 {
                     if (!context.EmployeeTeamMappings.Any(x => x.EmployeeId == employeeId && x.TeamId == mapping.TeamId))
@@ -126,7 +125,6 @@
                     }
                 }
 
-                // Проверка и добавяне на мапинг на JobDoneTeamMapping
                 foreach (var jobDoneId in mapping.JobDoneIds)
                 {
                     if (!context.JobDoneTeamMappings.Any(x => x.JobDoneId == jobDoneId && x.TeamId == mapping.TeamId))

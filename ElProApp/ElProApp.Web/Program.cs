@@ -12,6 +12,7 @@
     using ElProApp.Services.Data;
     using static ElProApp.Web.Infrastructure.Extensions.ApplicationBuilderExtensions;
     using static ElProApp.Common.ApplicationConstants;
+    using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
     public class Program
     {
@@ -62,22 +63,7 @@
 
             // Build the application
             var app = builder.Build();
-            app.Use(async (context, next) =>
-            {
-                using var scope = app.Services.CreateScope();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-                string[] roleNames = { AdminRoleName, OfficeManagerRoleName, TechnicianRoleName,WorkerRoleName, UserRoleName };
-                foreach (var roleName in roleNames)
-                {
-                    if (!await roleManager.RoleExistsAsync(roleName))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(roleName));
-                    }
-                }
-
-                await next.Invoke();
-            });
+            
             // Configure AutoMapper mappings
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
@@ -100,7 +86,7 @@
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.SeedAdmin("admin@abv.bg", "admin", "admin@");
+            app.SeedAdminAndRoles("admin@abv.bg", "admin", "admin@");
 
             // Map controller routes and Razor Pages
             app.MapControllerRoute(
@@ -113,7 +99,7 @@
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Error}/{id?}");
            
             app.MapRazorPages();
 

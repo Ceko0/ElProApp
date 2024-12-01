@@ -127,6 +127,10 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the job done record.");
 
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Foreign key for the building where was completing the job.");
+
                     b.Property<int>("DaysForJob")
                         .HasColumnType("int")
                         .HasComment("Number of days spent completing the job.");
@@ -143,11 +147,9 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("decimal(6, 2)")
                         .HasComment("Quantity of work completed.");
 
-                    b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Foreign key for the team responsible for completing the job.");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("BuildingId");
 
                     b.HasIndex("JobId");
 
@@ -447,11 +449,19 @@ namespace ElProApp.Data.Migrations
 
             modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
                 {
+                    b.HasOne("ElProApp.Data.Models.Building", "Building")
+                        .WithMany()
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ElProApp.Data.Models.Job", "Job")
                         .WithMany("JobsDone")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Building");
 
                     b.Navigation("Job");
                 });

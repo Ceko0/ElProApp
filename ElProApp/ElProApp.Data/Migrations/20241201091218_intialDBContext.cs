@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ElProApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbContextAndTablesAfterBroken : Migration
+    public partial class intialDBContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,41 +51,44 @@ namespace ElProApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "buildings",
+                name: "Buildings",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the building."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the building with a minimum of 3 and a maximum of 50 characters."),
-                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The location of the building with a minimum of 10 and a maximum of 100 characters.")
+                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The location of the building with a minimum of 10 and a maximum of 100 characters."),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the building is active or soft deleted.")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_buildings", x => x.Id);
+                    table.PrimaryKey("PK_Buildings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "jobs",
+                name: "Jobs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the job with a maximum of 50 characters."),
-                    Price = table.Column<decimal>(type: "decimal(4,2)", nullable: false, comment: "The price of the job with up to 4 digits before the decimal point and up to 2 digits after.")
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The price of the job with up to 6 digits before the decimal point and up to 2 digits after."),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the job is active or soft deleted.")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_jobs", x => x.Id);
+                    table.PrimaryKey("PK_Jobs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "teams",
+                name: "Teams",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Primary key and unique identifier for the team"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The name of the team with a maximum length")
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Primary key and unique identifier for the team."),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The name of the team, limited by maximum length."),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the team is active or soft deleted.")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_teams", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,8 +137,8 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -179,8 +182,8 @@ namespace ElProApp.Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -195,22 +198,22 @@ namespace ElProApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "employees",
+                name: "Employees",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the employee."),
                     FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The first name of the employee with a maximum of 20 characters."),
                     LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, comment: "The last name of the employee with a maximum of 20 characters."),
-                    Wages = table.Column<decimal>(type: "decimal(4,2)", nullable: false, comment: "The wages of the employee with up to 4 digits before the decimal point and up to 2 digits after."),
+                    Wages = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The wages of the employee with up to 6 digits before the decimal point and up to 2 digits after."),
                     MoneyToTake = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "The money the employee has to take, must be a positive value."),
-                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key representing the team to which the employee belongs."),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the employee is active or soft deleted."),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false, comment: "Foreign key representing the user account associated with this employee.")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_employees", x => x.Id);
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_employees_AspNetUsers_UserId",
+                        name: "FK_Employees_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -218,90 +221,98 @@ namespace ElProApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "jobsDone",
+                name: "JobsDone",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job done record"),
-                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the job being done"),
-                    Quantity = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "Quantity of work completed"),
-                    DaysForJob = table.Column<int>(type: "int", nullable: false, comment: "Number of days spent completing the job")
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job done record."),
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the job being done."),
+                    Quantity = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "Quantity of work completed."),
+                    DaysForJob = table.Column<int>(type: "int", nullable: false, comment: "Number of days spent completing the job."),
+                    BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the building where was completing the job."),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the jobdone is active or soft deleted.")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_jobsDone", x => x.Id);
+                    table.PrimaryKey("PK_JobsDone", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_jobsDone_jobs_JobId",
-                        column: x => x.JobId,
-                        principalTable: "jobs",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "buildingTeamMappings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_buildingTeamMappings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_buildingTeamMappings_buildings_BuildingId",
+                        name: "FK_JobsDone_Buildings_BuildingId",
                         column: x => x.BuildingId,
-                        principalTable: "buildings",
-                        principalColumn: "Id");
+                        principalTable: "Buildings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_buildingTeamMappings_teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "teams",
+                        name: "FK_JobsDone_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "employeeTeamMappings",
+                name: "BuildingTeamMappings",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the employee."),
-                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the team."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the mapping between Employee and Team.")
+                    BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Building entity."),
+                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_employeeTeamMappings", x => new { x.EmployeeId, x.TeamId });
+                    table.PrimaryKey("PK_BuildingTeamMappings", x => new { x.BuildingId, x.TeamId });
                     table.ForeignKey(
-                        name: "FK_employeeTeamMappings_employees_EmployeeId",
+                        name: "FK_BuildingTeamMappings_Buildings_BuildingId",
+                        column: x => x.BuildingId,
+                        principalTable: "Buildings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_BuildingTeamMappings_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeeTeamMappings",
+                columns: table => new
+                {
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Employee entity."),
+                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeTeamMappings", x => new { x.EmployeeId, x.TeamId });
+                    table.ForeignKey(
+                        name: "FK_EmployeeTeamMappings_Employees_EmployeeId",
                         column: x => x.EmployeeId,
-                        principalTable: "employees",
+                        principalTable: "Employees",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_employeeTeamMappings_teams_TeamId",
+                        name: "FK_EmployeeTeamMappings_Teams_TeamId",
                         column: x => x.TeamId,
-                        principalTable: "teams",
+                        principalTable: "Teams",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "jobDoneTeamMappings",
+                name: "JobDoneTeamMappings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    JobDoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    JobDoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the JobDone entity."),
+                    TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_jobDoneTeamMappings", x => x.Id);
+                    table.PrimaryKey("PK_JobDoneTeamMappings", x => new { x.JobDoneId, x.TeamId });
                     table.ForeignKey(
-                        name: "FK_jobDoneTeamMappings_jobsDone_JobDoneId",
+                        name: "FK_JobDoneTeamMappings_JobsDone_JobDoneId",
                         column: x => x.JobDoneId,
-                        principalTable: "jobsDone",
+                        principalTable: "JobsDone",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_jobDoneTeamMappings_teams_TeamId",
+                        name: "FK_JobDoneTeamMappings_Teams_TeamId",
                         column: x => x.TeamId,
-                        principalTable: "teams",
+                        principalTable: "Teams",
                         principalColumn: "Id");
                 });
 
@@ -345,39 +356,34 @@ namespace ElProApp.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_buildingTeamMappings_BuildingId",
-                table: "buildingTeamMappings",
-                column: "BuildingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_buildingTeamMappings_TeamId",
-                table: "buildingTeamMappings",
+                name: "IX_BuildingTeamMappings_TeamId",
+                table: "BuildingTeamMappings",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_employees_UserId",
-                table: "employees",
+                name: "IX_Employees_UserId",
+                table: "Employees",
                 column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_employeeTeamMappings_TeamId",
-                table: "employeeTeamMappings",
+                name: "IX_EmployeeTeamMappings_TeamId",
+                table: "EmployeeTeamMappings",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_jobDoneTeamMappings_JobDoneId",
-                table: "jobDoneTeamMappings",
-                column: "JobDoneId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_jobDoneTeamMappings_TeamId",
-                table: "jobDoneTeamMappings",
+                name: "IX_JobDoneTeamMappings_TeamId",
+                table: "JobDoneTeamMappings",
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_jobsDone_JobId",
-                table: "jobsDone",
+                name: "IX_JobsDone_BuildingId",
+                table: "JobsDone",
+                column: "BuildingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobsDone_JobId",
+                table: "JobsDone",
                 column: "JobId");
         }
 
@@ -400,34 +406,34 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "buildingTeamMappings");
+                name: "BuildingTeamMappings");
 
             migrationBuilder.DropTable(
-                name: "employeeTeamMappings");
+                name: "EmployeeTeamMappings");
 
             migrationBuilder.DropTable(
-                name: "jobDoneTeamMappings");
+                name: "JobDoneTeamMappings");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "buildings");
+                name: "Employees");
 
             migrationBuilder.DropTable(
-                name: "employees");
+                name: "JobsDone");
 
             migrationBuilder.DropTable(
-                name: "jobsDone");
-
-            migrationBuilder.DropTable(
-                name: "teams");
+                name: "Teams");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "jobs");
+                name: "Buildings");
+
+            migrationBuilder.DropTable(
+                name: "Jobs");
         }
     }
 }

@@ -1,36 +1,64 @@
 {
   "Mappings": [
     {
-      "TeamId": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77", // Engineering Team
+      "TeamId": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77",
       "BuildingIds": [
-        "d67a5304-94c4-4c67-9399-321e1b823c7a" // Main Office
+        "d67a5304-94c4-4c67-9399-321e1b823c7a"
       ],
       "EmployeeIds": [
-        "b3219f94-7541-4f5c-8238-35fdc97e9b43" // John Doe
+        "b3219f94-7541-4f5c-8238-35fdc97e9b43"
       ],
       "JobDoneIds": [
-        "f24ae2d4-75a8-4aef-b6f7-b1a5c4a12d89" // Job done with Job ID
+        "f24ae2d4-75a8-4aef-b6f7-b1a5c4a12d89"
       ]
     },
     {
-      "TeamId": "a27cfed2-abc4-4b6f-9447-3a77c43bf999", // Maintenance Team
+      "TeamId": "f65c53c3-091e-4fb6-ae2e-8c34dfc7eab3",
       "BuildingIds": [
-        "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d" // Warehouse
+        "f60e7e7d-93c4-4f7c-9d6f-a8e9c1f6d7e8"
       ],
       "EmployeeIds": [
-        "c53db596-5871-4048-9b39-72a7dcd8143c" // Jane Smith
+        "c53db596-5871-4048-9b39-72a7dcd8143c"
       ],
-      "JobDoneIds": []
+      "JobDoneIds": [
+        "f6d8c8e9-93f4-4f7d-9e6c-b9e8c1f7e9d0"
+      ]
     },
     {
-      "TeamId": "e13d47a8-56f3-41f7-b8a2-46df0bc6de77", // Engineering Team (Second mapping example)
+      "TeamId": "a27cfed2-abc4-4b6f-9447-3a77c43bf999",
       "BuildingIds": [
-        "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d" // Warehouse
+        "e50f6dd1-2bd8-409f-88a3-e1d11c12cd6d"
       ],
       "EmployeeIds": [
-        "c53db596-5871-4048-9b39-72a7dcd8143c" // Jane Smith
+        "d7d5c7c3-5e7f-4e3a-8b7c-d6f7a8c9b1d4"
       ],
-      "JobDoneIds": []
+      "JobDoneIds": [
+        "e5d8c7d5-92f4-4f7d-9d6c-a9e8d1f8d7c8"
+      ]
+    },
+    {
+      "TeamId": "3d9b7385-75cc-4a78-bba7-0e5f1bca2de1",
+      "BuildingIds": [
+        "c4d7e6e5-82d4-4f8d-8e7c-d7f8c1f9d8e9"
+      ],
+      "EmployeeIds": [
+        "e4d7e7d4-8c6f-4e7d-93c7-f7e8d9c1f3a5"
+      ],
+      "JobDoneIds": [
+        "d7f8e8d0-92f4-4f7c-9e6c-c9e8c1f9d0e1"
+      ]
+    },
+    {
+      "TeamId": "2b1f3e91-cd13-4706-abc3-467e91a91c0f",
+      "BuildingIds": [
+        "d7f8e8c9-92f4-4f7d-9e6c-a9e8d1f7e9c1"
+      ],
+      "EmployeeIds": [
+        "f7d8c8d5-93e4-4f7c-9c6f-a7e9d1c5f4a6"
+      ],
+      "JobDoneIds": [
+        "e8f9c9d1-94f4-4f8d-9f7c-d9e8d2f0e2f2"
+      ]
     }
   ]
 }

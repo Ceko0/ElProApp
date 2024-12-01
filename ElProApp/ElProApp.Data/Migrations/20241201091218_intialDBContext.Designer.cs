@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElProApp.Data.Migrations
 {
     [DbContext(typeof(ElProAppDbContext))]
-    [Migration("20241104190216_fixingKeyFOrMapping")]
-    partial class fixingKeyFOrMapping
+    [Migration("20241201091218_intialDBContext")]
+    partial class intialDBContext
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,6 +104,10 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the job.");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates if the job is active or soft deleted.");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -126,9 +130,17 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasComment("Unique identifier for the job done record.");
 
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasComment("Foreign key for the building where was completing the job.");
+
                     b.Property<int>("DaysForJob")
                         .HasColumnType("int")
                         .HasComment("Number of days spent completing the job.");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasComment("Indicates if the jobdone is active or soft deleted.");
 
                     b.Property<Guid>("JobId")
                         .HasColumnType("uniqueidentifier")
@@ -139,6 +151,8 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Quantity of work completed.");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BuildingId");
 
                     b.HasIndex("JobId");
 
@@ -156,8 +170,7 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Unique identifier for the mapping record.");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BuildingId", "TeamId");
 
@@ -177,8 +190,7 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Unique identifier for the mapping between Employee and Team.");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("EmployeeId", "TeamId");
 
@@ -198,8 +210,7 @@ namespace ElProApp.Data.Migrations
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Unique identifier for the mapping between JobDone and Team.");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("JobDoneId", "TeamId");
 
@@ -375,12 +386,10 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -417,12 +426,10 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -445,11 +452,19 @@ namespace ElProApp.Data.Migrations
 
             modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
                 {
+                    b.HasOne("ElProApp.Data.Models.Building", "Building")
+                        .WithMany()
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ElProApp.Data.Models.Job", "Job")
                         .WithMany("JobsDone")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Building");
 
                     b.Navigation("Job");
                 });
@@ -457,13 +472,13 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.Building", "Building")
-                        .WithMany("TeamsOnBuilding")
+                        .WithMany()
                         .HasForeignKey("BuildingId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ElProApp.Data.Models.Team", "Team")
-                        .WithMany("BuildingWithTeam")
+                        .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -476,13 +491,13 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.EmployeeTeamMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.Employee", "Employee")
-                        .WithMany("TeamsEmployeeBelongsTo")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ElProApp.Data.Models.Team", "Team")
-                        .WithMany("EmployeesInTeam")
+                        .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -495,13 +510,13 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.JobDone", "JobDone")
-                        .WithMany("TeamsDoTheJob")
+                        .WithMany()
                         .HasForeignKey("JobDoneId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ElProApp.Data.Models.Team", "Team")
-                        .WithMany("JobsDoneByTeam")
+                        .WithMany()
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -562,33 +577,9 @@ namespace ElProApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ElProApp.Data.Models.Building", b =>
-                {
-                    b.Navigation("TeamsOnBuilding");
-                });
-
-            modelBuilder.Entity("ElProApp.Data.Models.Employee", b =>
-                {
-                    b.Navigation("TeamsEmployeeBelongsTo");
-                });
-
             modelBuilder.Entity("ElProApp.Data.Models.Job", b =>
                 {
                     b.Navigation("JobsDone");
-                });
-
-            modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
-                {
-                    b.Navigation("TeamsDoTheJob");
-                });
-
-            modelBuilder.Entity("ElProApp.Data.Models.Team", b =>
-                {
-                    b.Navigation("BuildingWithTeam");
-
-                    b.Navigation("EmployeesInTeam");
-
-                    b.Navigation("JobsDoneByTeam");
                 });
 #pragma warning restore 612, 618
         }

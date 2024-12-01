@@ -1,16 +1,17 @@
 ﻿namespace ElProApp.Web.Infrastructure.Extensions
 {
-    using ElProApp.Data.Models;
-    using ElProApp.Services.Data.Interfaces;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using static ElProApp.Common.ApplicationConstants;
+    
+    using ElProApp.Data.Models;
+    using ElProApp.Services.Data.Interfaces;    
+    using static ElProApp.Common.ApplicationConstants;    
 
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder SeedAdmin(this IApplicationBuilder app, string Email, string UserName, string Password)
+        public static async Task< IApplicationBuilder> SeedAdminAndRoles(this IApplicationBuilder app, string Email, string UserName, string Password)
         {
             using IServiceScope serviceScope = app.ApplicationServices.CreateAsyncScope();
             IServiceProvider serviceProvider = serviceScope.ServiceProvider;
@@ -29,10 +30,18 @@
 
             var employeeService = serviceProvider.GetService<IEmployeeService>();
 
-            Task.Run(async () =>
-            {
+          
+                string[] roleNames = { AdminRoleName, OfficeManagerRoleName, TechnicianRoleName, WorkerRoleName, UserRoleName };
+                foreach (var roleName in roleNames)
+                {
+                    if (!await roleManager.RoleExistsAsync(roleName))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(roleName));
+                    }
+                }
+
                 bool roleExist = await roleManager.RoleExistsAsync(AdminRoleName);
-                if (roleExist)
+                if (!roleExist)
                 {
                     return app;
                 }
@@ -43,11 +52,6 @@
                 var result = await userManager.AddToRoleAsync(adminUser, AdminRoleName);
                 if (!result.Succeeded) throw new InvalidOperationException($"Failed to adding {UserName} to the {AdminRoleName} role");
                 return app;
-            })
-                .GetAwaiter()
-                .GetResult();
-
-            return app;
         }
 
         private static async Task<IdentityUser> CreateAdminUserAsync(string Email, string UserName, string Password, IUserStore<IdentityUser> userStore, UserManager<IdentityUser> userManager, IEmployeeService employeeService)
