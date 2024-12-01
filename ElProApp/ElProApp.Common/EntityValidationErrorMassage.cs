@@ -44,6 +44,7 @@ namespace ElProApp.Common
         {
             public const string ErrorMassageQuantity = "Стойността трябва да е с максимум 6 цифри преди и до 2 след десетичната запетая.";
             public const string ErrorMassageDaysForJob = "Дните за свършена работа трябва да са между 1 и 30.";
+            public const string ErrorMassageNameMaxLength = "Името на работата не може да надвишава 50 символа.";
         }
 
         public static class UserLogin

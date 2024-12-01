@@ -7,13 +7,15 @@
     using static Common.EntityValidationConstants.Team;
     using static Common.EntityValidationErrorMessage.Team;
     using static Common.EntityValidationErrorMessage.Master;
+    using ElProApp.Services.Data.Interfaces;
+    using System.ComponentModel.DataAnnotations.Schema;
 
 
     /// <summary>
     /// Represents a team within the system, including its unique identifier, name, 
     /// and associated relationships to buildings, jobs, and employees.
     /// </summary>
-    public class Team
+    public class Team : IDeletableEntity
     {
         /// <summary>
         /// Unique identifier for the team, serving as the primary key.
@@ -36,5 +38,19 @@
         /// </summary>
         [Comment("Indicates if the team is active or soft deleted.")]
         public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// The date when the record was created.
+        /// </summary>
+        [Comment("The date when the record was created.")]
+        [Column(TypeName = "date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
+
+        /// <summary>
+        /// The date when the record was deleted (logically deleted).
+        /// </summary>
+        [Comment("The date when the record was deleted (logically deleted).")]
+        [Column(TypeName = "date")]
+        public DateTime? DeletedDate { get; set; }
     }
 }

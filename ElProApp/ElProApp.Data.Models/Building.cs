@@ -2,7 +2,9 @@
 {
     using Microsoft.EntityFrameworkCore;
     using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
+    using ElProApp.Services.Data.Interfaces;
     using static Common.EntityValidationConstants.Building;
     using static Common.EntityValidationErrorMessage.Building;
     using static Common.EntityValidationErrorMessage.Master;
@@ -10,7 +12,7 @@
     /// <summary>
     /// Represents a building entity with details about its name, location, and associated teams.
     /// </summary>
-    public class Building
+    public class Building : IDeletableEntity
     {
         /// <summary>
         /// Unique identifier for the building.
@@ -44,5 +46,18 @@
         [Comment("Indicates if the building is active or soft deleted.")]
         public bool IsDeleted { get; set; }
 
+        /// <summary>
+        /// The date when the record was created.
+        /// </summary>
+        [Comment("The date when the record was created.")]
+        [Column(TypeName = "date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
+
+        /// <summary>
+        /// The date when the record was deleted (logically deleted).
+        /// </summary>
+        [Comment("The date when the record was deleted (logically deleted).")]
+        [Column(TypeName = "date")]
+        public DateTime? DeletedDate { get; set; }
     }
 }

@@ -40,5 +40,19 @@
         [ForeignKey(nameof(TeamId))]
         [Comment("Navigation property for the associated Team.")]
         public Team Team { get; set; } = null!;
+
+        /// <summary>
+        /// The date when the record was created.
+        /// </summary>
+        [Comment("The date when the record was created.")]
+        [Column(TypeName = "date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
+
+        /// <summary>
+        /// The date when the record was deleted (logically deleted).
+        /// </summary>
+        [Comment("The date when the record was deleted (logically deleted).")]
+        [Column(TypeName = "date")]
+        public DateTime? DeletedDate { get; set; }
     }
 }

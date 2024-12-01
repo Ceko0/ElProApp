@@ -20,7 +20,7 @@
             builder.HasKey(e => e.Id);
 
             // Configures the FirstName property as required with a maximum length.
-            builder.Property(e => e.FirstName)
+            builder.Property(e => e.Name)
                 .IsRequired() // First name must not be null
                 .HasMaxLength(NameMaxLength); // Maximum length defined by NameMaxLength constant
 

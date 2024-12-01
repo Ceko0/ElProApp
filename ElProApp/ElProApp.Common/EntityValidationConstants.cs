@@ -28,5 +28,11 @@
             public const int nameMaxLength = 50;
         }
 
+        public static class JobDone
+        {
+            public const int nameMinLength = 5;
+            public const int nameMaxLength = 50;
+        }
+
     }
 }

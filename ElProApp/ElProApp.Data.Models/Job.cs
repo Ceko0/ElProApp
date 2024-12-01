@@ -8,11 +8,13 @@
     using static Common.EntityValidationConstants.Job;
     using static Common.EntityValidationErrorMessage.Job;
     using static Common.EntityValidationErrorMessage.Master;
+    using ElProApp.Services.Data.Interfaces;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// Represents a Job entity with details about job name, price, and associated work done by teams.
     /// </summary>
-    public class Job
+    public class Job : IDeletableEntity
     {
         /// <summary>
         /// Unique identifier for the job.
@@ -48,5 +50,19 @@
         /// </summary>
         [Comment("Collection of mappings between jobs and teams representing job completions.")]
         public virtual IEnumerable<JobDone> JobsDone { get; set; } = new List<JobDone>();
+
+        /// <summary>
+        /// The date when the record was created.
+        /// </summary>
+        [Comment("The date when the record was created.")]
+        [Column(TypeName = "date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
+
+        /// <summary>
+        /// The date when the record was deleted (logically deleted).
+        /// </summary>
+        [Comment("The date when the record was deleted (logically deleted).")]
+        [Column(TypeName = "date")]
+        public DateTime? DeletedDate { get; set; }
     }
 }

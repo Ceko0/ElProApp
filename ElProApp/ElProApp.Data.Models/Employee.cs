@@ -6,15 +6,16 @@
     using System.ComponentModel.DataAnnotations;
     using Microsoft.EntityFrameworkCore;
 
-    using Models.Mappings;
     using static Common.EntityValidationErrorMessage.Employee;
     using static Common.EntityValidationErrorMessage.Master;
     using static Common.EntityValidationConstants.Employee;
+    using ElProApp.Services.Data.Interfaces;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// Represents an Employee entity with personal information, salary details, and associations to user accounts and teams.
     /// </summary>
-    public class Employee
+    public class Employee : IDeletableEntity
     {
         /// <summary>
         /// Unique identifier for the employee.
@@ -30,7 +31,7 @@
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Comment("The first name of the employee with a maximum of 20 characters.")]
         [PersonalData]
-        public string FirstName { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Last name of the employee, constrained by a maximum length.
@@ -75,6 +76,20 @@
         /// Navigation property to the IdentityUser associated with this employee.
         /// </summary>
         [Comment("Navigation property to the IdentityUser associated with this employee.")]
-        public IdentityUser User { get; set; } = null!;
+        public IdentityUser? User { get; set; }
+
+        /// <summary>
+        /// The date when the record was created.
+        /// </summary>
+        [Comment("The date when the record was created.")]
+        [Column(TypeName = "date")]
+        public DateTime CreatedDate { get; set; } = DateTime.Now.Date;
+
+        /// <summary>
+        /// The date when the record was deleted (logically deleted).
+        /// </summary>
+        [Comment("The date when the record was deleted (logically deleted).")]
+        [Column(TypeName = "date")]
+        public DateTime? DeletedDate { get; set; }
     }
 }
