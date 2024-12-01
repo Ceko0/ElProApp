@@ -1,14 +1,13 @@
 ﻿namespace ElProApp.Services.Data
 {
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
+
     using ElProApp.Data.Models;
+    using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Building;
-    using ElProApp.Data.Models.Mappings;
-
 
     public class BuildingService(IRepository<Building, Guid> _BuildingRepository
         , IBuildingTeamMappingService _buildingTeamMappingService
@@ -76,7 +75,6 @@
             model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
             return model;
         }
-
 
         /// <summary>
         /// Updates a building based on the provided edit input model.
@@ -195,8 +193,7 @@
                 return false;
             }
         }
-
-
+       
         /// <summary>
         /// Converts a string ID to a valid GUID and validates it.
         /// </summary>
