@@ -20,7 +20,7 @@
         /// <summary>
         /// Gets or sets the first name of the employee.
         /// </summary>
-        public string FirstName { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the last name of the employee.
