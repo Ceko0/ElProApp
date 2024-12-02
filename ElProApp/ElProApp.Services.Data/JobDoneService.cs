@@ -46,12 +46,14 @@
 
             var jobService = serviceProvider.GetRequiredService<IJobService>();
 
+            var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
+
             var currentJob = await jobService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.JobId && !x.IsDeleted);
             if (currentJob == null)
                 throw new InvalidOperationException("Job not found.");
 
-            var teamService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
-            var team = await teamService
+            var buildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+            var team = await buildingTeamMappingService
                 .GetAllAttached()
                 .Include(x => x.Team)
                 .Include(x => x.Building)
@@ -66,7 +68,10 @@
                 team = new List<Team>();
 
             var jobDone = AutoMapperConfig.MapperInstance.Map<JobDone>(model);
-
+#pragma warning disable CS8601 // Possible null reference assignment.
+            jobDone.Building = await buildingService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.BuildingId);
+#pragma warning restore CS8601 // Possible null reference assignment.
+            jobDone.Job = currentJob;           
             currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
