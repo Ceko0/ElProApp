@@ -1,16 +1,22 @@
 ﻿namespace ElProApp.Web.Models.JobDone
 { 
     using System.ComponentModel.DataAnnotations;
-    using AutoMapper;
+
     using ElProApp.Data.Models;    
     using Services.Mapping;
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
+    using static Common.EntityValidationConstants.JobDone;
 
     public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone>
     {
 
         public Guid Id { get; set; }
+
+        [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
+        [MaxLength(nameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
+        [Display(Name = "Име")]      
+        public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]

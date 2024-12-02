@@ -6,10 +6,16 @@
     using ElProApp.Services.Mapping;
     using static ElProApp.Common.EntityValidationErrorMessage.JobDobe;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
+    using static ElProApp.Common.EntityValidationConstants.JobDone;
 
     public class JobDoneInputModel : IMapTo<JobDone>
     {
         public Guid Id { get; set; } = Guid.NewGuid();
+
+        [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
+        [MaxLength(nameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
+        [Display(Name = "Име")]
+        public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
