@@ -5,6 +5,7 @@
 
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Web.Models.Team;
+    using static Common.ApplicationConstants;
 
     /// <summary>
     /// Controller for managing team entries and operations.
@@ -13,7 +14,7 @@
     public class TeamController(ITeamService _teamService) : Controller
     {
         private readonly ITeamService teamService = _teamService;
-        
+
         /// <summary>
         /// Displays a list of all teams.
         /// </summary>
@@ -21,6 +22,9 @@
         [HttpGet]
         public async Task<IActionResult> All()
         {
+            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                return RedirectToAction("AllTeams", "Admin", new { area = "admin" });
+
             var teams = await teamService.GetAllAsync();
             return View(teams);
         }
@@ -29,7 +33,7 @@
         /// </summary>
         /// <param name="id">The ID of the team to retrieve details for.</param>
         /// <returns>Returns a view displaying the team's details if found, otherwise returns a BadRequest or NotFound result.</returns>
-        
+
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
@@ -58,8 +62,8 @@
         [HttpGet]
         public async Task<IActionResult> Add()
         {
-         
-           var model = await teamService.AddAsync();
+
+            var model = await teamService.AddAsync();
 
             return View(model);
         }
@@ -74,7 +78,7 @@
         [HttpPost]
         public async Task<IActionResult> Add(TeamInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);            
+            if (!ModelState.IsValid) return View(model);
 
             try
             {

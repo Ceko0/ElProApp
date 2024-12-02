@@ -5,11 +5,13 @@
 
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Web.Models.JobDone;
+    using static Common.ApplicationConstants;
+
     /// <summary>
     /// Controller for managing completed jobs.
     /// </summary>
     [Authorize]
-    public class JobDoneController(IJobDoneService _jobDoneService,IServiceProvider _serviceProvider) : Controller
+    public class JobDoneController(IJobDoneService _jobDoneService, IServiceProvider _serviceProvider) : Controller
     {
         private readonly IJobDoneService jobDoneService = _jobDoneService;
         private readonly IServiceProvider serviceProvider = _serviceProvider;
@@ -20,8 +22,12 @@
         /// <returns>A view with the list of completed jobs.</returns>
         [HttpGet]
         public async Task<IActionResult> All()
-            => View(await jobDoneService.GetAllAsync());
+        {
+            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                return RedirectToAction("AllJobDones", "Admin", new { area = "admin" });
 
+            return View(await jobDoneService.GetAllAsync());
+        }
         /// <summary>
         /// Displays the form for adding a new completed job.
         /// Accessible only by administrators.
@@ -120,6 +126,6 @@
             }
             ModelState.AddModelError("", "Failed to delete the completed job.");
             return RedirectToAction(nameof(Details), new { id });
-        }    
+        }
     }
 }
