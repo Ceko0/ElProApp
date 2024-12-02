@@ -2,12 +2,11 @@
 @model ICollection<BuildingViewModel>
 
 @{
-    ViewData["Title"] = "Всички сгради";
-    Layout = "_Layout";
+    ViewData["Title"] = "Списък със сгради";    
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Списък на всички сгради</h1>
+    <h1 class="display-4 text-center">Списък със сгради</h1>
 
     <div class="table-responsive">
         <table class="table table-striped">
@@ -46,6 +45,7 @@
                         <td>
                             <a asp-area="" asp-controller="Building" asp-action="Details" asp-route-id="@building.Id" class="btn btn-info btn-sm">Информация</a>
                             <a asp-area="" asp-controller="Building" asp-action="Edit" asp-route-id="@building.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                            <a asp-area="" asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
                             <form asp-area="" asp-controller="Building" asp-action="SoftDelete" asp-route-id="@building.Id" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
                             </form>
@@ -54,6 +54,8 @@
                 }
             </tbody>
         </table>
-        <a asp-area="" asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+        <div class="d-flex justify-content-between">
+            <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
     </div>
 </div>

@@ -65,7 +65,7 @@
             .Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
-                    Text = e.FirstName + " " + e.LastName,
+                    Text = e.Name + " " + e.LastName,
                     Selected = Model.EmployeesInTeamIds.Contains(e.Id)
                 }).ToList();
 
@@ -85,12 +85,12 @@
             <p>Няма служители в екипа.</p>
         }
 
-        <button type="submit" class="btn btn-primary">Запази промените</button>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-warning">Запази</button>
+            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с екипи</a>
+            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
     </form>
-
-    <div class="mt-3">
-        <a asp-action="All" class="btn btn-secondary">Обратно към списъка с екипи</a>
-    </div>
 </div>
 
 @section Scripts {

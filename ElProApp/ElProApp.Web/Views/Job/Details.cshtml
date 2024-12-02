@@ -1,13 +1,32 @@
 ﻿@using ElProApp.Web.Models.Job
 @model JobViewModel
 
-<h1>Job Details</h1>
+@{
+    ViewData["Title"] = "Детайли за работа";
+}
 
-<p><strong>Name:</strong> @Model.Name</p>
-<p><strong>Price:</strong> @Model.Price.ToString("F2")</p>
+<div class="text-center">
+    <h1 class="display-4">Детайли за работа</h1>
+</div>
 
-<a asp-area="" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-<form asp-area ="" asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" style="display:inline;">
-    <button type="submit" class="btn btn-danger">Delete</button>
-</form>
-<a asp-area="" asp-action="All" class="btn btn-secondary">Back to All Jobs</a>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h3>@Model.Name</h3>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-3">Име:</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Цена:</dt>
+                <dd class="col-sm-9">@Model.Price.ToString("F2")</dd>
+            </dl>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>                
+                <a asp-action="All" class="btn btn-secondary">Списъка с работа</a>
+                <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>                
+            </div>
+        </div>
+    </div>
+</div>

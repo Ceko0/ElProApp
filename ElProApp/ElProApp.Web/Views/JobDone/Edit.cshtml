@@ -1,13 +1,18 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model JobDoneEditInputModel
 
-
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Редактиране на задача</h1>
+    <h1 class="display-4 text-center">Редактиране на свършена работа</h1>
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="JobId" />
+        
+        <div class="form-group">
+            <label asp-for="Name" class="control-label">Име</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
 
         <div class="form-group">
             <label asp-for="quantity" class="control-label">Количество</label>
@@ -33,7 +38,8 @@
                 <input type="hidden" asp-for="TeamId" />
                 <input type="hidden" asp-for="Team.Name" />
             </ul>
-        </div><div class="form-group">
+        </div>
+        <div class="form-group">
             <label class="control-label">Сграда</label>
             <ul class="list-group">
                 @Model.Building.Name
@@ -42,8 +48,15 @@
                 <input type="hidden" asp-for="Building.Location" />
             </ul>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Запази промените</button>
-    </form>
 
-    <a asp-action="All" class="btn btn-secondary mt-3">Обратно към всички</a>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-warning">Запази</button>
+            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка със свършена работа</a>
+            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
+    </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

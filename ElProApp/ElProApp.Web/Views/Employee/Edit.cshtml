@@ -11,14 +11,14 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <h3>@Model.FirstName @Model.LastName</h3>
+            <h3>@Model.Name @Model.LastName</h3>
             <hr />
                        
             <form asp-action="Edit" method="post">
                 <dl class="row">
                     <dt class="col-sm-3">Име:</dt>
                     <dd class="col-sm-9">
-                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
                     </dd>
 
                     <dt class="col-sm-3">Фамилия:</dt>
@@ -32,9 +32,10 @@
                     </dd>
                 </dl>
                 <input type="hidden" asp-for="@Model.Id" />
-                <div class="d-flex justify-content-between mt-3">
-                    <button type="submit" class="btn btn-success">Запази</button>
-                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Отказ</a>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-warning">Запази</button>
+                    <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с служители</a>
+                    <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
                 </div>
             </form>
         </div>

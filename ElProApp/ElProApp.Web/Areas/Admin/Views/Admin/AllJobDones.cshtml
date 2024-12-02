@@ -1,11 +1,12 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model ICollection<JobDoneViewModel>
+
 @{
-    ViewData["Title"] = "Всички изпълнени задачи";
+    ViewData["Title"] = "Списък със свършени работи";
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Списък с изпълнени задачи</h1>
+    <h1 class="display-4 text-center">Списък със свършена работа</h1>
 
     <table class="table table-striped mt-4">
         <thead>
@@ -30,6 +31,7 @@
                     <td>
                         <a asp-area="" asp-controller="JobDone" asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">Информация</a>
                         <a asp-area="" asp-controller="JobDone" asp-action="Edit" asp-route-id="@jobDone.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                        <a asp-area="" asp-controller="JobDone" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
                         <form asp-area="" asp-controller="JobDone" asp-action="SoftDelete" asp-route-id="@jobDone.Id" method="post" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
                         </form>
@@ -38,5 +40,7 @@
             }
         </tbody>
     </table>
-    <a asp-area="" asp-controller="JobDone" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+    <div class="d-flex justify-content-between">
+        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>    
 </div>

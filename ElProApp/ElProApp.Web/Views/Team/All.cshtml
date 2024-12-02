@@ -63,7 +63,7 @@
                                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                                 if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
                                 {
-                                    <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-primary">Детайли</a>
+                                    <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-warning btn-sm">Информация за екипа</a>
                                 }
                             }
                         </td>
@@ -78,5 +78,8 @@
             }
         </tbody>
     </table>
-    <a asp-area="" asp-controller="Team" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+    <div class="d-flex justify-content-between">
+        <a asp-area="" asp-controller="Job" asp-action="Add" class="btn btn-success">Добави екип</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>
 </div>

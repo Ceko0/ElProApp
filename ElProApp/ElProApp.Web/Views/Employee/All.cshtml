@@ -24,7 +24,7 @@
             @foreach (var employee in Model)
             {
                 <tr>
-                    <td>@employee.FirstName</td>
+                    <td>@employee.Name</td>
                     <td>@employee.LastName</td>
                     <td>@employee.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
                     <td>@employee.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
@@ -59,4 +59,7 @@
             }
         </tbody>
     </table>
+    <div class="d-flex justify-content-between">        
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>
 </div>

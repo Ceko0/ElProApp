@@ -2,11 +2,12 @@
 @model JobDoneViewModel
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Детайли за задача</h1>
+    <h1 class="display-4 text-center">Детайли за свършена работа</h1>
 
     <div class="card mt-4">
         <div class="card-body">
             <h5 class="card-title">Основна информация</h5>
+            <p><strong>Име:</strong> @Model.Name</p>
             <p><strong>Количество:</strong> @Model.quantity</p>
             <p><strong>Дни за изпълнение:</strong> @Model.DaysForJob</p>
             <p><strong>Работа:</strong> @Model.Job.Name</p>
@@ -15,8 +16,9 @@
         </div>
     </div>
 
-    <div class="mt-3">
+    <div class="d-flex justify-content-between">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
-        <a asp-action="All" class="btn btn-secondary">Обратно към всички</a>
+        <a asp-action="All" class="btn btn-secondary">Списъка със свършена работа</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
     </div>
 </div>

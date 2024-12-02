@@ -1,24 +1,42 @@
 ﻿@using ElProApp.Web.Models.Job
 @model ICollection<JobViewModel>
 
-<h1>Списък с работа</h1>
+@{
+    ViewData["Title"] = "Списък с работа";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Име</th>
-            <th>Цена за 1 бр / 1 метър</th>           
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var job in Model)
-        {
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Списък с работа</h1>
+
+    <table class="table table-striped mt-4">
+        <thead>
             <tr>
-                <td>@job.Name</td>
-                <td>@job.Price.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>               
+                <th scope="col">Име</th>
+                <th scope="col">Цена за 1 бр / 1 метър</th>                
             </tr>
-        }
-    </tbody>
-</table>
-<a asp-area="" asp-controller="Job" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
-
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var job in Model)
+                {
+                    <tr>
+                        <td>@job.Name</td>
+                        <td>@job.Price.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>                        
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">Няма налична информация за работа.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        <a asp-area="" asp-controller="Job" asp-action="Add" class="btn btn-success">Добави работа</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>
+    
+</div>

@@ -72,10 +72,10 @@
                 <li class="list-group-item">Няма служители в този екип.</li>
             }
         </ul>
-    </div>
-
-    <div class="mt-4">
-        <a asp-action="All" class="btn btn-secondary">Обратно към списъка с екипи</a>
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary ml-2">Редактирай</a>
+        <div class="d-flex justify-content-between">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
+            <a asp-action="All" class="btn btn-secondary">Списъка с екипи</a>
+            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
     </div>
 </div>

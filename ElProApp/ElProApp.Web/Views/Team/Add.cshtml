@@ -18,7 +18,6 @@
         <span asp-validation-for="SelectedBuildingId" class="text-danger"></span>
     </div>
 
-    <!-- Свършена работа -->
     <div class="form-group">
         <label>Работи за изпълнение</label>
         <div>
@@ -63,7 +62,7 @@
                         <li>
                             <input type="checkbox" name="SelectedEmployeeIds" value="@employee.Id"
                             @(Model.SelectedEmployeeIds.Contains(employee.Id) ? "checked" : "") />
-                            @employee.FirstName
+                            @employee.Name
                         </li>
                     }
                 </ul>
@@ -74,13 +73,13 @@
             }
         </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Добави екип</button>
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success btn-sm">Добави екип</button>
+        <a asp-action="All" class="btn btn-secondary">Списъка с екипи</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>
 </form>
 
-<div>
-    <a asp-action="Index">Назад към списъка</a>
-</div>
 
 @section Scripts {
     @{

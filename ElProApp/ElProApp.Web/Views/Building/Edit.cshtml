@@ -43,8 +43,11 @@
             <p>Няма свързани екипи със сградата.</p>
         } 
 
-        <button type="submit" class="btn btn-primary">Запази промените</button>
-        <a asp-action="All" class="btn btn-secondary">Отказ</a>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-warning">Запази</button>
+            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с сгради</a>
+            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
     </form>
 </div>
 

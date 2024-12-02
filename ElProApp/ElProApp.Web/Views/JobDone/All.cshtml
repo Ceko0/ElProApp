@@ -5,11 +5,12 @@
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Списък с изпълнени задачи</h1>
+    <h1 class="display-4 text-center">Списък с изпълнени свършени работи</h1>
 
     <table class="table table-striped mt-4">
         <thead>
             <tr>
+                <th>Име</th>
                 <th>Работа</th>
                 <th>Екип</th>
                 <th>Сграда</th>
@@ -22,6 +23,7 @@
             @foreach (var jobDone in Model)
             {
                 <tr>
+                    <td>@jobDone.Name</td>
                     <td>@jobDone.Job.Name</td>
                     <td>@jobDone.Team.Name</td>
                     <td>@jobDone.Building.Name</td>
@@ -32,5 +34,8 @@
             }
         </tbody>
     </table>
-    <a asp-area="" asp-controller="JobDone" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
+    <div class="d-flex justify-content-between">
+        <a asp-area="" asp-controller="Job" asp-action="Add" class="btn btn-success">Добави свършена работа</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    </div>
 </div>

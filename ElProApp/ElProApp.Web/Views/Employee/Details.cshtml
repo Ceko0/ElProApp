@@ -11,11 +11,11 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <h3>@Model.FirstName @Model.LastName</h3>
+            <h3>@Model.Name @Model.LastName</h3>
             <hr />
             <dl class="row">
                 <dt class="col-sm-3">Име:</dt>
-                <dd class="col-sm-9">@Model.FirstName</dd>
+                <dd class="col-sm-9">@Model.Name</dd>
 
                 <dt class="col-sm-3">Фамилия:</dt>
                 <dd class="col-sm-9">@Model.LastName</dd>
@@ -53,10 +53,9 @@
             </dl>
 
             <div class="d-flex justify-content-between">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редактиране</a>
-                <form asp-action="SoftDelete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Сигурни ли сте, че искате да изтриете този служител?');">
-                    <button type="submit" class="btn btn-danger">Изтриване</button>
-                </form>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
+                <a asp-action="All" class="btn btn-secondary">Списъка с служители</a>
+                <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
             </div>
         </div>
     </div>
