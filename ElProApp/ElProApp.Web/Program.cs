@@ -13,6 +13,7 @@
     using static ElProApp.Web.Infrastructure.Extensions.ApplicationBuilderExtensions;
     using static ElProApp.Common.ApplicationConstants;
     using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+    using Microsoft.AspNetCore.Mvc;
 
     public class Program
     {
@@ -61,7 +62,10 @@
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
 
             // Add services to the container for MVC and Razor Pages
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(cfg =>
+            {
+                cfg.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
             builder.Services.AddRazorPages();
 
             // Build the application
