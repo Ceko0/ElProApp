@@ -4,15 +4,19 @@
     using Microsoft.EntityFrameworkCore;
     using System.Data;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Linq;   
 
     using ElProApp.Services.Data.Interfaces;
     using ElProApp.Web.Models.Admin;
     using ElProApp.Data;
+    using Microsoft.AspNetCore.Http;
+    using System.Security.Claims;
 
     public class AdminService(UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ElProAppDbContext dbContext)
+            ElProAppDbContext dbContext,
+            SignInManager<IdentityUser> signInManager,
+            IHttpContextAccessor httpContextAccessor)
             : IAdminService
     {
         /// <summary>
@@ -74,6 +78,13 @@
                     await userManager.RemoveFromRolesAsync(user, roles);
                     break;
             }
+
+            var currentUser = await userManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+
+            if (currentUser == user)
+                await signInManager.RefreshSignInAsync(user);
+            
+
             return true;
         }
 
@@ -137,5 +148,6 @@
 
             return true;
         }
+
     }
 }

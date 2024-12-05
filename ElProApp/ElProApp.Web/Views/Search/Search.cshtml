@@ -16,10 +16,23 @@
             </tr>
         </thead>
         <tbody>
+            @{
+                var distinctTypes = Model.Select(x => x.GetType()).Distinct().ToList();
+                int emlpoyeeCounter = 0;
+                int buildingCounter = 0;
+                int teamCounter = 0;
+                int jobDoneCounter = 0;
+                int jobCounter = 0;
+            }
+
             @foreach (var item in Model)
             {
                 if (item is Employee employee)
                 {
+                    if (distinctTypes.Count > 1 && emlpoyeeCounter++ == 0)
+                    {
+                        <tr><td colspan="3" class="table-info text-center"><strong>Служители</strong></td></tr>
+                    }
                     <tr>
                         <td>Служител</td>
                         <td>@employee.Name</td>
@@ -29,14 +42,17 @@
                                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                                 if (employee.UserId == currentUserId)
                                 {
-                                    <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Информация за служителя</a>
+                                    <a asp-area="" asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Информация за служителя</a>
                                 }
                             }
                         </td>
-                    </tr>
-                }
+                    </tr>                }
                 else if (item is Building building)
                 {
+                    if (distinctTypes.Count > 1 && buildingCounter++ == 0)
+                    {
+                        <tr><td colspan="3" class="table-info text-center"><strong>Сгради</strong></td></tr>
+                    }
                     <tr>
                         <td>Сграда</td>
                         <td>@building.Name</td>
@@ -45,6 +61,10 @@
                 }
                 else if (item is Team team)
                 {
+                    if (distinctTypes.Count > 1 && teamCounter++ == 0)
+                    {
+                        <tr><td colspan="3" class="table-info text-center"><strong>Екипи</strong></td></tr>
+                    }
                     <tr>
                         <td>Екип</td>
                         <td>@team.Name</td>                        
@@ -52,6 +72,10 @@
                 }
                 else if (item is JobDone jobDone)
                 {
+                    if (distinctTypes.Count > 1 && jobDoneCounter++ == 0)
+                    {
+                        <tr><td colspan="3" class="table-info text-center"><strong>Свършена работа</strong></td></tr>
+                    }
                     <tr>
                         <td>Свършена работа</td>
                         <td>@jobDone.Job.Name</td>
@@ -60,6 +84,10 @@
                 }
                 else if (item is Job job)
                 {
+                    if (distinctTypes.Count > 1 && jobCounter++ == 0)
+                    {
+                        <tr><td colspan="3" class="table-info text-center"><strong>Работа</strong></td></tr>
+                    }
                     <tr>
                         <td>Работа</td>
                         <td>@job.Name</td>                        
@@ -68,6 +96,45 @@
             }
         </tbody>
     </table>
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination">
+            @if ((int)ViewData["CurrentPage"] > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Search"
+                       asp-route-pageNumber="@( (int)ViewData["CurrentPage"] - 1 )"
+                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-searchIn="@ViewData["SearchIn"]">
+                        Предишна
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= (int)ViewData["TotalPages"]; i++)
+            {
+                <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
+                    <a class="page-link" asp-action="Search"
+                       asp-route-pageNumber="@i"
+                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-searchIn="@ViewData["SearchIn"]">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if ((int)ViewData["CurrentPage"] < (int)ViewData["TotalPages"])
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Search"
+                       asp-route-pageNumber="@( (int)ViewData["CurrentPage"] + 1 )"
+                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-searchIn="@ViewData["SearchIn"]">
+                        Следваща
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
 }
 else
 {

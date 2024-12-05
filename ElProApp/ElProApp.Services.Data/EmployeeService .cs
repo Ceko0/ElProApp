@@ -103,20 +103,13 @@
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            try
-            {
-                var entity = await employeeRepository.GetByIdAsync(model.Id);
-                if (entity == null || entity.IsDeleted) throw new InvalidOperationException("Employee is deleted or not found.");
+            var entity = await employeeRepository.GetByIdAsync(model.Id);
+            if (entity == null || entity.IsDeleted) throw new InvalidOperationException("Employee is deleted or not found.");
 
-                AutoMapperConfig.MapperInstance.Map(model, entity);
+            AutoMapperConfig.MapperInstance.Map(model, entity);
 
-                await employeeRepository.SaveAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            await employeeRepository.SaveAsync();
+            return true;
         }
 
         /// <summary>
@@ -161,16 +154,23 @@
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Invalid employee ID.");
 
-            try
-            {
-                Guid validId = ConvertAndTestIdToGuid(id);
-                bool isDeleted = await employeeRepository.SoftDeleteAsync(validId);
-                return isDeleted;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            Guid validId = ConvertAndTestIdToGuid(id);
+            bool isDeleted = await employeeRepository.SoftDeleteAsync(validId);
+
+            if (httpContextAccessor?.HttpContext?.User == null)
+                throw new InvalidOperationException("Unable to retrieve user context."); 
+            
+            if (!httpContextAccessor.HttpContext.User.Identity!.IsAuthenticated)
+                throw new UnauthorizedAccessException("User is not authenticated."); 
+            
+            var user = await userManager.GetUserAsync(httpContextAccessor.HttpContext.User);    
+
+            if (user == null) throw
+                    new ArgumentNullException("User is null");
+
+            //await userManager.UpdateAsync(user);
+
+            return isDeleted;
         }
 
         /// <summary>
@@ -215,19 +215,19 @@
             {
                 Name = firstName,
                 LastName = lastName,
-                Wages = 10,  
+                Wages = 10,
                 UserId = identityUserId
             };
 
             await employeeRepository.AddAsync(employee);
-            await employeeRepository.SaveAsync();  
+            await employeeRepository.SaveAsync();
 
             return employee.Id.ToString();
         }
 
-        public async Task<bool> SaveChangesAsync() 
+        public async Task<bool> SaveChangesAsync()
             => await employeeRepository.SaveAsync();
-        
+
 
         /// <summary>
         /// Converts and validates the provided ID to a valid <see cref="Guid"/>.
