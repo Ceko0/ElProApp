@@ -30,6 +30,16 @@
                     <dd class="col-sm-9">
                         @Html.EditorFor(model => model.Wages, new { htmlAttributes = new { @class = "form-control" } })
                     </dd>
+                    @{
+                        if (User.IsInRole("Admin"))
+                        {
+                            <dt class="col-sm-3">Заработка:</dt>
+                            <dd class="col-sm-9">
+                                @Html.EditorFor(model => model.MoneyToTake, new { htmlAttributes = new { @class = "form-control" } })
+                            </dd>
+                        }
+                    }
+                    
                 </dl>
                 <input type="hidden" asp-for="@Model.Id" />
                 <div class="d-flex justify-content-between mt-4">

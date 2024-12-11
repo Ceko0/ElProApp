@@ -45,5 +45,12 @@
         [Range(0.01, 9999.99, ErrorMessage = ErrorMassageWages)]
         [Display(Name = "Заплата")]
         public decimal Wages { get; set; }
+
+        /// <summary>
+        /// The total money the employee is set to receive.
+        /// </summary>
+        [Range(-9999.99, 9999.99, ErrorMessage = ErrorMassageWages)]
+        [Display(Name = "Заработка")]
+        public decimal MoneyToTake { get; set; }
     }
 }

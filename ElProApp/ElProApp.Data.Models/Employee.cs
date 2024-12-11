@@ -52,9 +52,9 @@
         public decimal Wages { get; set; } = 0.0m;
 
         /// <summary>
-        /// The total money the employee is set to receive, must be positive.
+        /// The total money the employee is set to receive.
         /// </summary>
-        [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
+        [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassageWages)]
         [Display(Name = "Сума, която служителят трябва да получи")]
         [Comment("The money the employee has to take, must be a positive value.")]
         public decimal MoneyToTake { get; set; } = 0.0m;
