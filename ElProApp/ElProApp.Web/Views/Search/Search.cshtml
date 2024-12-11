@@ -34,8 +34,7 @@
                     }
                     <tr>
                         <td>Служител</td>
-                        <td>@employee.Name</td>
-                        <td>@employee.LastName</td>
+                        <td>@employee.Name  @employee.LastName</td>
                         <td>
                             @{
                                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -66,7 +65,8 @@
                     }
                     <tr>
                         <td>Екип</td>
-                        <td>@team.Name</td>                        
+                        <td>@team.Name</td>
+                        <td>@team.CreatedDate.ToString("dd/MM/yyyy")</td>
                     </tr>
                 }
                 else if (item is JobDone jobDone)
@@ -78,7 +78,7 @@
                     <tr>
                         <td>Свършена работа</td>
                         <td>@jobDone.Name</td>
-                        
+                        <td>@jobDone.CreatedDate.ToString("dd/MM/yyyy") </td>
                     </tr>
                 }
                 else if (item is Job job)
@@ -89,8 +89,10 @@
                     }
                     <tr>
                         <td>Работа</td>
-                        <td>@job.Name</td>                        
+                        <td>@job.Name</td>
+                        <td>@job.Price.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
                     </tr>
+                    
                 }
             }
         </tbody>
