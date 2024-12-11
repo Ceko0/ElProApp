@@ -23,7 +23,7 @@
         [HttpGet]
         public async Task<IActionResult> All()
         {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
                 return RedirectToAction("AllJobDones", "Admin", new { area = "admin" });
 
             return View(await jobDoneService.GetAllAsync());

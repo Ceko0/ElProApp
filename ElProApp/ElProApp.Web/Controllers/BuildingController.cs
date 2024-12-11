@@ -20,7 +20,7 @@
         [HttpGet]
         public async Task<IActionResult> All()
         {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
                 return RedirectToAction("AllBuildings", "Admin", new { area = "admin" });
 
             return View(await buildingService.GetAllAsync());

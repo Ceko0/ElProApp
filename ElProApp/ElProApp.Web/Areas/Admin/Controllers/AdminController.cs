@@ -5,20 +5,18 @@
     using Services.Data.Interfaces;
 
     using ElProApp.Data.Models;
-    using Microsoft.AspNetCore.Http;
-    using System.Net.Http;
 
     [Area("Admin")]
-    [Authorize(Roles = "Admin , OfficeManager")]
+    [Authorize(Roles = "Admin , OfficeManager , Technician")]
     public class AdminController(IServiceProvider serviceProvider,
             IAdminService adminService)
             : Controller
     {
-
         /// <summary>
         /// Retrieves the list of users with their roles and available roles for updating.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains the view with the user roles data.</returns>
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> UpdateUserRoles()
         {
@@ -36,6 +34,7 @@
         /// <param name="roles">The list of roles to be added or removed.</param>
         /// <param name="state">The action to perform on the roles ("add" or "remove").</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains the redirection to the UpdateUserRoles view or Home page if unsuccessful.</returns>
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> UpdateUserRoles(string userId, List<string> roles, string state)
         {
@@ -158,6 +157,7 @@
         /// Retrieves and displays all employees.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains the view with all employees.</returns>
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> AllEmployees()
         {
@@ -182,6 +182,7 @@
         /// Retrieves and displays all jobs.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains the view with all jobs.</returns>
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> AllJobs()
         {
@@ -194,6 +195,7 @@
         /// Retrieves and displays all teams.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation. The task result contains the view with all teams.</returns>
+        [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> AllTeams()
         {
