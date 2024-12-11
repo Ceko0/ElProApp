@@ -10,19 +10,21 @@
 
     <table class="table table-striped mt-4">
         <thead>
-            <tr>
-                <th>Работа</th>                
-                <th>Дни за изпълнение</th>
-                <th>Количество</th>
-                <th>Екип</th>
-                <th>Сграда</th>
-                <th>Действия</th>
-            </tr>
+        <tr>
+            <th>Име</th>
+            <th>Работа</th>
+            <th>Дни за изпълнение</th>
+            <th>Количество</th>
+            <th>Екип</th>
+            <th>Сграда</th>
+            <th>Действия</th>
+        </tr>
         </thead>
         <tbody>
             @foreach (var jobDone in Model)
             {
                 <tr>
+                    <td>@jobDone.Name</td>
                     <td>@jobDone.Job.Name</td>
                     <td>@jobDone.DaysForJob</td>
                     <td>@jobDone.quantity</td>

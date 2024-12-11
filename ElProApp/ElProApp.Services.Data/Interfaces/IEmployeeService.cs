@@ -1,7 +1,7 @@
 ﻿namespace ElProApp.Services.Data.Interfaces
 {
     using ElProApp.Data.Models;
-    using ElProApp.Web.Models.Employee;
+    using Web.Models.Employee;
 
     public interface IEmployeeService
     {
@@ -92,5 +92,6 @@
         Task<string> AddAdminEmployeeAsync(string firstName, string lastName, string identityUserId);
 
         Task<bool> SaveChangesAsync();
+
     }
 }

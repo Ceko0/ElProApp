@@ -1,16 +1,16 @@
 ﻿namespace ElProApp.Services.Data
 {
+    using System.Collections.Generic;
+    using System.Linq; 
+
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
-    using System.Data;
-    using System.Collections.Generic;
-    using System.Linq;   
 
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.Admin;
+    using Interfaces;
+    using Web.Models.Admin;
     using ElProApp.Data;
     using Microsoft.AspNetCore.Http;
-    using System.Security.Claims;
+
 
     public class AdminService(UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,

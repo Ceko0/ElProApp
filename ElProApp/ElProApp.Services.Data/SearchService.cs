@@ -3,17 +3,14 @@
     using Microsoft.EntityFrameworkCore;
     using ElProApp.Data;
     using ElProApp.Data.Models;
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.Search;
+    using Interfaces;
 
     /// <summary>
     /// Service for performing search operations across various entities in the database.
     /// </summary>
     /// <param name="_data">The database context used for accessing data.</param>
-    public class SearchService(ElProAppDbContext _data) : ISearchService
+    public class SearchService(ElProAppDbContext data) : ISearchService
     {
-        private readonly ElProAppDbContext data = _data;
-
         /// <summary>
         /// Performs a search operation based on the provided query and specified entity type.
         /// </summary>
@@ -53,8 +50,6 @@
                     case "Team":
                         results.AddRange(await GetAllEntities<Team>());
                         break;
-                    default:
-                        break;
                 }
             }
             else if (!string.IsNullOrEmpty(searchIn) && !string.IsNullOrEmpty(query))
@@ -75,8 +70,6 @@
                         break;
                     case "Team":
                         results.AddRange(await SearchEntities<Team>(query));
-                        break;
-                    default:
                         break;
                 }
             }

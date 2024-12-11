@@ -4,16 +4,13 @@
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Services.Data.Interfaces;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Service for managing building-team mappings.
     /// </summary>
-    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> _buildingTeamMappingRepository,IServiceProvider _serviceProvider)
+    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> buildingTeamMappingRepository)
         : IBuildingTeamMappingService
     {
-        private readonly IRepository<BuildingTeamMapping, Guid> buildingTeamMappingRepository = _buildingTeamMappingRepository;
-        private readonly IServiceProvider serviceProvider = _serviceProvider;
 
         /// <summary>
         /// Adds a new building-team mapping.
@@ -26,15 +23,6 @@
         {
             if (buildingId == Guid.Empty) throw new ArgumentNullException("Invalid buildingId");
             if (teamId == Guid.Empty) throw new ArgumentNullException("Invalid TeamId");
-
-            var buildingService = serviceProvider.GetService<IBuildingService>()!;
-            var teamService = serviceProvider.GetService<ITeamService>()!;
-
-            var buildingExists = await buildingService.GetAllAttached().FirstOrDefaultAsync(b => b.Id == buildingId && !b.IsDeleted);
-            if (buildingExists == null) throw new InvalidOperationException("Building not found");
-
-            var teamExists = await teamService.GetAllAttached().FirstOrDefaultAsync(t => t.Id == teamId && !t.IsDeleted);
-            if (teamExists == null) throw new InvalidOperationException("Team not found");
 
             var buildingTeamMapping = new BuildingTeamMapping()
             {

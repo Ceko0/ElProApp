@@ -3,8 +3,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
 
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.JobDone;
+    using Interfaces;
+    using Web.Models.JobDone;
 
     public class EarningsCalculationService(IServiceProvider serviceProvider) : IEarningsCalculationService
     {

@@ -1,5 +1,4 @@
 ﻿@using ElProApp.Data.Models
-@using ElProApp.Web.Models.Search
 @using System.Security.Claims
 @model List<object>
 
@@ -78,8 +77,8 @@
                     }
                     <tr>
                         <td>Свършена работа</td>
-                        <td>@jobDone.Job.Name</td>
-                        <td>--</td>
+                        <td>@jobDone.Name</td>
+                        
                     </tr>
                 }
                 else if (item is Job job)

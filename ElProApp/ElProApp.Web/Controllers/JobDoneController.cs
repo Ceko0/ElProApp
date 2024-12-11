@@ -11,15 +11,15 @@
     /// Controller for managing completed jobs.
     /// </summary>
     [Authorize]
-    public class JobDoneController(IJobDoneService _jobDoneService, IServiceProvider _serviceProvider) : Controller
+    public class JobDoneController(IJobDoneService jobDoneService, IServiceProvider serviceProvider) : Controller
     {
-        private readonly IJobDoneService jobDoneService = _jobDoneService;
-        private readonly IServiceProvider serviceProvider = _serviceProvider;
+     
 
         /// <summary>
         /// Displays a list of all completed jobs.
         /// </summary>
         /// <returns>A view with the list of completed jobs.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
         {
@@ -65,6 +65,7 @@
         /// </summary>
         /// <param name="id">The ID of the completed job.</param>
         /// <returns>A view with the completed job details.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
             => View(await jobDoneService.GetByIdAsync(id));

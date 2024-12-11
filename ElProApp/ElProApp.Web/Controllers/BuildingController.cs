@@ -11,11 +11,8 @@
     /// Controller for managing building entries and operations.
     /// </summary>
     [Authorize]
-    public class BuildingController(IBuildingService _buildingService, IBuildingTeamMappingService _buildingTeamMappingService) : Controller
+    public class BuildingController(IBuildingService buildingService, IBuildingTeamMappingService buildingTeamMappingService) : Controller
     {
-        private readonly IBuildingService buildingService = _buildingService;
-        private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
-
         /// <summary>
         /// Displays a list of all buildings.
         /// </summary>
@@ -72,6 +69,7 @@
         /// </summary>
         /// <param name="id">The ID of the building.</param>
         /// <returns>A view with the details of the specified building.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {

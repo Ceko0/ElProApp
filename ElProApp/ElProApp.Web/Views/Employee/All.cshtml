@@ -14,8 +14,6 @@
             <tr>
                 <th>Име</th>
                 <th>Фамилия</th>
-                <th>Дневно възнаграждение</th>
-                <th>Заработка</th>
                 <th>Информация за екипи</th>
                 <th>Информация</th>
             </tr>
@@ -26,8 +24,6 @@
                 <tr>
                     <td>@employee.Name</td>
                     <td>@employee.LastName</td>
-                    <td>@employee.Wages.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
-                    <td>@employee.MoneyToTake.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
                     <td>
                         @if (employee.TeamsEmployeeBelongsTo != null && employee.TeamsEmployeeBelongsTo.Any(te => te != null))
                         {

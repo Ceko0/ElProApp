@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Authorization;
 
     using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.Team;
+    using Models.Team;
     using static Common.ApplicationConstants;
 
     /// <summary>
@@ -19,6 +19,7 @@
         /// Displays a list of all teams.
         /// </summary>
         /// <returns>A view with the list of all teams.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
         {
@@ -33,23 +34,18 @@
         /// </summary>
         /// <param name="id">The ID of the team to retrieve details for.</param>
         /// <returns>Returns a view displaying the team's details if found, otherwise returns a BadRequest or NotFound result.</returns>
-
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest("Invalid team ID.");
-            }
-
             try
             {
                 var team = await teamService.GetByIdAsync(id);
                 return View(team);
             }
-            catch (ArgumentException ex)
+            catch (UnauthorizedAccessException)
             {
-                return NotFound(ex.Message);
+                return StatusCode(403);
             }
         }
 
@@ -111,6 +107,10 @@
             {
                 var team = await teamService.EditByIdAsync(id);
                 return View(team);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(403);
             }
             catch (Exception ex)
             {

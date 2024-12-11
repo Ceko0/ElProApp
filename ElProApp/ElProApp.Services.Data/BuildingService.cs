@@ -3,21 +3,16 @@
     using Microsoft.EntityFrameworkCore;
 
     using ElProApp.Data.Models;
-    using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Services.Mapping;
-    using ElProApp.Web.Models.Building;
+    using Interfaces;
+    using Mapping;
+    using Web.Models.Building;
 
-    public class BuildingService(IRepository<Building, Guid> _BuildingRepository
-        , IBuildingTeamMappingService _buildingTeamMappingService
-        , IServiceProvider _serviceProvider)
-        : IBuildingService
+    public class BuildingService(IRepository<Building, Guid> buildingRepository,
+                                 IBuildingTeamMappingService buildingTeamMappingService,
+                                 IHelpMethodsService helpMethodsService):
+                                 IBuildingService
     {
-        private readonly IRepository<Building, Guid> buildingRepository = _BuildingRepository;
-        private readonly IBuildingTeamMappingService buildingTeamMappingService = _buildingTeamMappingService;
-        private readonly IServiceProvider serviceProvider = _serviceProvider;
-
         /// <summary>
         /// Adds a new building based on the provided input model.
         /// </summary>
@@ -59,7 +54,7 @@
                 throw new ArgumentException("Building ID must be provided.");
             }
 
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
 
             var model = await buildingRepository
                 .GetAllAttached()
@@ -72,7 +67,7 @@
                 throw new InvalidOperationException("Building not found or is deleted.");
             }
 
-            model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
+            model.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(model.Id);
             return model;
         }
 
@@ -138,7 +133,7 @@
 
             foreach (var building in model)
             {
-                building.TeamsOnBuilding = await GetBuildingTeamMapping(building.Id);
+                building.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(building.Id);
             }
 
             return model;
@@ -158,14 +153,15 @@
         /// <returns>The view model representing the building.</returns>
         public async Task<BuildingViewModel> GetByIdAsync(string id)
         {
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             var model = buildingRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
                 .To<BuildingViewModel>()
                 .FirstOrDefault(x => x.Id == validId);
+            if (model == null) throw new InvalidOperationException("Building not found or is deleted.");
 
-            model.TeamsOnBuilding = await GetBuildingTeamMapping(model.Id);
+            model.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(model.Id);
 
             return model!;
         }
@@ -184,7 +180,7 @@
 
             try
             {
-                Guid validId = ConvertAndTestIdToGuid(id);
+                Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
                 bool isDeleted = await buildingRepository.SoftDeleteAsync(validId);
                 return isDeleted;
             }
@@ -193,30 +189,5 @@
                 return false;
             }
         }
-       
-        /// <summary>
-        /// Converts a string ID to a valid GUID and validates it.
-        /// </summary>
-        /// <param name="id">The string ID to convert.</param>
-        /// <returns>The valid GUID.</returns>
-        /// <exception cref="ArgumentException">Thrown if the ID format is invalid.</exception>
-        private static Guid ConvertAndTestIdToGuid(string id)
-        {
-            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId))
-                throw new ArgumentException("Invalid ID format.");
-            return validId;
-        }
-
-        /// <summary>
-        /// Retrieves all team mappings for a building.
-        /// </summary>
-        /// <param name="id">The ID of the building.</param>
-        /// <returns>A list of <see cref="BuildingTeamMapping"/> objects associated with the building.</returns>
-        private async Task<List<BuildingTeamMapping>> GetBuildingTeamMapping(Guid id) => await buildingTeamMappingService
-                                .GetAllAttached()
-                                .Include(x => x.Building)
-                                .Include(x => x.Team)
-                                .Where(x => x.BuildingId == id && !x.Building.IsDeleted && !x.Team.IsDeleted).ToListAsync();
-
     }
 }

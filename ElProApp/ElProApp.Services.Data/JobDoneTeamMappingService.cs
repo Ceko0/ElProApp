@@ -1,13 +1,10 @@
 ﻿namespace ElProApp.Services.Data
-{
-    using ElProApp.Data.Models;
+{ 
+    using Microsoft.EntityFrameworkCore;
+    
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Services.Mapping;
-    using ElProApp.Web.Models.JobDone;
-    using Microsoft.EntityFrameworkCore;
-    using System.Xml.Linq;
+    using Interfaces;
 
     /// <summary>
     /// Service class for managing job done team mappings. Provides functionality to retrieve, add, and remove mappings between teams and job done records.

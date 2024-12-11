@@ -1,19 +1,17 @@
 ﻿namespace ElProApp.Web
 {
+    using Services.Mapping;
+
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity;
-    using Services.Mapping;
     using Microsoft.Extensions.DependencyInjection;
-
-    using ElProApp.Data;
-    using ElProApp.Web.Models;
-    using ElProApp.Data.Models;
-    using ElProApp.Web.Infrastructure.Extensions;
-    using ElProApp.Services.Data;
-    using static ElProApp.Web.Infrastructure.Extensions.ApplicationBuilderExtensions;
-    using static ElProApp.Common.ApplicationConstants;
-    using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
     using Microsoft.AspNetCore.Mvc;
+
+    using ElProApp.Data.Models;
+    using ElProApp.Services.Data;
+    using Data;
+    using Models;
+    using Infrastructure.Extensions;
 
     public class Program
     {
@@ -75,25 +73,28 @@
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
             // Configure the HTTP request pipeline
-            if (!app.Environment.IsDevelopment())
-            {           
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts(); // Enable HTTP Strict Transport Security
             }
-
-            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
-
+            
             // Enable HTTPS redirection and static file serving
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             // Configure request routing
             app.UseRouting();
-
+            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
             // Enable authentication and authorization
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.SeedAdminAndRoles("admin@abv.bg", "admin", "admin@");
+            Task<IApplicationBuilder> seedAdmin = app.SeedAdminAndRoles("admin@abv.bg", "admin", "admin@");
 
             // Map controller routes and Razor Pages
             app.MapControllerRoute(
@@ -102,17 +103,15 @@
 
             app.MapControllerRoute(
                 name: "Error",
-                pattern: "{controller=Home}/{action=Index}/{statusCode?}");
+                pattern: "Home/Error/{statusCode?}",
+                defaults: new { controller = "Home", action = "Error" });
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Error}/{id?}");
-           
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
-
-            // Optional: Show developer exception page in development
-            app.UseDeveloperExceptionPage();
-
+            
             // Seed the database with initial data
             using (var scope = app.Services.CreateScope())
             {

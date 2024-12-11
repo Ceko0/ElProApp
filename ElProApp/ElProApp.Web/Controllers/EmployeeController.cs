@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Identity;
 
-    using ElProApp.Data;
+    using Data;
     using Models.Employee;
     using ElProApp.Services.Data.Interfaces;
     using static Common.ApplicationConstants;
@@ -94,6 +94,7 @@
         /// </summary>
         /// <param name="id">The ID of the employee to edit.</param>
         /// <returns>A view for editing the employee.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
@@ -110,6 +111,7 @@
         /// </summary>
         /// <param name="model">The model with updated employee data.</param>
         /// <returns>Redirects to employee details or stays on the page if there's an error.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
         public async Task<IActionResult> Edit(EmployeeEditInputModel model)
         {

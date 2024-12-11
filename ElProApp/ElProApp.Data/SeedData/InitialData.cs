@@ -1,6 +1,6 @@
 ﻿namespace ElProApp.Data.SeedData
 {
-    using Data.Models;
+    using ElProApp.Data.Models;
     using Microsoft.AspNetCore.Identity;
 
     public class InitialData

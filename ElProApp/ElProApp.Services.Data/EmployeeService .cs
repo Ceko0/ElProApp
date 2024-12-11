@@ -1,31 +1,28 @@
-﻿namespace ElProApp.Services.Data
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace ElProApp.Services.Data
 {
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Http;
-    using ElProApp.Data.Repository.Interfaces;
-    using System.Security.Claims;
-    using Microsoft.EntityFrameworkCore;
-    using Web.Models.Employee;
-    using Services.Data.Interfaces;
-    using Services.Mapping;
-    using ElProApp.Data.Models;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
+
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+
+    using ElProApp.Data.Repository.Interfaces;
+    using Web.Models.Employee;
+    using Interfaces;
+    using Mapping;
+    using ElProApp.Data.Models;
+
 
     /// <summary>
     /// Service class for managing employee-related operations, including adding, editing, deleting, and retrieving employee information.
     /// </summary>
-    public class EmployeeService(IRepository<Employee, Guid> _employeeRepository,
-                               UserManager<IdentityUser> _userManager,
-                               IHttpContextAccessor _httpContextAccessor,
-                               IServiceProvider _serviceProvider)
-                               : IEmployeeService
+    public class EmployeeService(IRepository<Employee, Guid> employeeRepository,
+                               IEmployeeTeamMappingService employeeTeamMappingService,
+                               IHelpMethodsService helpMethodsService)
+                               : IEmployeeService 
     {
-        private readonly IRepository<Employee, Guid> employeeRepository = _employeeRepository;
-        private readonly UserManager<IdentityUser> userManager = _userManager;
-        private readonly IHttpContextAccessor httpContextAccessor = _httpContextAccessor;
-        private readonly IServiceProvider serviceProvider = _serviceProvider;
-
+        
         /// <summary>
         /// Adds a new employee based on the provided model.
         /// </summary>
@@ -35,7 +32,10 @@
         {
             if (model == null) throw new ArgumentNullException(nameof(model));
 
-            string? userId = GetUserId();
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.LastName))
+                throw new ArgumentException("Employee first name must be provided.");
+
+            string? userId = helpMethodsService.GetUserId();
 
             var existingEmployee = await employeeRepository.FirstOrDefaultAsync(e => e.UserId == userId);
             if (existingEmployee != null) throw new InvalidOperationException("Employee already exists for this user.");
@@ -56,17 +56,17 @@
         /// <returns>Returns EmployeeViewModel or throws an exception if the employee is not found.</returns>
         public async Task<EmployeeViewModel?> GetByIdAsync(string id)
         {
-            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Invalid employee ID.");
+            if (string.IsNullOrWhiteSpace(id)) throw new InvalidOperationException("Invalid employee ID.");
 
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             var entity = await employeeRepository.GetByIdAsync(validId);
-            if (entity == null || entity.IsDeleted) throw new ArgumentException("Employee is deleted or not found.");
+            if (entity == null || entity.IsDeleted) throw new InvalidOperationException("Employee is deleted or not found.");
 
-            entity.User = await GetUserAsync(entity.UserId);
+            entity.User = await helpMethodsService.GetUserAsync(entity.UserId);
 
             var model = AutoMapperConfig.MapperInstance.Map<EmployeeViewModel>(entity);
 
-            var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
+            
             var teams = employeeTeamMappingService.GetAllByEmployeeId(id).ToList();
             model.TeamsEmployeeBelongsTo = teams;
 
@@ -82,13 +82,13 @@
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Invalid employee ID.");
 
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             var entity = await employeeRepository.GetByIdAsync(validId);
             if (entity == null || entity.IsDeleted) throw new InvalidOperationException("Employee is deleted or not found.");
 
             IdentityUser user = !string.IsNullOrEmpty(entity.UserId)
-                ? await userManager.FindByIdAsync(entity.UserId) ?? throw new InvalidOperationException("User not found.")
-                : await GetCurrentUserAsync();
+                ? await helpMethodsService.GetUserAsync(entity.UserId) ?? throw new InvalidOperationException("User not found.")
+                : await helpMethodsService.GetCurrentUserAsync();
 
             entity.User = user;
             return AutoMapperConfig.MapperInstance.Map<EmployeeEditInputModel>(entity);
@@ -118,7 +118,6 @@
         /// <returns>A list of view models representing all active employees.</returns>
         public async Task<ICollection<EmployeeViewModel>> GetAllAsync()
         {
-            var employeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var model = await employeeRepository
                             .GetAllAttached()
                             .Where(x => !x.IsDeleted)
@@ -154,36 +153,17 @@
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Invalid employee ID.");
 
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             bool isDeleted = await employeeRepository.SoftDeleteAsync(validId);
 
-            if (httpContextAccessor?.HttpContext?.User == null)
+            var currentUser = await helpMethodsService.GetCurrentUserAsync();
+
+            if (currentUser == null)
                 throw new InvalidOperationException("Unable to retrieve user context."); 
-            
-            if (!httpContextAccessor.HttpContext.User.Identity!.IsAuthenticated)
-                throw new UnauthorizedAccessException("User is not authenticated."); 
-            
-            var user = await userManager.GetUserAsync(httpContextAccessor.HttpContext.User);    
-
-            if (user == null) throw
-                    new ArgumentNullException("User is null");
-
-            //await userManager.UpdateAsync(user);
 
             return isDeleted;
         }
-
-        /// <summary>
-        /// Retrieves the ID of the currently logged-in user from their claims.
-        /// </summary>
-        /// <returns>The user ID.</returns>
-        private string GetUserId()
-        {
-            var userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId)) throw new InvalidOperationException("Failed to retrieve UserId. Please try again.");
-            return userId;
-        }
-
+        
         /// <summary>
         /// Retrieves the employee associated with a user ID.
         /// </summary>
@@ -228,38 +208,5 @@
         public async Task<bool> SaveChangesAsync()
             => await employeeRepository.SaveAsync();
 
-
-        /// <summary>
-        /// Converts and validates the provided ID to a valid <see cref="Guid"/>.
-        /// </summary>
-        /// <param name="id">The ID to validate and convert.</param>
-        /// <returns>The converted <see cref="Guid"/>.</returns>
-        /// <exception cref="ArgumentException">Thrown if the ID format is invalid.</exception>
-        private static Guid ConvertAndTestIdToGuid(string id)
-        {
-            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId)) throw new ArgumentException("Invalid ID format.");
-            return validId;
-        }
-
-        /// <summary>
-        /// Retrieves the currently logged-in user through UserManager if no employee-specific UserId is set.
-        /// </summary>
-        /// <returns>The <see cref="IdentityUser"/> representing the current user.</returns>
-        private async Task<IdentityUser> GetCurrentUserAsync()
-        {
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) throw new InvalidOperationException("User not found.");
-
-            return await userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException("Invalid user.");
-        }
-
-        /// <summary>
-        /// Retrieves the user associated with the specified ID.
-        /// </summary>
-        /// <param name="id">The ID of the user.</param>
-        /// <returns>The <see cref="IdentityUser"/> object associated with the given ID.</returns>
-        private async Task<IdentityUser> GetUserAsync(string id)
-            => await userManager.FindByIdAsync(id)
-            ?? throw new InvalidOperationException("Invalid user.");
     }
 }

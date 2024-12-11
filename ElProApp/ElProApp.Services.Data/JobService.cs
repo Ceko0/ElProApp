@@ -3,17 +3,17 @@
     using Microsoft.EntityFrameworkCore;
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
-    using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Services.Mapping;
-    using ElProApp.Web.Models.Job;
+    using Interfaces;
+    using Mapping;
+    using Web.Models.Job;
 
     /// <summary>
     /// Service class for managing job records. Provides functionality to add, edit, retrieve, and delete job records.
     /// </summary>
-    public class JobService(IRepository<Job, Guid> _jobRepository) : IJobService
+    public class JobService(IRepository<Job, Guid> jobRepository,
+                            IHelpMethodsService helpMethodsService) :
+                            IJobService
     {
-        private readonly IRepository<Job, Guid> jobRepository = _jobRepository;
-
         /// <summary>
         /// Adds a new job based on the provided input model.
         /// </summary>
@@ -35,7 +35,7 @@
         /// <exception cref="ArgumentException">Thrown if the job cannot be found.</exception>
         public async Task<JobViewModel> GetByIdAsync(string id)
         {
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
 
             var entity = await jobRepository.GetByIdAsync(validId);
 
@@ -55,7 +55,7 @@
         /// <returns>A <see cref="JobEditInputModel"/> with the job details for editing.</returns>
         public async Task<JobEditInputModel> EditByIdAsync(string id)
         {
-            Guid validId = ConvertAndTestIdToGuid(id);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             var entity = await jobRepository.GetByIdAsync(validId);
 
             if (entity == null || entity.IsDeleted)
@@ -117,7 +117,7 @@
         {
             try
             {
-                Guid validId = ConvertAndTestIdToGuid(id);
+                Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
                 bool isDeleted = await jobRepository.SoftDeleteAsync(validId);
                 return isDeleted;
             }
@@ -125,19 +125,6 @@
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Converts and validates the job ID string to a GUID.
-        /// </summary>
-        /// <param name="id">The ID string to convert.</param>
-        /// <returns>The converted GUID.</returns>
-        /// <exception cref="ArgumentException">Thrown if the ID is invalid.</exception>
-        private static Guid ConvertAndTestIdToGuid(string id)
-        {
-            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid validId))
-                throw new ArgumentException("Invalid ID format.");
-            return validId;
         }
     }
 }

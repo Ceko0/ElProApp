@@ -1,7 +1,7 @@
 ﻿namespace ElProApp.Services.Data.Interfaces
 {
     using ElProApp.Data.Models;
-    using ElProApp.Web.Models.Building;  
+    using Web.Models.Building;  
 
     public interface IBuildingService
     {

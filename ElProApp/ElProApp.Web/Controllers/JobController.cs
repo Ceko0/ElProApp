@@ -19,6 +19,7 @@
         /// Displays a list of all jobs.
         /// </summary>
         /// <returns>A view with the list of jobs.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
         {
@@ -66,6 +67,7 @@
         /// </summary>
         /// <param name="id">The ID of the job.</param>
         /// <returns>A view with the job details.</returns>
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
             => View(await jobService.GetByIdAsync(id));
