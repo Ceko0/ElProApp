@@ -145,8 +145,7 @@
                 .Include(x => x.Job)
                 .Include(x => x.Building)
                 .Where(x => !x.IsDeleted);
-                //.To<JobDoneViewModel>()
-                //.ToListAsync();
+
                 List<JobDoneViewModel> newModel = new();
                 AutoMapperConfig.MapperInstance.Map(model , newModel);
 
@@ -201,7 +200,7 @@
         /// </summary>
         /// <param name="id">The ID of the job done record to delete.</param>
         /// <returns>True if the delete operation was successful, otherwise false.</returns>
-        public async Task<bool> SoftDeleteAsync(string id)
+        public async Task<bool> SoftDeleteAsync(string id, string teamId)
         {
             try
             {
@@ -211,6 +210,22 @@
                     throw new InvalidOperationException("JobDone record not found.");
 
                 bool isDeleted = await jobDoneRepository.SoftDeleteAsync(validId);
+
+                Guid validTeamId = helpMethodsService.ConvertAndTestIdToGuid(teamId);
+                var team = await helpMethodsService.GetAllTeam().FirstOrDefaultAsync(x => x.Id == validTeamId);
+                JobDoneInputModel model = new()
+                {
+                    Id = entity.Id,
+                    JobId = entity.JobId,
+                    BuildingId = entity.BuildingId,
+                    DaysForJob = entity.DaysForJob,
+                    Quantity = entity.Quantity,
+                    TeamId = team.Id
+                };
+
+                var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
+                await calculator.CalculateDeletingMoneyAsync(model);
+
                 return isDeleted;
             }
             catch (Exception)

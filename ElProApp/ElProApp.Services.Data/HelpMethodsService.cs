@@ -138,6 +138,13 @@ namespace ElProApp.Services.Data
             return model;
         }
 
+        public IQueryable<Team> GetAllTeam()
+        {
+            var service = serviceProvider.GetRequiredService<ITeamService>();
+            var model = service.GetAllAttached().Where(x => !x.IsDeleted);
+            return model;
+        }
+
         /// <summary>
         /// Retrieves all building-team mappings attached to the service.
         /// </summary>

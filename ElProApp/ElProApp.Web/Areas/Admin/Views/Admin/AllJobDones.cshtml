@@ -34,7 +34,7 @@
                         <a asp-area="" asp-controller="JobDone" asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">Информация</a>
                         <a asp-area="" asp-controller="JobDone" asp-action="Edit" asp-route-id="@jobDone.Id" class="btn btn-warning btn-sm">Редактиране</a>
                         <a asp-area="" asp-controller="JobDone" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
-                        <form asp-area="" asp-controller="JobDone" asp-action="SoftDelete" asp-route-id="@jobDone.Id" method="post" style="display:inline;">
+                        <form asp-area="" asp-controller="JobDone" asp-action="SoftDelete" asp-route-id="@jobDone.Id" asp-route-teamId ="@jobDone.TeamId" method="post" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
                         </form>
                     </td>

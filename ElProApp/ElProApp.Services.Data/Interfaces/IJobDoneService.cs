@@ -76,6 +76,6 @@
         /// <returns>
         /// A boolean indicating whether the deletion operation was successful.
         /// </returns>
-        Task<bool> SoftDeleteAsync(string id);
+        Task<bool> SoftDeleteAsync(string id, string teamId);
     }
 }

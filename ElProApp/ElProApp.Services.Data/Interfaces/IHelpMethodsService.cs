@@ -30,6 +30,8 @@ namespace ElProApp.Services.Data.Interfaces
 
         IQueryable<Job> GetAllJobs();
 
+        IQueryable<Team> GetAllTeam();
+
         IQueryable<BuildingTeamMapping> GetAllBuildingTeamMappings();
 
         IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMаppings();

@@ -8,7 +8,7 @@
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
     using static ElProApp.Common.EntityValidationConstants.JobDone;
 
-    public class JobDoneInputModel : IMapTo<JobDone>
+    public class JobDoneInputModel : IMapTo<JobDone> , IMapFrom<JobDone>
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 

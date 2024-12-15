@@ -1,4 +1,7 @@
-﻿namespace ElProApp.Services.Data
+﻿using ElProApp.Data.Models;
+using ElProApp.Web.Models.JobDone;
+
+namespace ElProApp.Services.Data
 {
     using System.Collections.Generic;
     using System.Linq; 
@@ -10,13 +13,16 @@
     using Web.Models.Admin;
     using ElProApp.Data;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+    using System;
 
 
     public class AdminService(UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
             ElProAppDbContext dbContext,
             SignInManager<IdentityUser> signInManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IServiceProvider serviceProvider)
             : IAdminService
     {
         /// <summary>
@@ -143,6 +149,27 @@
 
             isDeletedProperty.SetValue(entity, false);
             deletedDateProperty.SetValue(entity, null);
+
+            if (entity is JobDone jobDone)
+            {
+                JobDoneInputModel model = new()
+                {
+                    Id = jobDone.Id,
+                    JobId = jobDone.JobId,
+                    BuildingId = jobDone.BuildingId,
+                    DaysForJob = jobDone.DaysForJob,
+                    Quantity = jobDone.Quantity,
+                    
+                };
+
+                var jboDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+                var jobDoneTeamMapping = await jboDoneTeamMappingService.GetAllAttached()
+                    .Include(x => x.JobDone)
+                    .FirstOrDefaultAsync(x => x.JobDoneId == validId && x.JobDone.CreatedDate == jobDone.CreatedDate);
+                model.TeamId = jobDoneTeamMapping.TeamId;
+                var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
+                await calculator.CalculateMoneyAsync(model);
+            }
 
             await dbContext.SaveChangesAsync();
 

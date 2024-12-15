@@ -118,9 +118,9 @@
         /// <returns>Redirects to the list of completed jobs.</returns>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
-        public async Task<IActionResult> SoftDelete(string id)
+        public async Task<IActionResult> SoftDelete(string id, string teamId)
         {
-            bool isDeleted = await jobDoneService.SoftDeleteAsync(id);
+            bool isDeleted = await jobDoneService.SoftDeleteAsync(id , teamId);
             if (isDeleted)
             {
                 return RedirectToAction(nameof(All));
