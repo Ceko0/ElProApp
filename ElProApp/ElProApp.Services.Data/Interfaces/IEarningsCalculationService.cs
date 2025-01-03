@@ -4,7 +4,6 @@ namespace ElProApp.Services.Data.Interfaces
 {
     public interface IEarningsCalculationService
     {
-        Task<bool> CalculateMoneyAsync(JobDoneInputModel model); 
-        Task<bool> CalculateDeletingMoneyAsync(JobDoneInputModel model);
+        Task<bool> CalculateMoneyAsync(Guid teamId, Dictionary<Guid, decimal> jobs, Guid jobDoneId, int daysForJob, string action);
     }
 }

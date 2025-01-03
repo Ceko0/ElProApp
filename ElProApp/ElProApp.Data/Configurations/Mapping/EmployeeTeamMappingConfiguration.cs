@@ -1,6 +1,6 @@
 ﻿namespace ElProApp.Data.Configuration.Mapping
 {
-    using ElProApp.Data.Models.Mappings;
+    using Models.Mappings;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,21 +17,19 @@
         public void Configure(EntityTypeBuilder<EmployeeTeamMapping> builder)
         {
             // Sets a composite primary key for the EmployeeTeamMapping entity.
-            builder.HasKey(et => new { et.EmployeeId, et.TeamId });
+            builder.HasKey(et => new {et.EmployeeId, et.TeamId});
 
             // Configures the relationship between Employee and EmployeeTeamMapping.
             builder
-                .HasOne(et => et.Employee) // Each EmployeeTeamMapping has one Employee
-                .WithMany() // An Employee can be part of many EmployeeTeamMappings
-                .HasForeignKey(et => et.EmployeeId) // Foreign key defined in EmployeeTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(et => et.Employee) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction); 
 
             // Configures the relationship between Team and EmployeeTeamMapping.
             builder
-                .HasOne(et => et.Team) // Each EmployeeTeamMapping has one Team
-                .WithMany() // A Team can have many EmployeeTeamMappings
-                .HasForeignKey(et => et.TeamId) // Foreign key defined in EmployeeTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(et => et.Team) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

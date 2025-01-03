@@ -48,7 +48,7 @@
         public IdentityUser User { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the collection of teams that the employee belongs to.
+        /// Gets or sets the collection of Teams that the employee belongs to.
         /// </summary>
         public ICollection<EmployeeTeamMapping> TeamsEmployeeBelongsTo { get; set; } = new List<EmployeeTeamMapping>();
 

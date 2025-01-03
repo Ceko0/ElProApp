@@ -12,8 +12,8 @@
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <h3>@Model.Name @Model.LastName</h3>
-            <hr />
-                       
+            <hr/>
+
             <form asp-action="Edit" method="post">
                 <dl class="row">
                     <dt class="col-sm-3">Име:</dt>
@@ -39,9 +39,10 @@
                             </dd>
                         }
                     }
-                    
+
                 </dl>
-                <input type="hidden" asp-for="@Model.Id" />
+                <input type="hidden" asp-for="@Model.Id"/>
+                <input type="hidden" asp-for="MoneyToTake" />
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-warning">Запази</button>
                     <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с служители</a>

@@ -10,9 +10,6 @@
     /// </summary>
     public class JobDoneTeamMapping
     {
-        [Required]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         /// <summary>
         /// Foreign key for the job done.
         /// </summary>

@@ -1,21 +1,20 @@
-﻿using ElProApp.Data.Models;
-using ElProApp.Web.Models.JobDone;
-
-namespace ElProApp.Services.Data
+﻿namespace ElProApp.Services.Data
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq; 
+    using System.Linq;
 
     using Microsoft.AspNetCore.Identity;
-    using Microsoft.EntityFrameworkCore;
-
-    using Interfaces;
-    using Web.Models.Admin;
-    using ElProApp.Data;
+    using Microsoft.EntityFrameworkCore; 
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
 
+    using Interfaces;
+    using Web.Models.JobDone;
+    using Web.Models.Admin;
+    using ElProApp.Data;
+    using ElProApp.Data.Models;
+    using static Common.EntityValidationConstants.CalculationAction;
 
     public class AdminService(UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -89,7 +88,7 @@ namespace ElProApp.Services.Data
 
             if (currentUser == user)
                 await signInManager.RefreshSignInAsync(user);
-            
+
 
             return true;
         }
@@ -155,11 +154,9 @@ namespace ElProApp.Services.Data
                 JobDoneInputModel model = new()
                 {
                     Id = jobDone.Id,
-                    JobId = jobDone.JobId,
                     BuildingId = jobDone.BuildingId,
                     DaysForJob = jobDone.DaysForJob,
-                    Quantity = jobDone.Quantity,
-                    
+                    Jobs = new ()
                 };
 
                 var jboDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
@@ -167,8 +164,12 @@ namespace ElProApp.Services.Data
                     .Include(x => x.JobDone)
                     .FirstOrDefaultAsync(x => x.JobDoneId == validId && x.JobDone.CreatedDate == jobDone.CreatedDate);
                 model.TeamId = jobDoneTeamMapping.TeamId;
+                var jobs = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
+                    .GetAllAttached().Where(x => x.JobDoneId == jobDone.Id)
+                    .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
+
                 var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
-                await calculator.CalculateMoneyAsync(model);
+                await calculator.CalculateMoneyAsync(jobDoneTeamMapping.TeamId , jobs , jobDone.Id, jobDone.DaysForJob , Add);
             }
 
             await dbContext.SaveChangesAsync();

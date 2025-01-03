@@ -17,17 +17,13 @@
     {
         public static void Main(string[] args)
         {
-            // Create a new web application builder
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configure the database context to use SQL Server
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-            // Configure default identity settings
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                // Настройка на опциите за Identity
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -52,27 +48,22 @@
                 options.Cookie.SameSite = SameSiteMode.Strict;
                 options.ExpireTimeSpan = TimeSpan.FromDays(14);
                 options.LoginPath = new PathString("/Identity/Account/Login");
+                options.AccessDeniedPath = new PathString("/Home/Error/403");
             });
 
-
-            // Register repositories and services
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
 
-            // Add services to the container for MVC and Razor Pages
             builder.Services.AddControllersWithViews(cfg =>
             {
                 cfg.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
             builder.Services.AddRazorPages();
 
-            // Build the application
             var app = builder.Build();
             
-            // Configure AutoMapper mappings
             AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).Assembly);
 
-            // Configure the HTTP request pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -80,23 +71,19 @@
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts(); // Enable HTTP Strict Transport Security
+                app.UseHsts();
             }
             
-            // Enable HTTPS redirection and static file serving
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // Configure request routing
             app.UseRouting();
-            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
-            // Enable authentication and authorization
+            app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
             app.UseAuthentication();
             app.UseAuthorization();
 
             Task<IApplicationBuilder> seedAdmin = app.SeedAdminAndRoles("admin@abv.bg", "admin", "admin@");
 
-            // Map controller routes and Razor Pages
             app.MapControllerRoute(
                name: "Areas",
                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
@@ -112,7 +99,6 @@
 
             app.MapRazorPages();
             
-            // Seed the database with initial data
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ElProAppDbContext>();
@@ -121,7 +107,6 @@
                 seeder.SeedDatabase();
             }
 
-            // Run the application
             app.Run();
         }
     }

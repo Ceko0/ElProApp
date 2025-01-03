@@ -25,19 +25,20 @@
                         <td>@building.Name</td>
                         <td>@building.Location</td>
                         <td>
-                            @if (building.TeamsOnBuilding.Any())
+
+                            @if (building.TeamsOnBuilding != null && building.TeamsOnBuilding.Any(te => te != null))
                             {
-                                <ul>
-                                    @foreach (var team in building.TeamsOnBuilding)
+                                <select class="form-select" onchange="location.href=this.value;">
+                                    <option selected disabled>Изберете екип за информация</option>
+                                    @foreach (var teamMapping in building.TeamsOnBuilding.Where(te => te != null))
                                     {
-                                        <li>
-                                            <a asp-controller="Team" asp-action="Details" asp-route-id="@team.Team.Id">
-                                                @team.Team.Name
-                                            </a>
-                                        </li>
+                                        <option value="@Url.Action("Details", "Team", new { id = teamMapping.Team.Id })">
+                                            @teamMapping?.Team?.Name
+                                        </option>
                                     }
-                                </ul>
+                                </select>
                             }
+
                             else
                             {
                                 <span>Няма екипи към тази сграда.</span>

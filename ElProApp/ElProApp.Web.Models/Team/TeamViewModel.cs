@@ -10,12 +10,10 @@
         // Name of the team
         public string Name { get; set; } = null!;
 
-        public string Location { get; set; } = null!;
-
-        // Collection of buildings associated with the team
+        // Collection of Buildings associated with the team
         public ICollection<BuildingTeamMapping> BuildingWithTeam { get; set; } = new List<BuildingTeamMapping>();
 
-        // Collection of jobs completed by the team
+        // Collection of JobsList completed by the team
         public ICollection<JobDoneTeamMapping> JobsDoneByTeam { get; set; } = new List<JobDoneTeamMapping>();
 
         // Collection of employees who are part of the team

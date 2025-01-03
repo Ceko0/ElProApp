@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ElProApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class intialDB : Migration
+    public partial class initialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,7 +72,7 @@ namespace ElProApp.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the job with a maximum of 50 characters."),
-                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The price of the job with up to 6 digits before the decimal point and up to 2 digits after."),
+                    Price = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The price of the job with up to 4 digits before the decimal point and up to 2 digits after."),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the job is active or soft deleted."),
                     CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
                     DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
@@ -234,11 +234,9 @@ namespace ElProApp.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Unique identifier for the job done record."),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The name of the job with a maximum of 50 characters."),
-                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the job being done."),
-                    Quantity = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "Quantity of work completed."),
                     DaysForJob = table.Column<int>(type: "int", nullable: false, comment: "Number of days spent completing the job."),
                     BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key for the building where was completing the job."),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the jobdone is active or soft deleted."),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, comment: "Indicates if the jobDone is active or soft deleted."),
                     CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
                     DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
                 },
@@ -251,11 +249,6 @@ namespace ElProApp.Data.Migrations
                         principalTable: "Buildings",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_JobsDone_Jobs_JobId",
-                        column: x => x.JobId,
-                        principalTable: "Jobs",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -264,9 +257,7 @@ namespace ElProApp.Data.Migrations
                 {
                     BuildingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Building entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
-                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created.")
                 },
                 constraints: table =>
                 {
@@ -289,9 +280,7 @@ namespace ElProApp.Data.Migrations
                 {
                     EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Employee entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
-                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created.")
                 },
                 constraints: table =>
                 {
@@ -309,14 +298,36 @@ namespace ElProApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JobDoneJobMapping",
+                columns: table => new
+                {
+                    JobId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JobDoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(6,2)", nullable: false, comment: "The quantity of the job with up to 6 digits before the decimal point and up to 2 digits after."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created.")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobDoneJobMapping", x => new { x.JobDoneId, x.JobId });
+                    table.ForeignKey(
+                        name: "FK_JobDoneJobMapping_JobsDone_JobDoneId",
+                        column: x => x.JobDoneId,
+                        principalTable: "JobsDone",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_JobDoneJobMapping_Jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "Jobs",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "JobDoneTeamMappings",
                 columns: table => new
                 {
                     JobDoneId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the JobDone entity."),
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, comment: "Foreign key referencing the Team entity."),
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
-                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created.")
                 },
                 constraints: table =>
                 {
@@ -389,6 +400,11 @@ namespace ElProApp.Data.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_JobDoneJobMapping_JobId",
+                table: "JobDoneJobMapping",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_JobDoneTeamMappings_TeamId",
                 table: "JobDoneTeamMappings",
                 column: "TeamId");
@@ -397,11 +413,6 @@ namespace ElProApp.Data.Migrations
                 name: "IX_JobsDone_BuildingId",
                 table: "JobsDone",
                 column: "BuildingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_JobsDone_JobId",
-                table: "JobsDone",
-                column: "JobId");
         }
 
         /// <inheritdoc />
@@ -429,6 +440,9 @@ namespace ElProApp.Data.Migrations
                 name: "EmployeeTeamMappings");
 
             migrationBuilder.DropTable(
+                name: "JobDoneJobMapping");
+
+            migrationBuilder.DropTable(
                 name: "JobDoneTeamMappings");
 
             migrationBuilder.DropTable(
@@ -436,6 +450,9 @@ namespace ElProApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Employees");
+
+            migrationBuilder.DropTable(
+                name: "Jobs");
 
             migrationBuilder.DropTable(
                 name: "JobsDone");
@@ -448,9 +465,6 @@ namespace ElProApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Buildings");
-
-            migrationBuilder.DropTable(
-                name: "Jobs");
         }
     }
 }

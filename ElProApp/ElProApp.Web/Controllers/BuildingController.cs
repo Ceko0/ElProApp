@@ -14,9 +14,9 @@
     public class BuildingController(IBuildingService buildingService, IBuildingTeamMappingService buildingTeamMappingService) : Controller
     {
         /// <summary>
-        /// Displays a list of all buildings.
+        /// Displays a list of all Buildings.
         /// </summary>
-        /// <returns>A view with the list of all buildings.</returns>
+        /// <returns>A view with the list of all Buildings.</returns>
         [HttpGet]
         public async Task<IActionResult> All()
         {

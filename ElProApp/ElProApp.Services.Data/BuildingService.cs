@@ -121,9 +121,9 @@
         }
 
         /// <summary>
-        /// Retrieves a list of all buildings.
+        /// Retrieves a list of all Buildings.
         /// </summary>
-        /// <returns>A collection of view models representing all buildings.</returns>
+        /// <returns>A collection of view models representing all Buildings.</returns>
         public async Task<ICollection<BuildingViewModel>> GetAllAsync()
         {
             var model = await buildingRepository.GetAllAttached()
@@ -140,9 +140,9 @@
         }
 
         /// <summary>
-        /// Retrieves all attached buildings.
+        /// Retrieves all attached Buildings.
         /// </summary>
-        /// <returns>An <see cref="IQueryable{Building}"/> collection of all attached buildings.</returns>
+        /// <returns>An <see cref="IQueryable{Building}"/> collection of all attached Buildings.</returns>
         public IQueryable<Building> GetAllAttached()
             => buildingRepository.GetAllAttached().Where(x => !x.IsDeleted);
 
@@ -151,19 +151,19 @@
         /// </summary>
         /// <param name="id">The ID of the building.</param>
         /// <returns>The view model representing the building.</returns>
-        public async Task<BuildingViewModel> GetByIdAsync(string id)
+        public async Task<BuildingViewModel?> GetByIdAsync(string id)
         {
-            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
-            var model = buildingRepository
+            Guid validId =  helpMethodsService.ConvertAndTestIdToGuid(id);
+            var model =  await buildingRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
                 .To<BuildingViewModel>()
-                .FirstOrDefault(x => x.Id == validId);
+                .FirstOrDefaultAsync(x => x.Id == validId);
             if (model == null) throw new InvalidOperationException("Building not found or is deleted.");
 
             model.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(model.Id);
 
-            return model!;
+            return model;
         }
 
         /// <summary>

@@ -4,21 +4,21 @@
     using Microsoft.AspNetCore.Mvc;
 
     using ElProApp.Services.Data.Interfaces;
-    using ElProApp.Web.Models.JobDone;
+    using Models.JobDone;
     using static Common.ApplicationConstants;
 
     /// <summary>
-    /// Controller for managing completed jobs.
+    /// Controller for managing completed JobsList.
     /// </summary>
     [Authorize]
-    public class JobDoneController(IJobDoneService jobDoneService, IServiceProvider serviceProvider) : Controller
+    public class JobDoneController(IJobDoneService jobDoneService) : Controller
     {
      
 
         /// <summary>
-        /// Displays a list of all completed jobs.
+        /// Displays a list of all completed JobsList.
         /// </summary>
-        /// <returns>A view with the list of completed jobs.</returns>
+        /// <returns>A view with the list of completed JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
@@ -115,7 +115,7 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <param name="id">The ID of the completed job to delete.</param>
-        /// <returns>Redirects to the list of completed jobs.</returns>
+        /// <returns>Redirects to the list of completed JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id, string teamId)

@@ -24,14 +24,14 @@
             // Configures the Name property as required with a maximum length.
             builder
                 .Property(j => j.Name)
-                .IsRequired() // Name must not be null
-                .HasMaxLength(nameMaxLength); // Maximum length of the name
+                .IsRequired()
+                .HasMaxLength(NameMaxLength); 
 
             // Configures the Price property as required with a specific decimal type.
             builder
                 .Property(j => j.Price)
-                .IsRequired() // Price must not be null
-                .HasColumnType("decimal(6, 2)"); // 4 digits total, 2 after the decimal point
+                .IsRequired()
+                .HasColumnType("decimal(6, 2)");
         }
     }
 }

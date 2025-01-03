@@ -1,6 +1,4 @@
-﻿using ElProApp.Data.Models.Mappings;
-
-namespace ElProApp.Services.Data
+﻿namespace ElProApp.Services.Data
 { 
     using System.Security.Claims;
 
@@ -8,7 +6,8 @@ namespace ElProApp.Services.Data
     using Microsoft.AspNetCore.Identity;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.EntityFrameworkCore;
-    
+
+    using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Models;
     using Interfaces;
 
@@ -28,7 +27,6 @@ namespace ElProApp.Services.Data
             if (string.IsNullOrEmpty(userId)) throw new InvalidOperationException("Failed to retrieve UserId. Please try again.");
             return userId;
         }
-
 
         /// <summary>
         /// Retrieves the user associated with the specified ID.
@@ -62,7 +60,6 @@ namespace ElProApp.Services.Data
 
             return await userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException("Invalid user.");
         }
-
 
         /// <summary>
         /// Retrieves all team mappings for a building.
@@ -99,7 +96,7 @@ namespace ElProApp.Services.Data
         public async Task<IList<string>> GetUserRolesAsync(IdentityUser user) => await userManager.GetRolesAsync(user);
 
         /// <summary>
-        /// Retrieves all buildings attached to the service.
+        /// Retrieves all Buildings attached to the service.
         /// </summary>
         public IQueryable<Building> GetAllBuildings()
         {
@@ -129,7 +126,7 @@ namespace ElProApp.Services.Data
         }
 
         /// <summary>
-        /// Retrieves all jobs attached to the service.
+        /// Retrieves all JobsList attached to the service.
         /// </summary>
         public IQueryable<Job> GetAllJobs()
         {

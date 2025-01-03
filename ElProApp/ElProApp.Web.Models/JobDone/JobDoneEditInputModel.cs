@@ -8,29 +8,24 @@
     using static Common.EntityValidationErrorMessage.Master;
     using static Common.EntityValidationConstants.JobDone;
 
-    public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone>
+    public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone> 
     {
 
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
-        [MaxLength(nameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
+        [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Display(Name = "Име")]      
         public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
-        [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
-        public decimal quantity { get; set; }
-
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
+
         public int DaysForJob { get; set; }
 
-        public Guid JobId { get; set; }
+        public Dictionary<Guid, decimal> Jobs { get; set; } = new();
 
-        public Job Job { get; set; } = new();
-
+        public List<Job> JobList { get; set; } = new(); 
         public Guid BuildingId { get; set; }
 
         public Building Building { get; set; } = null!;
@@ -38,5 +33,6 @@
         public Guid TeamId { get; set; }
 
         public Team Team { get; set; } = null!;
+
     }
 }

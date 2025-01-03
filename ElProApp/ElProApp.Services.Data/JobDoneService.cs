@@ -1,43 +1,48 @@
 ﻿namespace ElProApp.Services.Data
 {
+    using System.Linq;
+
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+
     using ElProApp.Data.Models;
     using ElProApp.Data.Repository.Interfaces;
     using Interfaces;
     using Mapping;
     using Web.Models.JobDone;
-    using Microsoft.Extensions.DependencyInjection;
-    using System.Linq;
+    using static Common.EntityValidationConstants.CalculationAction;
 
     /// <summary>
     /// Service class for managing job done operations, including adding, editing, retrieving, and deleting job done records.
     /// </summary>
-    public class JobDoneService(IRepository<JobDone, Guid> jobDoneRepository, 
-                                IServiceProvider serviceProvider, 
+    public class JobDoneService(IRepository<JobDone, Guid> jobDoneRepository,
+                                IServiceProvider serviceProvider,
                                 IHelpMethodsService helpMethodsService) :
                                 IJobDoneService
     {
         /// <summary>
-        /// Initializes a new job done input model with lists of teams and jobs.
+        /// Initializes a new job done input model with lists of Teams and JobsList.
         /// </summary>
-        /// <returns>A <see cref="JobDoneInputModel"/> containing lists of available teams and jobs.</returns>
+        /// <returns>A <see cref="JobDoneInputModel"/> containing lists of available Teams and JobsList.</returns>
         public async Task<JobDoneInputModel> AddAsync()
         {
-            var EmployeeTeamMappingService = serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
             var jobService = serviceProvider.GetRequiredService<IJobService>();
             var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
             var userId = helpMethodsService.GetUserId();
-            
+
 
             var model = new JobDoneInputModel();
-            model.teams = await EmployeeTeamMappingService.GetAllAttached()
-                                                          .Include(x => x.Team)
-                                                          .Include(x => x.Employee)
-                                                          .Where(x => x.Employee.UserId == userId)
-                                                          .Select(x => x.Team)
-                                                          .ToListAsync();
-            model.jobs = await jobService.GetAllAttached().Where(x => !x.IsDeleted).ToListAsync();
-            model.buildings = await buildingService.GetAllAttached().Where(x => !x.IsDeleted).ToListAsync();
+            model.Teams = await serviceProvider.GetRequiredService<IEmployeeTeamMappingService>()
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .Include(x => x.Employee)
+                .Where(x => x.Employee.UserId == userId)
+                .Select(x => x.Team)
+                .ToListAsync();
+            model.JobsList = await jobService.GetAllAttached().Where(x => !x.IsDeleted).ToListAsync();
+            model.Jobs = await jobService.GetAllAttached().Where(x => !x.IsDeleted)
+                .ToDictionaryAsync(x => x.Id, x => 0m);
+            model.Buildings = await buildingService.GetAllAttached().Where(x => !x.IsDeleted).ToListAsync();
             return model;
         }
 
@@ -48,42 +53,21 @@
         /// <returns>The ID of the newly created job done record as a string.</returns>
         public async Task<string> AddAsync(JobDoneInputModel model)
         {
-            var jobService = serviceProvider.GetRequiredService<IJobService>();
-            var queryableJob = jobService.GetAllAttached();
-            Job currentJob = await queryableJob.FirstOrDefaultAsync(x => x.Id == model.JobId && !x.IsDeleted);
-            if (currentJob == null)
-                throw new InvalidOperationException("Job not found.");
-
             var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
-
-            var jobDoneTeamMppingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-
-            var buildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
-            var team = await buildingTeamMappingService
-                .GetAllAttached()
-                .Include(x => x.Team)
-                .Include(x => x.Building)
-                .Where(x => x.TeamId == model.TeamId
-                                && x.BuildingId == model.BuildingId
-                                && !x.Team.IsDeleted
-                                && !x.Building.IsDeleted)
-                .Select(x => x.Team)
-                .ToListAsync();
-
-            if (team == null)
-                team = new List<Team>();
-
+            var jobDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+            var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
             var jobDone = AutoMapperConfig.MapperInstance.Map<JobDone>(model);
-#pragma warning disable CS8601 // Possible null reference assignment.
+
             jobDone.Building = await buildingService.GetAllAttached().FirstOrDefaultAsync(x => x.Id == model.BuildingId);
-#pragma warning restore CS8601 // Possible null reference assignment.
-            jobDone.Job = currentJob;           
-            currentJob?.JobsDone.Append(jobDone);
 
             await jobDoneRepository.AddAsync(jobDone);
-            await jobDoneTeamMppingService.AddAsync(model.Id, model.TeamId);
-            var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
-            await calculator.CalculateMoneyAsync(model);
+            await jobDoneTeamMappingService.AddAsync(model.Id, model.TeamId);
+            var buildingTeamMappingService = serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+            if (buildingTeamMappingService.Any(model.BuildingId, model.TeamId) == false ) 
+                buildingTeamMappingService.AddAsync(model.BuildingId,model.TeamId);
+
+            await calculator.CalculateMoneyAsync(model.TeamId,model.Jobs,model.Id,model.DaysForJob,Add);
+
             return jobDone.Id.ToString();
         }
 
@@ -92,23 +76,40 @@
         /// </summary>
         /// <param name="id">The ID of the job done record to retrieve.</param>
         /// <returns>A <see cref="JobDoneEditInputModel"/> for editing the job done record.</returns>
-        public async Task<JobDoneEditInputModel> EditByIdAsync(string id )
+        public async Task<JobDoneEditInputModel> EditByIdAsync(string id)
         {
             Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
-            
-            var model = await jobDoneRepository
+
+            var entity = await jobDoneRepository
                 .GetAllAttached()
-                .Include(x => x.Job)
-                .Include( x => x.Building)
+                .Include(x => x.Building)
                 .Where(x => !x.IsDeleted)
-                .To<JobDoneEditInputModel>()
                 .FirstOrDefaultAsync(x => x.Id == validId);
-            if (model == null)
+
+            if (entity == null)
                 throw new InvalidOperationException("JobDone is deleted or not found.");
 
-            model.Team = await helpMethodsService.GetTeamInforamtion(model.Id);
-            model.TeamId = model.Team.Id;
-            return model!;
+            var team = await helpMethodsService.GetTeamInforamtion(entity.Id);
+
+            var model = new JobDoneEditInputModel
+            {
+                BuildingId = entity.BuildingId,
+                Building = entity.Building,
+                DaysForJob = entity.DaysForJob,
+                Id = entity.Id,
+                Name = entity.Name,
+                TeamId = team.Id,
+                Team = team
+            };
+
+            model.JobList = await serviceProvider.GetRequiredService<IJobService>().GetAllAttached().ToListAsync();
+
+            model.Jobs = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
+                .GetAllAttached()
+                .Where(x => x.JobDoneId == validId)
+                .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
+
+            return model;
         }
 
         /// <summary>
@@ -118,21 +119,23 @@
         /// <returns>True if the update was successful, otherwise false.</returns>
         public async Task<bool> EditByModelAsync(JobDoneEditInputModel model)
         {
-            try
-            {
-                var entity = await jobDoneRepository.GetByIdAsync(model.Id);
-                if (entity == null || entity.IsDeleted)
-                    throw new InvalidOperationException("Jobdone is deleted or not found.");
+            var entity = await jobDoneRepository.GetByIdAsync(model.Id);
+            if (entity == null || entity.IsDeleted)
+                throw new InvalidOperationException("JobDone is deleted or not found.");
+            var jobsToRemove = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
+                .GetAllAttached()
+                .Where(x => x.JobDoneId == model.Id)
+                .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
+            var editedJobs = model.Jobs;
+            AutoMapperConfig.MapperInstance.Map(model, entity);
 
-                AutoMapperConfig.MapperInstance.Map(model, entity);
+            await jobDoneRepository.SaveAsync();
 
-                await jobDoneRepository.SaveAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
+            await calculator.CalculateMoneyAsync(model.TeamId, jobsToRemove, model.Id, model.DaysForJob, Remove);
+            await calculator.CalculateMoneyAsync(model.TeamId, editedJobs, model.Id, model.DaysForJob, Add);
+            
+            return true;
         }
 
         /// <summary>
@@ -142,12 +145,11 @@
         public async Task<ICollection<JobDoneViewModel>> GetAllAsync()
         {
             var model = jobDoneRepository.GetAllAttached()
-                .Include(x => x.Job)
                 .Include(x => x.Building)
                 .Where(x => !x.IsDeleted);
 
-                List<JobDoneViewModel> newModel = new();
-                AutoMapperConfig.MapperInstance.Map(model , newModel);
+            List<JobDoneViewModel> newModel = new();
+            AutoMapperConfig.MapperInstance.Map(model, newModel);
 
             foreach (var jobDone in newModel)
             {
@@ -163,7 +165,8 @@
         /// </summary>
         /// <returns>An <see cref="IQueryable"/> collection of <see cref="JobDone"/> records with attached data.</returns>
         public IQueryable<JobDone> GetAllAttached()
-            => jobDoneRepository.GetAllAttached().Include(x => x.Job).Where(x => !x.IsDeleted && !x.Job.IsDeleted);
+            => jobDoneRepository.GetAllAttached()
+                .Where(x => !x.IsDeleted);
 
         /// <summary>
         /// Retrieves a specific job done record by its ID.
@@ -176,10 +179,9 @@
             var queryableEntity = jobDoneRepository
                 .GetAllAttached()
                 .Include(x => x.Building)
-                .Include(x => x.Job)
                 .Where(x => !x.IsDeleted);
-            
-              var entity = await queryableEntity.FirstOrDefaultAsync(x => x.Id == validId);
+
+            var entity = await queryableEntity.FirstOrDefaultAsync(x => x.Id == validId);
 
             if (entity != null)
             {
@@ -189,6 +191,15 @@
                 var maping = await jobDoneTeamMappingService.GetByJobDoneIdAsync(model.Id);
                 model.TeamId = maping.TeamId;
                 model.Team = maping.Team;
+
+                model.Jobs = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
+                    .GetAllAttached()
+                    .Include(x => x.Job)
+                    .Include( x => x.JobDone)
+                    .Where(x => x.JobDoneId == validId)
+                    .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
+
+                model.JobsList = await serviceProvider.GetRequiredService<IJobService>().GetAllAttached().ToListAsync();
                 return model;
             }
 
@@ -202,36 +213,25 @@
         /// <returns>True if the delete operation was successful, otherwise false.</returns>
         public async Task<bool> SoftDeleteAsync(string id, string teamId)
         {
-            try
-            {
-                Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
-                var entity = await jobDoneRepository.GetByIdAsync(validId);
-                if (entity == null)
-                    throw new InvalidOperationException("JobDone record not found.");
 
-                bool isDeleted = await jobDoneRepository.SoftDeleteAsync(validId);
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
+            var entity = await jobDoneRepository.GetByIdAsync(validId);
+            if (entity == null)
+                throw new InvalidOperationException("JobDone record not found.");
 
-                Guid validTeamId = helpMethodsService.ConvertAndTestIdToGuid(teamId);
-                var team = await helpMethodsService.GetAllTeam().FirstOrDefaultAsync(x => x.Id == validTeamId);
-                JobDoneInputModel model = new()
-                {
-                    Id = entity.Id,
-                    JobId = entity.JobId,
-                    BuildingId = entity.BuildingId,
-                    DaysForJob = entity.DaysForJob,
-                    Quantity = entity.Quantity,
-                    TeamId = team.Id
-                };
+            bool isDeleted = await jobDoneRepository.SoftDeleteAsync(validId);
 
-                var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
-                await calculator.CalculateDeletingMoneyAsync(model);
+            Guid validTeamId = helpMethodsService.ConvertAndTestIdToGuid(teamId);
+            var team = await helpMethodsService.GetAllTeam().FirstOrDefaultAsync(x => x.Id == validTeamId) ?? new Team();
+            var jobs = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
+                .GetAllAttached()
+                .Where(x => x.JobDoneId == validId)
+                .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
 
-                return isDeleted;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var calculator = serviceProvider.GetRequiredService<IEarningsCalculationService>();
+            await calculator.CalculateMoneyAsync(team.Id , jobs , entity.Id , entity.DaysForJob , Remove);
+
+            return isDeleted;
         }
     }
 }

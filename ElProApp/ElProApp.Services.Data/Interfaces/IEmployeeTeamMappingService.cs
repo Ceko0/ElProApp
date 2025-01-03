@@ -5,7 +5,7 @@
     public interface IEmployeeTeamMappingService
     {
         /// <summary>
-        /// Retrieves all mappings between a specific employee and teams by the employee's ID.
+        /// Retrieves all mappings between a specific employee and Teams by the employee's ID.
         /// </summary>
         /// <param name="id">The unique ID of the employee.</param>
         /// <returns>

@@ -17,21 +17,19 @@
         public void Configure(EntityTypeBuilder<JobDoneTeamMapping> builder)
         {
             // Sets the primary key for the JobDoneTeamMapping entity.
-            builder.HasKey(et => new { et.JobDoneId, et.TeamId });
+            builder.HasKey(jdtm => new{jdtm.JobDoneId,jdtm.TeamId});
 
             // Configures the relationship between JobDone and JobDoneTeamMapping.
             builder
-                .HasOne(jdtm => jdtm.JobDone) // Each JobDoneTeamMapping has one JobDone
-                .WithMany() // A JobDone can have many JobDoneTeamMappings
-                .HasForeignKey(jdtm => jdtm.JobDoneId) // Foreign key defined in JobDoneTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(jdtm => jdtm.JobDone) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction); 
 
             // Configures the relationship between Team and JobDoneTeamMapping.
             builder
-                .HasOne(jdtm => jdtm.Team) // Each JobDoneTeamMapping has one Team
-                .WithMany() // A Team can have many JobDoneTeamMappings
-                .HasForeignKey(jdtm => jdtm.TeamId) // Foreign key defined in JobDoneTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(jdtm => jdtm.Team) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction); 
         }
     }
 }

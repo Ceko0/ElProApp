@@ -9,11 +9,11 @@
     using ElProApp.Web.Models.Building;
     using ElProApp.Web.Models.Employee;
     using ElProApp.Web.Models.JobDone;
+    using ElProApp.Web.Models.Job;
     using static ElProApp.Common.EntityValidationConstants.Team;
     using static ElProApp.Common.EntityValidationErrorMessage.Team;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
-    using ElProApp.Data.Models.Mappings;
-    using ElProApp.Web.Models.Job;
+
 
     // ViewModel for adding a team
     public class TeamInputModel : IMapTo<Team>
@@ -24,10 +24,10 @@
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         public string Name { get; set; } = null!;
 
-        // Collection of buildings associated with the team
+        // Collection of Buildings associated with the team
         public ICollection<BuildingViewModel> BuildingWithTeam { get; set; } = new List<BuildingViewModel>();
 
-        // Collection of jobs completed by the team
+        // Collection of JobsList completed by the team
         public ICollection<JobDoneViewModel> JobsDoneByTeam { get; set; } = new List<JobDoneViewModel>();
 
         // ID of the selected building

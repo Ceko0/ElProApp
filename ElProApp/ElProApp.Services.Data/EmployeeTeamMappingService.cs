@@ -9,7 +9,7 @@
     /// <summary>
     /// Service class for managing employee-team mapping operations, including adding, removing, and retrieving mappings.
     /// </summary>
-    public class EmployeeTeamMappingService(IRepository<EmployeeTeamMapping, Guid> employeeTeamMappingRepository)
+    public class EmployeeTeamMappingService(IRepository<EmployeeTeamMapping, object> employeeTeamMappingRepository)
         : IEmployeeTeamMappingService
     {
         /// <summary>
@@ -63,7 +63,6 @@
 
             var employeeTeamMappingEntity = new EmployeeTeamMapping()
             {
-                Id = Guid.NewGuid(),
                 EmployeeId = employeeId,
                 TeamId = teamId
             };

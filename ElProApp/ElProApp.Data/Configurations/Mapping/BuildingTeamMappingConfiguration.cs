@@ -1,6 +1,6 @@
 ﻿namespace ElProApp.Data.Configurations.Mapping
 {
-    using ElProApp.Data.Models.Mappings;
+    using Models.Mappings;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,21 +17,19 @@
         public void Configure(EntityTypeBuilder<BuildingTeamMapping> builder)
         {
             // Sets the primary key for the BuildingTeamMapping entity.
-            builder.HasKey(et => new { et.BuildingId, et.TeamId });
+            builder.HasKey(btm => new{ btm.BuildingId, btm.TeamId});
 
             // Configures the relationship between Building and BuildingTeamMapping.
             builder
-                .HasOne(btm => btm.Building) // Each BuildingTeamMapping has one Building
-                .WithMany() // A Building can have many BuildingTeamMappings
-                .HasForeignKey(btm => btm.BuildingId) // Foreign key defined in BuildingTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(btm => btm.Building) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Configures the relationship between Team and BuildingTeamMapping.
             builder
-                .HasOne(btm => btm.Team) // Each BuildingTeamMapping has one Team
-                .WithMany() // A Team can have many BuildingTeamMappings
-                .HasForeignKey(btm => btm.TeamId) // Foreign key defined in BuildingTeamMapping
-                .OnDelete(DeleteBehavior.NoAction); // Specify delete behavior for this relationship
+                .HasOne(btm => btm.Team) 
+                .WithMany() 
+                .OnDelete(DeleteBehavior.NoAction); 
         }
     }
 }

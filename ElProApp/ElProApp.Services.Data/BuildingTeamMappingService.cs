@@ -8,7 +8,7 @@
     /// <summary>
     /// Service for managing building-team mappings.
     /// </summary>
-    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, Guid> buildingTeamMappingRepository)
+    public class BuildingTeamMappingService(IRepository<BuildingTeamMapping, object> buildingTeamMappingRepository)
         : IBuildingTeamMappingService
     {
 

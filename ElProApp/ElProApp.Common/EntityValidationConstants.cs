@@ -24,15 +24,20 @@
 
         public static class Job
         {
-            public const int nameMinLength = 5;
-            public const int nameMaxLength = 50;
+            public const int NameMinLength = 5;
+            public const int NameMaxLength = 50;
         }
 
         public static class JobDone
         {
-            public const int nameMinLength = 5;
-            public const int nameMaxLength = 50;
+            public const int NameMinLength = 5;
+            public const int NameMaxLength = 50;
         }
 
+        public static class CalculationAction
+        {
+            public const string Add = "add";
+            public const string Remove = "remove";
+        }
     }
 }

@@ -20,7 +20,7 @@
         public static void RegisterRepositories(this IServiceCollection services, Assembly modelsAssembly)
         {
             // Types to exclude from repository registration.
-            Type[] typesToExclude = { typeof(IdentityUser) };
+            Type[] typesToExclude = new Type[] { typeof(IdentityUser) };
 
             // Retrieve model types from the assembly that are not abstract or interfaces.
             Type[] modelTypes = modelsAssembly
@@ -40,7 +40,7 @@
                     // Find the ID property for the model type.
                     PropertyInfo? idPropInfo = type
                         .GetProperties()
-                        .Where(p => p.Name.Equals("id", StringComparison.CurrentCultureIgnoreCase))
+                        .Where(p => p.Name.ToLower() == "id")
                         .SingleOrDefault();
 
                     // Prepare constructor arguments for the repository types.
@@ -91,8 +91,10 @@
             foreach (Type serviceInterfaceType in serviceInterfaceTypes)
             {
                 Type? serviceType = serviceTypes
-                    .SingleOrDefault(t => ("i" + t.Name.ToLower()).Equals(serviceInterfaceType.Name, StringComparison.CurrentCultureIgnoreCase))
-                    ?? throw new NullReferenceException($"Service type could not be obtained for the service {serviceInterfaceType.Name}");
+                    .SingleOrDefault(t => "i" + t.Name.ToLower() == serviceInterfaceType.Name.ToLower());
+                if (serviceType == null)
+                    throw new NullReferenceException(
+                        $"Service type could not be obtained for the service {serviceInterfaceType.Name}");
 
                 // Register the service in the service collection.
                 services.AddScoped(serviceInterfaceType, serviceType);

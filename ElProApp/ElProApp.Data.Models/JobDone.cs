@@ -1,15 +1,15 @@
 ﻿namespace ElProApp.Data.Models
 {
-    using System;
-    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
-    using System.ComponentModel.DataAnnotations;
 
+    using System;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
+    using ElProApp.Services.Data.Interfaces;
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
     using static Common.EntityValidationConstants.JobDone;
-    using ElProApp.Services.Data.Interfaces;
-    using System.ComponentModel.DataAnnotations.Schema;
 
     /// <summary>
     /// Represents a completed job record, including details about the job, quantity completed, and time spent.
@@ -27,32 +27,9 @@
         /// The name of the jobDone, constrained by a maximum length.
         /// </summary>
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
-        [MaxLength(nameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
+        [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Comment("The name of the job with a maximum of 50 characters.")]
         public string Name { get; set; } = null!;
-
-        /// <summary>
-        /// Foreign key representing the job that has been completed.
-        /// </summary>
-        [Required]
-        [Comment("Foreign key for the job being done.")]
-        public Guid JobId { get; set; }
-
-        /// <summary>
-        /// Navigation property to the job associated with this completion record.
-        /// </summary>
-        [Required]
-        [Comment("The job associated with this record. Represents the job that has been completed.")]
-        public Job Job { get; set; } = null!;
-
-        /// <summary>
-        /// Quantity of work completed, with constraints on format and required positive value.
-        /// </summary>
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Range(0.01, double.MaxValue, ErrorMessage = ErrorMassagePozitive)]
-        [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
-        [Comment("Quantity of work completed.")]
-        public decimal Quantity { get; set; }
 
         /// <summary>
         /// Number of days spent completing the job, restricted to between 1 and 30 days.
@@ -73,10 +50,10 @@
         public Building Building { get; set; } = null!;
 
         /// <summary>
-        /// Indicates if the jobdone is active (false) or soft deleted (true).
+        /// Indicates if the jobDone is active (false) or soft deleted (true).
         /// <para>This property helps in managing logical deletion without removing records from the database.</para>
         /// </summary>
-        [Comment("Indicates if the jobdone is active or soft deleted.")]
+        [Comment("Indicates if the jobDone is active or soft deleted.")]
         public bool IsDeleted { get; set; }
 
         /// <summary>

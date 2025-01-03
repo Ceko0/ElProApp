@@ -142,9 +142,9 @@
         }
 
         /// <summary>
-        /// Retrieves and displays all buildings.
+        /// Retrieves and displays all Buildings.
         /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all buildings.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all Buildings.</returns>
         [HttpGet]
         public async Task<IActionResult> AllBuildings()
         {
@@ -167,9 +167,9 @@
         }
 
         /// <summary>
-        /// Retrieves and displays all completed jobs (JobDone).
+        /// Retrieves and displays all completed JobsList (JobDone).
         /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all completed jobs.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all completed JobsList.</returns>
         [HttpGet]
         public async Task<IActionResult> AllJobDones()
         {
@@ -179,9 +179,9 @@
         }
 
         /// <summary>
-        /// Retrieves and displays all jobs.
+        /// Retrieves and displays all JobsList.
         /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all jobs.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> AllJobs()
@@ -192,9 +192,9 @@
         }
 
         /// <summary>
-        /// Retrieves and displays all teams.
+        /// Retrieves and displays all Teams.
         /// </summary>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all teams.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the view with all Teams.</returns>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpGet]
         public async Task<IActionResult> AllTeams()

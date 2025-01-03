@@ -1,4 +1,5 @@
-﻿@using ElProApp.Web.Models.Team
+﻿@using ElProApp.Data.Models
+@using ElProApp.Web.Models.Team
 @model TeamViewModel
 
 @{
@@ -33,26 +34,7 @@
             }
         </ul>
     </div>
-
-    <div class="mb-4">
-        <h4>Извършени дейности от екипа</h4>
-        <ul class="list-group">
-            @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
-            {
-                foreach (var job in Model.JobsDoneByTeam)
-                {
-                    <li class="list-group-item">
-                        <strong>Описание на дейността:</strong> @job.JobDone.Job?.Name
-                    </li>
-                }
-            }
-            else
-            {
-                <li class="list-group-item">Няма извършени дейности от този екип.</li>
-            }
-        </ul>
-    </div>
-
+    
     <div class="mb-4">
         <h4>Служители в екипа</h4>
         <ul class="list-group">

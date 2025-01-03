@@ -16,9 +16,9 @@
         private readonly IJobService jobService = _jobService;
 
         /// <summary>
-        /// Displays a list of all jobs.
+        /// Displays a list of all JobsList.
         /// </summary>
-        /// <returns>A view with the list of jobs.</returns>
+        /// <returns>A view with the list of JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
@@ -116,7 +116,7 @@
         /// Accessible only by administrators.
         /// </summary>
         /// <param name="id">The ID of the job to delete.</param>
-        /// <returns>Redirects to the list of jobs or displays an error.</returns>
+        /// <returns>Redirects to the list of JobsList or displays an error.</returns>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)

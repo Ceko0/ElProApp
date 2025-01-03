@@ -6,7 +6,7 @@
     public interface IJobService
     {
         /// <summary>
-        /// Retrieves all jobs as a queryable collection, including related entities for advanced querying.
+        /// Retrieves all JobsList as a queryable collection, including related entities for advanced querying.
         /// </summary>
         /// <returns>
         /// An <see cref="IQueryable{T}"/> of <see cref="Job"/> entities.
@@ -58,10 +58,10 @@
         Task<bool> EditByModelAsync(JobEditInputModel model);
 
         /// <summary>
-        /// Retrieves all jobs as a list for simpler operations or UI display.
+        /// Retrieves all JobsList as a list for simpler operations or UI display.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="JobViewModel"/> representing all jobs.
+        /// A collection of <see cref="JobViewModel"/> representing all JobsList.
         /// </returns>
         Task<ICollection<JobViewModel>> GetAllAsync();
 

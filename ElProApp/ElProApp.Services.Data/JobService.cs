@@ -88,9 +88,9 @@
         }
 
         /// <summary>
-        /// Retrieves all jobs.
+        /// Retrieves all JobsList.
         /// </summary>
-        /// <returns>A collection of all jobs as <see cref="JobViewModel"/>.</returns>
+        /// <returns>A collection of all JobsList as <see cref="JobViewModel"/>.</returns>
         public async Task<ICollection<JobViewModel>> GetAllAsync()
         {
             return await jobRepository.GetAllAttached()
@@ -100,9 +100,9 @@
         }
 
         /// <summary>
-        /// Retrieves all jobs as IQueryable, attached with relevant data.
+        /// Retrieves all JobsList as IQueryable, attached with relevant data.
         /// </summary>
-        /// <returns>An <see cref="IQueryable{Job}"/> representing all jobs.</returns>
+        /// <returns>An <see cref="IQueryable{Job}"/> representing all JobsList.</returns>
         public IQueryable<Job> GetAllAttached()
             => jobRepository
             .GetAllAttached()

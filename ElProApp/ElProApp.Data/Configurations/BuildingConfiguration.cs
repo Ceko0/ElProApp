@@ -21,13 +21,13 @@
 
             // Configures the Name property as required with a maximum length.
             builder.Property(b => b.Name)
-                .IsRequired() // Name must not be null
-                .HasMaxLength(BuildingNameMaxLength); // Maximum length defined by BuildingNameMaxLength constant
+                .IsRequired() 
+                .HasMaxLength(BuildingNameMaxLength);
 
             // Configures the Location property as required with a maximum length.
             builder.Property(b => b.Location)
-                .IsRequired() // Location must not be null
-                .HasMaxLength(LocationMaxLength); // Maximum length defined by LocationMaxLength constant
+                .IsRequired() 
+                .HasMaxLength(LocationMaxLength);
         }
     }
 }

@@ -36,7 +36,7 @@
         Task<TeamViewModel> GetByIdAsync(string id);
 
         /// <summary>
-        /// Retrieves all teams as a queryable collection, including related entities for complex querying.
+        /// Retrieves all Teams as a queryable collection, including related entities for complex querying.
         /// </summary>
         /// <returns>
         /// An <see cref="IQueryable{T}"/> of <see cref="Team"/> entities.
@@ -66,10 +66,10 @@
         Task<bool> EditByModelAsync(TeamEditInputModel model);
 
         /// <summary>
-        /// Retrieves all teams as a list for simplified data consumption.
+        /// Retrieves all Teams as a list for simplified data consumption.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="TeamViewModel"/> representing all teams.
+        /// A collection of <see cref="TeamViewModel"/> representing all Teams.
         /// </returns>
         Task<ICollection<TeamViewModel>> GetAllAsync();
 

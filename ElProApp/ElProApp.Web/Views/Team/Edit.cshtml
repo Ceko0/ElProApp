@@ -43,12 +43,6 @@
                 <ul class="list-group">
                     @foreach (var job in Model.JobsDoneByTeam)
                     {
-                        if (job != null && job.Job != null)
-                        {
-                            <li class="list-group-item">
-                                @job.Job.Name
-                            </li>
-                        }
                     }
                 </ul>
             </div>

@@ -1,25 +1,19 @@
-﻿
-using AutoMapper;
-
-namespace ElProApp.Web.Models.JobDone
+﻿namespace ElProApp.Web.Models.JobDone
 {    
     using Services.Mapping;
+    using AutoMapper;
     
     using ElProApp.Data.Models;
     
-    public class JobDoneViewModel : IMapFrom<JobDone>
+    public class JobDoneViewModel : IMapFrom<JobDone> , IHaveCustomMappings
     {
         public Guid Id { get; set; }
 
         public string Name { get; set; } = null!;
 
-        public decimal quantity { get; set; }
-
         public int DaysForJob { get; set; }
 
-        public Guid JobId { get; set; }
-
-        public Job Job { get; set; } = new();
+        public Dictionary<Guid, decimal> Jobs { get; set; } = new();
 
         public Guid TeamId { get; set; }
 
@@ -28,6 +22,13 @@ namespace ElProApp.Web.Models.JobDone
         public Guid BuildingId { get; set; }
 
         public Building Building { get; set; } = null!;
-       
+
+        public virtual ICollection<Job> JobsList { get; set; } = new List<Job>();
+
+        public void CreateMappings(IProfileExpression configuration)
+        {
+            configuration.CreateMap<JobDone, JobDoneViewModel>()
+                .ForMember(d => d.Jobs, x => x.Ignore());
+        }
     }
 }

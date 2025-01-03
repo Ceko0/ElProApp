@@ -44,16 +44,16 @@
         Task<bool> EditByModelAsync(BuildingEditInputModel model);
 
         /// <summary>
-        /// Retrieves a list of all buildings in the system.
+        /// Retrieves a list of all Buildings in the system.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="BuildingViewModel"/> objects representing all buildings.
-        /// If no buildings exist, an empty collection is returned.
+        /// A collection of <see cref="BuildingViewModel"/> objects representing all Buildings.
+        /// If no Buildings exist, an empty collection is returned.
         /// </returns>
         Task<ICollection<BuildingViewModel>> GetAllAsync();
 
         /// <summary>
-        /// Retrieves all buildings as a queryable collection, including related entities such as employees or projects.
+        /// Retrieves all Buildings as a queryable collection, including related entities such as employees or projects.
         /// Useful for cases where deferred execution or filtering is needed.
         /// </summary>
         /// <returns>

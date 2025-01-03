@@ -1,8 +1,5 @@
-﻿
-namespace ElProApp.Common
+﻿namespace ElProApp.Common
 {
-    using static EntityValidationConstants;
-
     public static class EntityValidationErrorMessage
     {
         public static class Master
@@ -38,11 +35,11 @@ namespace ElProApp.Common
             public const string ErrorMassageNameMinLength = "Името на работата трябва да бъде поне 5 символа.";
             public const string ErrorMassageNameMaxLength = "Името на работата не може да надвишава 50 символа.";
             public const string ErrorMassagePrice = "Стойността трябва да е с максимум 4 цифри преди и 2 след десетичната запетая.";
+            public const string ErrorMassageQuantity = "Стойността трябва да е с максимум 6 цифри преди и до 2 след десетичната запетая.";
         }
 
         public static class JobDobe
         {
-            public const string ErrorMassageQuantity = "Стойността трябва да е с максимум 6 цифри преди и до 2 след десетичната запетая.";
             public const string ErrorMassageDaysForJob = "Дните за свършена работа трябва да са между 1 и 30.";
             public const string ErrorMassageNameMaxLength = "Името на работата не може да надвишава 50 символа.";
         }

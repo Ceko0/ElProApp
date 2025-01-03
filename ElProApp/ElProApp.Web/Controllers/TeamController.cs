@@ -16,9 +16,9 @@
         private readonly ITeamService teamService = _teamService;
 
         /// <summary>
-        /// Displays a list of all teams.
+        /// Displays a list of all Teams.
         /// </summary>
-        /// <returns>A view with the list of all teams.</returns>
+        /// <returns>A view with the list of all Teams.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()

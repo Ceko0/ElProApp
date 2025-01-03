@@ -21,7 +21,7 @@
                              ITeamService
     {
         /// <summary>
-        /// Creates a new TeamInputModel with a list of available buildings, employees, and jobs.
+        /// Creates a new TeamInputModel with a list of available Buildings, employees, and JobsList.
         /// </summary>
         /// <returns>A TeamInputModel with all the necessary data for adding a new team.</returns>
         public async Task<TeamInputModel> AddAsync()
@@ -58,14 +58,19 @@
 
             if (model.SelectedBuildingId != Guid.Empty)
             {
-                var building = await helpMethodsService.GetAllBuildings().Where(x => !x.IsDeleted).To<BuildingViewModel>().FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
+                var building = await helpMethodsService.GetAllBuildings()
+                                                       .Where(x => !x.IsDeleted)
+                                                       .To<BuildingViewModel>()
+                                                       .FirstOrDefaultAsync(x => x.Id == model.SelectedBuildingId)
                     ?? throw new InvalidOperationException("The selected building does not exist.");
                 await buildingTeamMappingService.AddAsync(building.Id, team.Id);
             }
 
             var userId = helpMethodsService.ConvertAndTestIdToGuid(helpMethodsService.GetUserId());
 
-            var employeeEntity = await helpMethodsService.GetAllEmployees().Where(x => !x.IsDeleted).FirstOrDefaultAsync(x => x.Id == userId);
+            var employeeEntity = await helpMethodsService.GetAllEmployees()
+                                                         .Where(x => !x.IsDeleted)
+                                                         .FirstOrDefaultAsync(x => x.Id == userId);
             if (employeeEntity != null)
             {
                 await employeeTeamMappingService.AddAsync(employeeEntity.Id, team.Id);
@@ -217,7 +222,7 @@
         }
 
         /// <summary>
-        /// Retrieves all teams that are not marked as deleted.
+        /// Retrieves all Teams that are not marked as deleted.
         /// Maps them to TeamAllViewModel.
         /// </summary>
         /// <returns>IEnumerable of TeamAllViewModel.</returns>
@@ -240,10 +245,10 @@
         }
 
         /// <summary>
-        /// Retrieves all teams that are attached to the repository.
+        /// Retrieves all Teams that are attached to the repository.
         /// </summary>
         /// <returns>
-        /// An <see cref="IQueryable{Team}"/> representing the collection of all teams.
+        /// An <see cref="IQueryable{Team}"/> representing the collection of all Teams.
         /// </returns>
         public IQueryable<Team> GetAllAttached()
             => teamRepository

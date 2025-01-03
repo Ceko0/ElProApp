@@ -17,7 +17,7 @@
 
         /// <summary>
         /// Retrieves all mappings associated with a specific team.
-        /// Useful for identifying all buildings where the given team is assigned.
+        /// Useful for identifying all Buildings where the given team is assigned.
         /// </summary>
         /// <param name="teamId">The unique ID of the team.</param>
         /// <returns>
@@ -28,7 +28,7 @@
 
         /// <summary>
         /// Retrieves all mappings associated with a specific building.
-        /// Useful for identifying all teams assigned to the given building.
+        /// Useful for identifying all Teams assigned to the given building.
         /// </summary>
         /// <param name="buildingId">The unique ID of the building.</param>
         /// <returns>

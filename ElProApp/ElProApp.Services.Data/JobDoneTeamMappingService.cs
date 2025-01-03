@@ -7,12 +7,10 @@
     using Interfaces;
 
     /// <summary>
-    /// Service class for managing job done team mappings. Provides functionality to retrieve, add, and remove mappings between teams and job done records.
+    /// Service class for managing job done team mappings. Provides functionality to retrieve, add, and remove mappings between Teams and job done records.
     /// </summary>
-    public class JobDoneTeamMappingService(IRepository<JobDoneTeamMapping, Guid> _jobDoneTeamMappingRepository) : IJobDoneTeamMappingService
+    public class JobDoneTeamMappingService(IRepository<JobDoneTeamMapping, object> jobDoneTeamMappingRepository) : IJobDoneTeamMappingService
     {
-        private readonly IRepository<JobDoneTeamMapping, Guid> jobDoneTeamMappingRepository = _jobDoneTeamMappingRepository;
-
         /// <summary>
         /// Retrieves all job done team mappings.
         /// </summary>
@@ -73,7 +71,6 @@
 
             var model = new JobDoneTeamMapping()
             {
-                Id = Guid.NewGuid(),
                 JobDoneId = jobDoneId,
                 TeamId = teamId
             };

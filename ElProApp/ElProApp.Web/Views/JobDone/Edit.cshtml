@@ -6,7 +6,6 @@
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="JobId" />
         
         <div class="form-group">
             <label asp-for="Name" class="control-label">Име</label>
@@ -15,22 +14,11 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="quantity" class="control-label">Количество</label>
-            <input asp-for="quantity" class="form-control" />
-            <span asp-validation-for="quantity" class="text-danger"></span>
-        </div>
-        <div class="form-group">
             <label asp-for="DaysForJob" class="control-label">Дни за изпълнение</label>
             <input asp-for="DaysForJob" class="form-control" />
             <span asp-validation-for="DaysForJob" class="text-danger"></span>
         </div>
-        <div class="form-group">
-            <label class="control-label">Работа</label>
-            <p class="form-control-plaintext">@Model.Job.Name</p>
-            <input type="hidden" asp-for="Job.Id" />
-            <input type="hidden" asp-for="Job.Name" />
-            <input type="hidden" asp-for="Job.Price" />
-        </div>
+     
         <div class="form-group">
             <label class="control-label">Екип</label>
             <ul class="list-group">
@@ -39,6 +27,7 @@
                 <input type="hidden" asp-for="Team.Name" />
             </ul>
         </div>
+
         <div class="form-group">
             <label class="control-label">Сграда</label>
             <ul class="list-group">
@@ -48,7 +37,27 @@
                 <input type="hidden" asp-for="Building.Location" />
             </ul>
         </div>
-
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Име на работа</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ((Guid id, decimal quantity) in Model.Jobs)
+                {
+                    <tr>
+                        <td>
+                            @Model.JobList.FirstOrDefault(x => x.Id == id).Name 
+                        </td>
+                        <td>
+                            <input type="number" name="Jobs[@id]" class="form-control" value="@quantity" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn btn-warning">Запази</button>
             <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка със свършена работа</a>

@@ -10,9 +10,6 @@
     /// </summary>
     public class BuildingTeamMapping
     {
-        [Required]
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Foreign key referencing the related Building.
         /// </summary>

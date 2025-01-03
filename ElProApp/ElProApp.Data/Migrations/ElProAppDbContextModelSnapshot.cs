@@ -137,7 +137,7 @@ namespace ElProApp.Data.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(6, 2)")
-                        .HasComment("The price of the job with up to 6 digits before the decimal point and up to 2 digits after.");
+                        .HasComment("The price of the job with up to 4 digits before the decimal point and up to 2 digits after.");
 
                     b.HasKey("Id");
 
@@ -169,11 +169,7 @@ namespace ElProApp.Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
-                        .HasComment("Indicates if the jobdone is active or soft deleted.");
-
-                    b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasComment("Foreign key for the job being done.");
+                        .HasComment("Indicates if the jobDone is active or soft deleted.");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -181,15 +177,9 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasComment("The name of the job with a maximum of 50 characters.");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(6, 2)")
-                        .HasComment("Quantity of work completed.");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BuildingId");
-
-                    b.HasIndex("JobId");
 
                     b.ToTable("JobsDone");
                 });
@@ -207,13 +197,6 @@ namespace ElProApp.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("date")
                         .HasComment("The date when the record was created.");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("date")
-                        .HasComment("The date when the record was deleted (logically deleted).");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BuildingId", "TeamId");
 
@@ -236,18 +219,34 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("date")
                         .HasComment("The date when the record was created.");
 
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("date")
-                        .HasComment("The date when the record was deleted (logically deleted).");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("EmployeeId", "TeamId");
 
                     b.HasIndex("TeamId");
 
                     b.ToTable("EmployeeTeamMappings");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneJobMapping", b =>
+                {
+                    b.Property<Guid>("JobDoneId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(6, 2)")
+                        .HasComment("The quantity of the job with up to 6 digits before the decimal point and up to 2 digits after.");
+
+                    b.HasKey("JobDoneId", "JobId");
+
+                    b.HasIndex("JobId");
+
+                    b.ToTable("JobDoneJobMapping");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
@@ -263,13 +262,6 @@ namespace ElProApp.Data.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("date")
                         .HasComment("The date when the record was created.");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("date")
-                        .HasComment("The date when the record was deleted (logically deleted).");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("JobDoneId", "TeamId");
 
@@ -525,15 +517,7 @@ namespace ElProApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ElProApp.Data.Models.Job", "Job")
-                        .WithMany("JobsDone")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Building");
-
-                    b.Navigation("Job");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
@@ -572,6 +556,25 @@ namespace ElProApp.Data.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneJobMapping", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.JobDone", "JobDone")
+                        .WithMany()
+                        .HasForeignKey("JobDoneId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("JobDone");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
@@ -642,11 +645,6 @@ namespace ElProApp.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ElProApp.Data.Models.Job", b =>
-                {
-                    b.Navigation("JobsDone");
                 });
 #pragma warning restore 612, 618
         }
