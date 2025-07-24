@@ -270,7 +270,7 @@
 
             var currentUserId = helpMethodsService.GetUserId();
             var userFromTeam = await helpMethodsService.GetAllEmployeeTeamMаppings()
-                .FirstOrDefaultAsync(x => x.Employee.UserId.ToString() == currentUserId && x.TeamId == validId);
+                .FirstOrDefaultAsync(x => x.Employee.UserId == currentUserId && x.TeamId == validId);
 
             if (userFromTeam == null) throw new UnauthorizedAccessException("You are not a part of that team");
 

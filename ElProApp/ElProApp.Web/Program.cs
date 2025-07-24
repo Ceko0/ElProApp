@@ -20,7 +20,8 @@
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+                options.UseMySql(builder.Configuration.GetConnectionString("ElProAppDbContextConnection"),
+                    new MySqlServerVersion(new Version(5, 7, 44))));
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
