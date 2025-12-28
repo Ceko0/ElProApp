@@ -41,5 +41,8 @@
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
         <a asp-action="All" class="btn btn-secondary">Списъка с сгради</a>
         <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <a asp-controller="Material" asp-action="ByBuilding" asp-route-buildingId="@Model.Id" class="btn btn-info">
+            Материали
+        </a>
     </div>
 </div>

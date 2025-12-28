@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Controllers\" />
+    <Folder Include="Views\Material\" />
   </ItemGroup>
 
   <ItemGroup>

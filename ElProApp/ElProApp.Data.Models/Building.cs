@@ -59,5 +59,7 @@
         [Comment("The date when the record was deleted (logically deleted).")]
         [Column(TypeName = "date")]
         public DateTime? DeletedDate { get; set; }
+
+        public ICollection<Material> Materials { get; set; } = new List<Material>();
     }
 }
