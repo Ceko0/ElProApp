@@ -7,6 +7,7 @@
     using ElProApp.Services.Mapping;
     using ElProApp.Data.Models;
     using AutoMapper;
+    using ElProApp.Web.Models.Material;
 
     public class BuildingViewModel : IMapFrom<Building>
     {
@@ -20,6 +21,6 @@
 
         public ICollection<Guid> selectedTeamEntities = new List<Guid>();
 
-       
+        public ICollection<MaterialViewModel> Materials { get; set; } = new List<MaterialViewModel>();
     }
 }

@@ -178,6 +178,14 @@
             return View(await Service.GetAllAsync());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> AllMaterials()
+        {
+            var Service = serviceProvider.GetRequiredService<IMaterialService>();
+
+            return View(await Service.GetAllAsync());
+        }
+
         /// <summary>
         /// Retrieves and displays all JobsList.
         /// </summary>

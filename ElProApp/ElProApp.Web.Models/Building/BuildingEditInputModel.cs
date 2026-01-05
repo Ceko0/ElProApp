@@ -5,6 +5,7 @@
     using ElProApp.Data.Models;
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
+    using ElProApp.Web.Models.Material;
     using static ElProApp.Common.EntityValidationConstants.Building;
     using static ElProApp.Common.EntityValidationErrorMessage.Building;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
@@ -27,5 +28,6 @@
 
         public ICollection<Guid> selectedTeamEntities { get; set; } = new List<Guid>();
 
+        public ICollection<MaterialViewModel> Materials { get; set; } = new List<MaterialViewModel>();
     }
 }

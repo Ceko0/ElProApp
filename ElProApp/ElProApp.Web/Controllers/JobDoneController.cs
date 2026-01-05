@@ -47,7 +47,20 @@
         [HttpPost]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                var freshModel = await jobDoneService.AddAsync();
+
+                freshModel.Name = model.Name;
+                freshModel.StartDate = model.StartDate;
+                freshModel.EndDate = model.EndDate;
+                freshModel.DaysForJob = model.DaysForJob;
+                freshModel.TeamId = model.TeamId;
+                freshModel.BuildingId = model.BuildingId;
+                freshModel.Jobs = model.Jobs;
+
+                return View(freshModel);
+            }
 
             try
             {

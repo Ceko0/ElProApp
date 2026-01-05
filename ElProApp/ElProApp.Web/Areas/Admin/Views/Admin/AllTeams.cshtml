@@ -9,6 +9,11 @@
 <div class="container mt-4">
     <h1 class="display-4 text-center">Списък с екипи</h1>
 
+    <div class="d-flex justify-content-between mb-2">
+        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <a asp-area="" asp-controller="Team" asp-action="Add" class="btn btn-success btn-sm">Добави екип</a>
+    </div>
+
     <table class="table table-striped mt-4">
         <thead>
             <tr>

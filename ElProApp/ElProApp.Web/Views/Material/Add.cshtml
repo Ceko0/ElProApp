@@ -1,0 +1,40 @@
+﻿@using ElProApp.Web.Models.Material
+@model MaterialInputModel
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Добавяне на нов материал</h1>
+
+    <form asp-action="Add" method="post">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label">Име на материала</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Quantity" class="control-label">Количество от материала</label>
+            <input asp-for="Quantity" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BuildingId" class="control-label">Сграда</label>
+            <select asp-for="BuildingId" asp-items="Model.Buildings" class="form-control">
+                <option value="">-- Изберете сграда --</option>
+            </select>
+            <span asp-validation-for="BuildingId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-success btn-sm">Добави материали</button>
+            <a asp-action="All" class="btn btn-secondary">Списъка с материали</a>
+            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

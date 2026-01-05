@@ -1,0 +1,29 @@
+﻿@using ElProApp.Web.Models.Material
+@model MaterialViewModel
+
+@{
+    ViewData["Title"] = "Детайли за материала";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Детайли за материал: @Model.Name</h1>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Основна информация</h5>
+            <p><strong>Име на материала:</strong> @Model.Name</p>
+            <p><strong>Количество:</strong> @Model.Quantity</p>
+            <p><strong>Сграда:</strong> @Model.BuildingName</p> 
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
+        <a asp-action="All" class="btn btn-secondary">Списъка с материали</a>
+        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <a asp-controller="Material" asp-action="ByBuilding" asp-route-buildingId="@Model.BuildingId" class="btn btn-info">
+            Материали в същата сграда
+        </a>
+    </div>
+</div>

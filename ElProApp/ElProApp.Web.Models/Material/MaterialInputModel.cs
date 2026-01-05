@@ -7,6 +7,7 @@
     using static Common.EntityValidationConstants.Material;
     using static Common.EntityValidationErrorMessage.Material;
     using static Common.EntityValidationErrorMessage.Master;
+    using Microsoft.AspNetCore.Mvc.Rendering;
 
     public class MaterialInputModel : IMapTo<Material>
     {
@@ -21,6 +22,9 @@
 
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         public Guid BuildingId { get; set; }
+
+        public IEnumerable<SelectListItem> Buildings { get; set; }
+        = new List<SelectListItem>();
 
     }
 }

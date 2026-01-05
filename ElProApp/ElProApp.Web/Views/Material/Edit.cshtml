@@ -1,0 +1,48 @@
+﻿@using ElProApp.Web.Models.Material
+@model MaterialEditInputModel
+
+@{
+    ViewData["Title"] = "Редактиране на материал";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Редактиране на материал - @Model.Name</h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label">Име на материала</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Quantity" class="control-label">Количество</label>
+            <input asp-for="Quantity" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="BuildingId" class="control-label">Сграда</label>
+            <select asp-for="BuildingId" class="form-control" asp-items="Model.Buildings">
+                <option value="">-- Изберете сграда --</option>
+            </select>
+            <span asp-validation-for="BuildingId" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-warning">Запази</button>
+            <div>
+                <a asp-action="All" class="btn btn-secondary me-2">Списъка с материали</a>
+                <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+

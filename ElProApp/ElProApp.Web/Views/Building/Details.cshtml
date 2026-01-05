@@ -9,21 +9,28 @@
 <div class="container mt-4">
     <h1 class="display-4 text-center">Детайли за сграда: @Model.Name</h1>
 
-    <div class="card">
+    <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Основна информация</h5>
             <p><strong>Име на сградата:</strong> @Model.Name</p>
             <p><strong>Локация:</strong> @Model.Location</p>
-            <hr />
+        </div>
+    </div>
 
+    <div class="card mb-4">
+        <div class="card-body">
             <h5 class="card-title">Екипи, свързани със сградата</h5>
+
             @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
             {
                 <ul class="list-group list-group-flush">
                     @foreach (var teamMapping in Model.TeamsOnBuilding)
                     {
                         <li class="list-group-item">
-                            <a asp-controller="Team" asp-action="Details" asp-route-id="@teamMapping.Team.Id" class="btn btn-link">
+                            <a asp-controller="Team"
+                               asp-action="Details"
+                               asp-route-id="@teamMapping.Team.Id"
+                               class="btn btn-link p-0">
                                 @teamMapping.Team.Name
                             </a>
                         </li>
@@ -32,17 +39,71 @@
             }
             else
             {
-                <p>Няма свързани екипи с тази сграда.</p>
+                <p class="text-muted">Няма свързани екипи с тази сграда.</p>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Материали в сградата</h5>
+
+            @if (Model.Materials != null && Model.Materials.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Име на материала</th>
+                                <th>Количество</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var material in Model.Materials)
+                            {
+                                var rowClass = material.Quantity <= 50 ? "table-danger" : "";
+
+                                <tr class="@rowClass">
+                                    <td>@material.Name</td>
+                                    <td>
+                                        @material.Quantity
+                                        @if (material.Quantity <= 50)
+                                        {
+                                            <span class="badge bg-danger ms-2"></span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Material"
+                                           asp-action="Details"
+                                           asp-route-id="@material.Id"
+                                           class="btn btn-info btn-sm">
+                                            Информация
+                                        </a>
+                                        <a asp-controller="Material"
+                                           asp-action="Edit"
+                                           asp-route-id="@material.Id"
+                                           class="btn btn-warning btn-sm">
+                                            Редактиране
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">Няма материали за тази сграда.</p>
             }
         </div>
     </div>
 
     <div class="d-flex justify-content-between">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
-        <a asp-action="All" class="btn btn-secondary">Списъка с сгради</a>
-        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-        <a asp-controller="Material" asp-action="ByBuilding" asp-route-buildingId="@Model.Id" class="btn btn-info">
-            Материали
-        </a>
+        <a asp-action="All" class="btn btn-secondary">Списък със сгради</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
     </div>
 </div>

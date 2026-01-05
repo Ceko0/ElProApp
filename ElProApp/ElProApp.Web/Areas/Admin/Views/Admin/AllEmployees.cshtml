@@ -5,9 +5,14 @@
 @{
     ViewData["Title"] = "Списък със служители";
 }
-
 <div class="container mt-4">
     <h1 class="display-4 text-center">Списък със служители</h1>
+
+    <div class="d-flex justify-content-between mb-2">
+        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <a asp-area="" asp-controller="employee" asp-action="Add" class="btn btn-success btn-sm">Добави служител</a>
+    </div>
+
 
     <table class="table table-striped mt-4">
         <thead>
@@ -49,7 +54,6 @@
                     <td>
                         <a asp-area="" asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-info btn-sm">Информация</a>
                         <a asp-area="" asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Редактиране</a>
-                        <a asp-area="" asp-controller="Employee" asp-action="Add" class="btn btn-success btn-sm">Добави</a>
                         <form asp-area="" asp-controller="Employee" asp-action="SoftDelete" asp-route-id="@employee.Id" method="post" style="display:inline;">
                             <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
                         </form>
@@ -58,7 +62,4 @@
             }
         </tbody>
     </table>
-    <div class="d-flex justify-content-between">
-        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-    </div>
 </div>

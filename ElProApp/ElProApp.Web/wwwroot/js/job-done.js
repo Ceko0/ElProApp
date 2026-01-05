@@ -1,4 +1,5 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
+
     const startDateInput = document.getElementById('startDate');
     const teamSelect = document.getElementById('teamSelect');
     const buildingSelect = document.getElementById('buildingSelect');
@@ -13,7 +14,7 @@
 
         while (currentDate <= end) {
             const day = currentDate.getDay();
-            if (day !== 0 && day !== 6) { // Exclude Sundays (0) and Saturdays (6)
+            if (day !== 0 && day !== 6) {
                 workDays++;
             }
             currentDate.setDate(currentDate.getDate() + 1);
@@ -22,6 +23,8 @@
     }
 
     function updateWorkDays() {
+        if (!startDateInput || !endDateInput || !workDaysInput) return;
+
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
 
@@ -34,19 +37,71 @@
     }
 
     function updateName() {
-        const startDate = startDateInput.value;
+        if (!nameInput || !teamSelect || !buildingSelect || !startDateInput) return;
+
+        const startDate = startDateInput.value || '';
         const teamName = teamSelect.options[teamSelect.selectedIndex]?.dataset?.name || '';
         const buildingName = buildingSelect.options[buildingSelect.selectedIndex]?.dataset?.name || '';
 
-        nameInput.value = `${teamName} - ${buildingName} - ${startDate}`.trim().replace(/\s+-\s+-/, '').replace(/-\s+$/, '');
+        nameInput.value =
+            `${teamName} - ${buildingName} - ${startDate}`
+                .replace(/\s+-\s+-/g, '')
+                .replace(/-\s*$/, '')
+                .trim();
     }
 
-    startDateInput.addEventListener('change', () => {
+    startDateInput?.addEventListener('change', () => {
         updateWorkDays();
         updateName();
     });
 
-    endDateInput.addEventListener('change', updateWorkDays);
-    teamSelect.addEventListener('change', updateName);
-    buildingSelect.addEventListener('change', updateName);
+    endDateInput?.addEventListener('change', updateWorkDays);
+    teamSelect?.addEventListener('change', updateName);
+    buildingSelect?.addEventListener('change', updateName);
+
+    const jobSelect = document.getElementById("jobSelect");
+    const addJobBtn = document.getElementById("addJobBtn");
+    const tableBody = document.querySelector("#jobsTable tbody");
+
+    if (!jobSelect || !addJobBtn || !tableBody) return;
+
+    addJobBtn.addEventListener("click", function () {
+        const jobId = jobSelect.value;
+        const jobName = jobSelect.options[jobSelect.selectedIndex].text;
+
+        if (!jobId) return;
+
+        if (document.getElementById(`job-row-${jobId}`)) {
+            alert("Тази работа вече е добавена.");
+            return;
+        }
+
+        const row = document.createElement("tr");
+        row.id = `job-row-${jobId}`;
+
+        row.innerHTML = `
+            <td>${jobName}</td>
+            <td>
+                <input type="number"
+                       name="Jobs[${jobId}]"
+                       class="form-control"
+                       step="0.1"
+                       value="0" />
+            </td>
+            <td>
+                <button type="button"
+                        class="btn btn-danger btn-sm remove-job">
+                    ✖
+                </button>
+            </td>
+        `;
+
+        tableBody.appendChild(row);
+
+        row.querySelector(".remove-job")
+            .addEventListener("click", () => row.remove());
+
+        jobSelect.value = "";
+    });
+
 });

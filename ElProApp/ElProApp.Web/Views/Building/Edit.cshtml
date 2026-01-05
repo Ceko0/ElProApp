@@ -12,21 +12,21 @@
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
 
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Name" class="control-label">Име на сградата</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Location" class="control-label">Локация</label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
-       @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
+        @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
         {
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label>Екипи на сградата</label>
                 @foreach (var teamMapping in Model.TeamsOnBuilding)
                 {
@@ -38,15 +38,46 @@
                 }
             </div>
         }
-        else
+
+        @* Таблица с материали *@
+        @if (Model.Materials != null && Model.Materials.Any())
         {
-            <p>Няма свързани екипи със сградата.</p>
-        } 
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Материали в сградата</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Име на материала</th>
+                                    <th>Количество</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var material in Model.Materials)
+                                {
+                                    var rowClass = material.Quantity <= 50 ? "table-danger" : "";
+                                    <tr class="@rowClass">
+                                        <td>@material.Name</td>
+                                        <td>@material.Quantity</td>
+                                        <td>
+                                            <a asp-controller="Material" asp-action="Details" asp-route-id="@material.Id" class="btn btn-info btn-sm">Информация</a>
+                                            <a asp-controller="Material" asp-action="Edit" asp-route-id="@material.Id" class="btn btn-warning btn-sm">Редактиране</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
 
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn btn-warning">Запази</button>
-            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с сгради</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+            <a asp-action="All" class="btn btn-secondary">Списък със сгради</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
         </div>
     </form>
 </div>

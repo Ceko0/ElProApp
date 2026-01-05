@@ -153,18 +153,24 @@
         /// <returns>The view model representing the building.</returns>
         public async Task<BuildingViewModel?> GetByIdAsync(string id)
         {
-            Guid validId =  helpMethodsService.ConvertAndTestIdToGuid(id);
-            var model =  await buildingRepository
-                .GetAllAttached()
-                .Where(x => !x.IsDeleted)
-                .To<BuildingViewModel>()
-                .FirstOrDefaultAsync(x => x.Id == validId);
-            if (model == null) throw new InvalidOperationException("Building not found or is deleted.");
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
 
-            model.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(model.Id);
+            var model = await buildingRepository
+                .GetAllAttached()
+                .Where(x => !x.IsDeleted && x.Id == validId)
+                .Include(b => b.Materials)
+                .To<BuildingViewModel>()
+                .FirstOrDefaultAsync();
+
+            if (model == null)
+                throw new InvalidOperationException("Building not found or is deleted.");
+
+            model.TeamsOnBuilding = await helpMethodsService
+                .GetBuildingTeamMapping(model.Id);
 
             return model;
         }
+
 
         /// <summary>
         /// Soft deletes a building by its ID.
