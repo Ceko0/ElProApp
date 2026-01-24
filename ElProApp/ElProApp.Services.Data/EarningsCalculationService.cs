@@ -4,7 +4,6 @@
     using Microsoft.Extensions.DependencyInjection;
 
     using Interfaces;
-    using Web.Models.JobDone;
     using static Common.EntityValidationConstants.CalculationAction;
 
     public class EarningsCalculationService(IServiceProvider serviceProvider) : IEarningsCalculationService

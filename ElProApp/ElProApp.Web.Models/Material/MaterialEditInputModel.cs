@@ -1,13 +1,15 @@
 ﻿namespace ElProApp.Web.Models.Material
 {
-    using ElProApp.Services.Mapping;
-    using ElProApp.Data.Models;
     using System;
     using System.ComponentModel.DataAnnotations;
+
+    using Microsoft.AspNetCore.Mvc.Rendering;
+
+    using ElProApp.Services.Mapping;
+    using ElProApp.Data.Models;
     using static Common.EntityValidationConstants.Material;
     using static Common.EntityValidationErrorMessage.Material;
     using static Common.EntityValidationErrorMessage.Master;
-    using Microsoft.AspNetCore.Mvc.Rendering;
 
     public class MaterialEditInputModel : IMapFrom<Material> , IMapTo<Material>
     {

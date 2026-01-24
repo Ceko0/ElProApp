@@ -10,6 +10,7 @@
     using static Common.EntityValidationErrorMessage.Master;
     using System.ComponentModel.DataAnnotations.Schema;
     using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
     /// Represents a material entity used in the system.
@@ -33,16 +34,6 @@
         public string Name { get; set; } = null!;
 
         /// <summary>
-        /// The quantity of the material.
-        /// Value must be positive and formatted with up to two decimal places.
-        /// </summary>
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Range(0.01, 9999.99, ErrorMessage = ErrorMassagePozitive)]
-        [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
-        [Comment("The quantity of the material.")]
-        public decimal Quantity { get; set; }
-
-        /// <summary>
         /// Indicates whether the material is active (false) or soft-deleted (true).
         /// </summary>
         [Comment("Indicates if the material is active or soft deleted.")]
@@ -62,9 +53,8 @@
         [Column(TypeName = "date")]
         public DateTime? DeletedDate { get; set; }
 
-        [ForeignKey(nameof(Building))]
-        public Guid BuildingId { get; set; }
+        public ICollection<JobDoneMaterialMapping> JobDones { get; set; } = new List<JobDoneMaterialMapping>();
 
-        public Building Building { get; set; } = null!;
+        public ICollection<BuildingMaterialMapping> Buildings { get; set; } = new List<BuildingMaterialMapping>();
     }
 }

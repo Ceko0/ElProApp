@@ -7,6 +7,8 @@
 
     using Models.Mappings;
     using Models;
+    using System.Linq.Expressions;
+    using ElProApp.Services.Data.Interfaces;
 
     /// <summary>
     /// Represents the database context for the ElProApp application, which manages database sets for the app's entities.
@@ -55,6 +57,16 @@
         public DbSet<JobDoneTeamMapping> JobDoneTeamMappings { get; set; }
 
         /// <summary>
+        /// DbSet for managing mappings between JobDone and Material in the database.
+        /// </summary>
+        public DbSet<JobDoneMaterialMapping> JobDoneMaterialMappings { get; set; }
+
+        /// <summary>
+        /// DbSet for managing mappings between Building and Material in the database.
+        /// </summary>
+        public DbSet<BuildingMaterialMapping> BuildingMaterialMappings { get; set; }
+
+        /// <summary>
         /// Configures the entity mappings using the configurations defined in the current assembly.
         /// </summary>
         /// <param name="modelBuilder">Provides a simple API surface for configuring a `DbContext` model.</param>
@@ -62,8 +74,27 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            // Applies all configurations in the assembly that inherit from IEntityTypeConfiguration.
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+            var softDeletableEntities = modelBuilder.Model
+                .GetEntityTypes()
+                .Where(et => typeof(IDeletableEntity).IsAssignableFrom(et.ClrType));
+
+            foreach (var entityType in softDeletableEntities)
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .HasQueryFilter(CreateIsDeletedRestriction(entityType.ClrType));
+            }
         }
+
+        private static LambdaExpression CreateIsDeletedRestriction(Type entityType)
+        {
+            var param = Expression.Parameter(entityType, "e");
+            var prop = Expression.Property(param, nameof(IDeletableEntity.IsDeleted));
+            var body = Expression.Equal(prop, Expression.Constant(false));
+
+            return Expression.Lambda(body, param);
+        }
+
     }
 }

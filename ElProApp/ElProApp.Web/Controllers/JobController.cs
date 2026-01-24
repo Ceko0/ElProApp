@@ -11,9 +11,8 @@
     /// Controller for managing job entries.
     /// </summary>
     [Authorize]
-    public class JobController(IJobService _jobService) : Controller
+    public class JobController(IJobService jobService) : Controller
     {
-        private readonly IJobService jobService = _jobService;
 
         /// <summary>
         /// Displays a list of all JobsList.

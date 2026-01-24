@@ -6,7 +6,6 @@
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
     using ElProApp.Data.Models;
-    using AutoMapper;
     using ElProApp.Web.Models.Material;
 
     public class BuildingViewModel : IMapFrom<Building>

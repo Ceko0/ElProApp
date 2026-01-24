@@ -289,7 +289,6 @@
             return model;
         }
 
-
         /// <summary>
         /// Performs a soft delete of a team, marking it as deleted without removing it from the database.
         /// Returns true if the deletion was successful, otherwise false.
@@ -310,7 +309,6 @@
                 throw new InvalidOperationException($"Error occurred while soft deleting team with id {validId}.", ex);
             }
         }
-
 
         /// <summary>
         /// Checks if a team with the specified ID exists in the repository.

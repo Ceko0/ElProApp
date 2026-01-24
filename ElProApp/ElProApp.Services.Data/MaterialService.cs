@@ -44,19 +44,12 @@
             var existingMaterial = await materialRepository
                 .FirstOrDefaultAsync(x => x.Name == model.Name && !x.IsDeleted);
 
-            if (existingMaterial != null)
-            {
-                existingMaterial.Quantity += model.Quantity;
-                existingMaterial.BuildingId = model.BuildingId;
-            }
-            else
-            {
                 var entity = AutoMapperConfig.MapperInstance.Map<Material>(model);
                 await materialRepository.AddAsync(entity);
-            }
+            
 
             await materialRepository.SaveAsync();
-            return model.Name;
+            return entity.Id.ToString();
         }
 
         public async Task<MaterialEditInputModel> GetEditByIdAsync(string id)
@@ -104,20 +97,13 @@
             return await materialRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
-                .Include(x => x.Building)
                 .Select(x => new MaterialViewModel
                 {
                     Id = x.Id,
-                    Name = x.Name,
-                    Quantity = x.Quantity,
-                    BuildingId = x.BuildingId,
-                    BuildingName = x.Building != null ? x.Building.Name : string.Empty
+                    Name = x.Name
                 })
                 .ToListAsync();
         }
-
-
-
 
         public IQueryable<Material> GetAllAttached()
             => materialRepository
@@ -145,5 +131,25 @@
             Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
             return await materialRepository.SoftDeleteAsync(validId);
         }
+
+        public async Task<ICollection<BuildingMaterialViewModel>> GetByBuildingIdAsync(string buildingId)
+        {
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(buildingId);
+
+            return await materialRepository
+                .GetAllAttached()
+                .SelectMany(m => m.Buildings)
+                .Where(bm => bm.BuildingId == validId)
+                .Select(bm => new BuildingMaterialViewModel
+                {
+                    MaterialId = bm.MaterialId,
+                    MaterialName = bm.Material.Name,
+                    BuildingId = bm.BuildingId,
+                    BuildingName = bm.Building.Name,
+                    Quantity = bm.Quantity
+                })
+                .ToListAsync();
+        }
+
     }
 }

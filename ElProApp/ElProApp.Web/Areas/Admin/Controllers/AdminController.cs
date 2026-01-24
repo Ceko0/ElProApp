@@ -2,6 +2,7 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+
     using Services.Data.Interfaces;
 
     using ElProApp.Data.Models;
@@ -78,6 +79,9 @@
                 case "JobDone":
                     deletedEntities = adminService.GetDeletedEntities<JobDone>();
                     break;
+                case "Material":
+                    deletedEntities = adminService.GetDeletedEntities<Material>();
+                    break;
                 default:
                     return BadRequest("Invalid entity type.");
             }
@@ -128,6 +132,9 @@
                     break;
                 case "JobDone":
                     result = await adminService.RestoreDeletedEntityAsync<JobDone>(id);
+                    break;
+                case "Material":
+                    result = await adminService.RestoreDeletedEntityAsync<Material>(id);
                     break;
                 default:
                     return BadRequest("Invalid entity type.");
