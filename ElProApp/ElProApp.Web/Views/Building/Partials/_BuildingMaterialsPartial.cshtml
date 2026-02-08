@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ElProApp.Web.Models.Material.MaterialViewModel>
+
+@if (Model != null && Model.Any())
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Материали в сградата</h5>
+            <select class="form-select" onchange="location.href=this.value;">
+                <option selected disabled>Изберете материал за информация</option>
+                @foreach (var material in Model)
+                {
+                    <option value="@Url.Action("Details", "Material", new { id = material.Id })">
+                        @material.Name - Количество: @material.Quantity
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
+}
+else
+{
+    <span class="text-muted">Няма материали за тази сграда</span>
+}

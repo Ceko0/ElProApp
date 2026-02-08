@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Application.Services.Interfaces;
     using Models.Job;
     using static Common.ApplicationConstants;
 

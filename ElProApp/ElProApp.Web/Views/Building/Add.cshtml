@@ -1,25 +1,29 @@
-﻿@using ElProApp.Web.Models.Building
-@model BuildingInputModel
+﻿@model ElProApp.Web.Models.Building.BuildingInputModel
+@{
+    ViewData["Title"] = "Добавяне на нова сграда";
+    Layout = "_Layout";
+}
 
 <div class="container mt-4">
     <h1 class="display-4 text-center">Добавяне на нова сграда</h1>
 
     <form asp-action="Add" method="post">
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Name" class="control-label">Име на сградата</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Location" class="control-label">Локация на сградата</label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
-        <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-success btn-sm">Добави сграда</button>
-            <a asp-action="All" class="btn btn-secondary">Списъка с сгради</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-success">Добави сграда</button>
+            <a asp-action="All" class="btn btn-secondary">Списък със сгради</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
         </div>
     </form>
 </div>

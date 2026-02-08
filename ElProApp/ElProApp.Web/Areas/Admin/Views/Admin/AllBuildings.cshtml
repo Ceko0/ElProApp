@@ -1,16 +1,15 @@
-﻿@using ElProApp.Web.Models.Building
-@model ICollection<BuildingViewModel>
-
+﻿@model IEnumerable<ElProApp.Web.Models.Building.BuildingViewModel>
 @{
-    ViewData["Title"] = "Списък със сгради";    
+    ViewData["Title"] = "Списък със сгради";
+    Layout = "_Layout";
 }
 
 <div class="container mt-4">
     <h1 class="display-4 text-center">Списък със сгради</h1>
 
     <div class="d-flex justify-content-between mb-2">
-        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-        <a asp-area="" asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави сграда</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
+        <a asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави сграда</a>
     </div>
 
     <div class="table-responsive">
@@ -19,7 +18,7 @@
                 <tr>
                     <th>Име на сградата</th>
                     <th>Локация</th>
-                    <th>Екипи към сградата</th>
+                    <th>Екипи</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -28,29 +27,12 @@
                 {
                     <tr>
                         <td>@building.Name</td>
-                        <td>@building.Location</td>                        
+                        <td>@building.Location</td>
+                        <td>@await Html.PartialAsync("~/Views/Building/Partials/_BuildingTeamsPartial.cshtml", building.TeamsOnBuilding)</td>
                         <td>
-                            @if (building.TeamsOnBuilding != null && building.TeamsOnBuilding.Any(te => te != null))
-                            {
-                                <select class="form-select" onchange="location.href=this.value;">
-                                    <option selected disabled>Изберете екип за информация</option>
-                                    @foreach (var teamMapping in building.TeamsOnBuilding.Where(te => te != null))
-                                    {
-                                        <option value="@Url.Action("Details", "Team", new {Area = "", id = teamMapping?.Team.Id })">
-                                            @teamMapping?.Team?.Name
-                                        </option>
-                                    }
-                                </select>
-                            }
-                            else
-                            {
-                                <p>Няма екипи за този служител.</p>
-                            }
-                        </td>
-                        <td>
-                            <a asp-area="" asp-controller="Building" asp-action="Details" asp-route-id="@building.Id" class="btn btn-info btn-sm">Информация</a>
-                            <a asp-area="" asp-controller="Building" asp-action="Edit" asp-route-id="@building.Id" class="btn btn-warning btn-sm">Редактиране</a>
-                            <form asp-area="" asp-controller="Building" asp-action="SoftDelete" asp-route-id="@building.Id" method="post" style="display:inline;">
+                            <a asp-controller="Building" asp-action="Details" asp-route-id="@building.Id" asp-area="" class="btn btn-info btn-sm">Информация</a>
+                            <a asp-controller="Building" asp-action="Edit" asp-route-id="@building.Id" asp-area="" class="btn btn-warning btn-sm">Редактиране</a>
+                            <form asp-controller="Building" asp-action="SoftDelete" asp-route-id="@building.Id" asp-area="" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
                             </form>
                         </td>
@@ -58,6 +40,5 @@
                 }
             </tbody>
         </table>
-
     </div>
 </div>

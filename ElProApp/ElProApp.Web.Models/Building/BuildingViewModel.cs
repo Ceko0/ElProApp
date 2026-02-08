@@ -20,6 +20,6 @@
 
         public ICollection<Guid> selectedTeamEntities = new List<Guid>();
 
-        public ICollection<MaterialViewModel> Materials { get; set; } = new List<MaterialViewModel>();
+        public ICollection<BuildingMaterialViewModel> Materials { get; set; } = new List<BuildingMaterialViewModel>();
     }
 }

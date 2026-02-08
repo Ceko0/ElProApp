@@ -6,7 +6,7 @@
 
     using Data;
     using Models.Employee;
-    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Application.Services.Interfaces;
     using static Common.ApplicationConstants;
 
     /// <summary>

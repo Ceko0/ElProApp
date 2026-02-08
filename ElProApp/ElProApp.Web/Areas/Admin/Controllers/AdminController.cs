@@ -3,9 +3,9 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    using Services.Data.Interfaces;
-
+    using ElProApp.Application.Services.Interfaces;
     using ElProApp.Data.Models;
+    using ElProApp.Web.Infrastructure.Interfaces;
 
     [Area("Admin")]
     [Authorize(Roles = "Admin , OfficeManager , Technician")]

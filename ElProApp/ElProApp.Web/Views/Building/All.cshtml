@@ -1,13 +1,16 @@
-﻿@using ElProApp.Web.Models.Building
-@model ICollection<BuildingViewModel>
-
+﻿@model IEnumerable<ElProApp.Web.Models.Building.BuildingViewModel>
 @{
-    ViewData["Title"] = "Всички сгради";
+    ViewData["Title"] = "Списък със сгради";
     Layout = "_Layout";
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Списък на всички сгради</h1>
+    <h1 class="display-4 text-center">Списък със сгради</h1>
+
+    <div class="d-flex justify-content-between mb-2">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
+        <a asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави сграда</a>
+    </div>
 
     <div class="table-responsive">
         <table class="table table-striped">
@@ -15,7 +18,7 @@
                 <tr>
                     <th>Име на сградата</th>
                     <th>Локация</th>
-                    <th>Екипи към сградата</th>
+                    <th>Екипи</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,31 +28,17 @@
                         <td>@building.Name</td>
                         <td>@building.Location</td>
                         <td>
-
-                            @if (building.TeamsOnBuilding != null && building.TeamsOnBuilding.Any(te => te != null))
-                            {
-                                <select class="form-select" onchange="location.href=this.value;">
-                                    <option selected disabled>Изберете екип за информация</option>
-                                    @foreach (var teamMapping in building.TeamsOnBuilding.Where(te => te != null))
-                                    {
-                                        <option value="@Url.Action("Details", "Team", new { id = teamMapping.Team.Id })">
-                                            @teamMapping?.Team?.Name
-                                        </option>
-                                    }
-                                </select>
-                            }
-
-                            else
-                            {
-                                <span>Няма екипи към тази сграда.</span>
-                            }
+                            @await Html.PartialAsync("Partials/_BuildingTeamsPartial", building.TeamsOnBuilding)
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <div class="d-flex justify-content-between">
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-        </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -8,7 +8,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     using ElProApp.Data.Models;
-    using ElProApp.Services.Data;
+    using ElProApp.Application.Services;
     using Data;
     using Models;
     using Infrastructure.Extensions;
@@ -54,6 +54,10 @@
 
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
+            builder.Services.AddScoped<
+            Infrastructure.Interfaces.IAdminService,
+            Infrastructure.Services.AdminService>();
+
 
             builder.Services.AddControllersWithViews(cfg =>
             {
