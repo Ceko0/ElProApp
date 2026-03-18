@@ -13,6 +13,7 @@
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Material;
     using ElProApp.Application.Services.Interfaces;
+    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
     /// Provides application-level operations for managing materials.
@@ -73,6 +74,15 @@
             var entity =
                 AutoMapperConfig.MapperInstance.Map<Material>(model);
 
+            var mapping = new BuildingMaterialMapping
+            {
+                BuildingId = model.BuildingId,
+                Quantity = model.Quantity,
+                Material = entity
+            };
+
+            entity.Buildings.Add(mapping);
+
             await materialRepository.AddAsync(entity);
             await materialRepository.SaveAsync();
 
@@ -87,13 +97,19 @@
             Guid validId =
                 helpMethodsService.ConvertAndTestIdToGuid(id);
 
-            var model = await materialRepository
+            var entity = await materialRepository
                 .GetAllAttached()
-                .Where(x => !x.IsDeleted)
-                .To<MaterialEditInputModel>()
-                .FirstOrDefaultAsync(x => x.Id == validId)
-                ?? throw new InvalidOperationException(
-                    "Material not found or is deleted.");
+                .Include(x => x.Buildings)
+                .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
+                ?? throw new InvalidOperationException("Material not found or is deleted.");
+
+            var model = new MaterialEditInputModel
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Quantity = entity.Buildings.FirstOrDefault()?.Quantity ?? 0,
+                BuildingId = entity.Buildings.FirstOrDefault()?.BuildingId ?? Guid.Empty
+            };
 
             model.Buildings = await helpMethodsService
                 .GetAllBuildings()
@@ -115,15 +131,32 @@
         {
             ArgumentNullException.ThrowIfNull(model);
 
-            var entity = await materialRepository.GetByIdAsync(model.Id)
-                ?? throw new InvalidOperationException(
-                    "Material not found.");
+            var entity = await materialRepository
+                .GetAllAttached()
+                .Include(x => x.Buildings)
+                .FirstOrDefaultAsync(x => x.Id == model.Id)
+                ?? throw new InvalidOperationException("Material not found.");
 
             if (entity.IsDeleted)
-                throw new InvalidOperationException(
-                    "Material is deleted.");
+                throw new InvalidOperationException("Material is deleted.");
 
-            AutoMapperConfig.MapperInstance.Map(model, entity);
+            entity.Name = model.Name;
+
+            var mapping = entity.Buildings.FirstOrDefault();
+
+            if (mapping == null)
+            {
+                mapping = new BuildingMaterialMapping
+                {
+                    Material = entity
+                };
+
+                entity.Buildings.Add(mapping);
+            }
+
+            mapping.BuildingId = model.BuildingId;
+            mapping.Quantity = model.Quantity;
+
             await materialRepository.SaveAsync();
 
             return true;
@@ -133,15 +166,25 @@
         /// Retrieves all non-deleted materials.
         /// </summary>
         public async Task<ICollection<MaterialViewModel>> GetAllAsync()
-            => await materialRepository
+        {
+            var materials = await materialRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
-                .Select(x => new MaterialViewModel
-                {
-                    Id = x.Id,
-                    Name = x.Name
-                })
+                .Include(x => x.Buildings)
+                    .ThenInclude(x => x.Building)
                 .ToListAsync();
+
+            return materials
+                .SelectMany(m => m.Buildings.Select(bm => new MaterialViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Quantity = bm.Quantity,
+                    BuildingId = bm.BuildingId,
+                    BuildingName = bm.Building.Name
+                }))
+                .ToList();
+        }
 
         /// <summary>
         /// Returns all attached, non-deleted materials.
@@ -159,15 +202,23 @@
             Guid validId =
                 helpMethodsService.ConvertAndTestIdToGuid(id);
 
-            var model = await materialRepository
+            var entity = await materialRepository
                 .GetAllAttached()
-                .Where(x => !x.IsDeleted)
-                .To<MaterialViewModel>()
-                .FirstOrDefaultAsync(x => x.Id == validId)
-                ?? throw new InvalidOperationException(
-                    "Material not found or is deleted.");
+                .Include(x => x.Buildings)
+                    .ThenInclude(x => x.Building)
+                .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
+                ?? throw new InvalidOperationException("Material not found or is deleted.");
 
-            return model;
+            var mapping = entity.Buildings.FirstOrDefault();
+
+            return new MaterialViewModel
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Quantity = mapping?.Quantity ?? 0,
+                BuildingId = mapping?.BuildingId ?? Guid.Empty,
+                BuildingName = mapping?.Building.Name
+            };
         }
 
         /// <summary>

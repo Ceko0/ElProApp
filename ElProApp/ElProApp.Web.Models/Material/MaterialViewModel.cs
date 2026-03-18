@@ -10,8 +10,9 @@
 
     using static Common.EntityValidationErrorMessage.Material;
     using static Common.EntityValidationErrorMessage.Master;
+    using AutoMapper;
 
-    public class MaterialViewModel : IMapFrom<Material>
+    public class MaterialViewModel : IMapFrom<Material>, IHaveCustomMappings
     {
         [Required]
         public Guid Id { get; set; }
@@ -30,5 +31,17 @@
 
         public IEnumerable<SelectListItem> Buildings { get; set; }
             = new List<SelectListItem>();
+
+        public void CreateMappings(IProfileExpression configuration)
+        {
+            configuration.CreateMap<Material, MaterialViewModel>()
+                .ForMember(dest => dest.BuildingName,
+                    opt => opt.MapFrom(src =>
+                        src.Buildings
+                            .Select(x => x.Building.Name)
+                            .FirstOrDefault()))
+                .ForMember(dest => dest.Buildings,
+                    opt => opt.Ignore());
+        }
     }
 }
