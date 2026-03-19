@@ -24,17 +24,21 @@
 
         <div class="form-group mb-3">
             <label>Екипи на сградата</label>
+
             @foreach (var teamMapping in Model.TeamsOnBuilding)
             {
+                var isChecked = Model.selectedTeamEntities.Contains(teamMapping.Team.Id);
+
                 <div class="form-check">
-                    <input type="checkbox" name="selectedTeamEntities" value="@teamMapping?.Team?.Id" class="form-check-input"
-                    @(teamMapping?.Team != null ? "checked" : "") />
-                    <label class="form-check-label">@teamMapping?.Team?.Name</label>
+                    <input type="checkbox"
+                           name="selectedTeamEntities"
+                           value="@teamMapping.Team.Id"
+                           class="form-check-input"
+                    @(isChecked ? "checked" : "") />
+                    <label class="form-check-label">@teamMapping.Team.Name</label>
                 </div>
             }
         </div>
-
-        @await Html.PartialAsync("Partials/_BuildingMaterialsPartial", Model.Materials)
 
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn btn-warning">Запази</button>

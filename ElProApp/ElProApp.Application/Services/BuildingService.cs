@@ -50,24 +50,37 @@
         public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 throw new ArgumentException("Building ID must be provided.");
-            }
 
             Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
 
-            var model = await buildingRepository
+            var entity = await buildingRepository
                 .GetAllAttached()
-                .Where(x => !x.IsDeleted)
-                .To<BuildingEditInputModel>()
-                .FirstOrDefaultAsync(x => x.Id == validId);
+                .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
+                ?? throw new InvalidOperationException("Building not found or is deleted.");
 
-            if (model == null)
+            var model = new BuildingEditInputModel
             {
-                throw new InvalidOperationException("Building not found or is deleted.");
-            }
+                Id = entity.Id,
+                Name = entity.Name,
+                Location = entity.Location
+            };
 
-            model.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(model.Id);
+            var allMappings = await buildingTeamMappingService
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .ToListAsync();
+
+            model.TeamsOnBuilding = allMappings
+                .GroupBy(x => x.Team.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            model.selectedTeamEntities = allMappings
+                .Where(x => x.BuildingId == model.Id)
+                .Select(x => x.TeamId)
+                .ToList();
+
             return model;
         }
 
@@ -161,22 +174,24 @@
         {
             Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
 
-            var model = await buildingRepository
+            var entity = await buildingRepository
                 .GetAllAttached()
-                .Where(x => !x.IsDeleted && x.Id == validId)
                 .Include(b => b.Materials)
-                .To<BuildingViewModel>()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == validId)
+                ?? throw new InvalidOperationException("Building not found or is deleted.");
 
-            if (model == null)
-                throw new InvalidOperationException("Building not found or is deleted.");
+            var model = new BuildingViewModel
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Location = entity.Location
+            };
 
             model.TeamsOnBuilding = await helpMethodsService
                 .GetBuildingTeamMapping(model.Id);
 
             return model;
         }
-
 
         /// <summary>
         /// Soft deletes a building by its ID.
