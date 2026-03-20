@@ -9,7 +9,13 @@
 
     <div class="d-flex justify-content-between mb-2">
         <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
-        <a asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">Добави сграда</a>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician"))
+        {
+            <a asp-controller="Building" asp-action="Add" class="btn btn-success btn-sm">
+                Добави сграда
+            </a>
+        }
     </div>
 
     <div class="table-responsive">
@@ -19,6 +25,7 @@
                     <th>Име на сградата</th>
                     <th>Локация</th>
                     <th>Екипи</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +36,28 @@
                         <td>@building.Location</td>
                         <td>
                             @await Html.PartialAsync("Partials/_BuildingTeamsPartial", building.TeamsOnBuilding)
+                        </td>
+
+                        <td>
+                            <a asp-action="Details" asp-route-id="@building.Id" class="btn btn-info btn-sm">
+                                Детайли
+                            </a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@building.Id" class="btn btn-warning btn-sm">
+                                    Редактирай
+                                </a>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form asp-action="SoftDelete" asp-route-id="@building.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Изтрий
+                                    </button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

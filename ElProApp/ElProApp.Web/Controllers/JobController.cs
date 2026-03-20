@@ -5,7 +5,6 @@
 
     using ElProApp.Application.Services.Interfaces;
     using Models.Job;
-    using static Common.ApplicationConstants;
 
     /// <summary>
     /// Controller for managing job entries.
@@ -20,13 +19,8 @@
         /// <returns>A view with the list of JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
-                return RedirectToAction("AllJobs", "Admin", new { area = "admin" });
-
-            return View(await jobService.GetAllAsync());
-        }
+        public async Task<IActionResult> All() => View(await jobService.GetAllAsync());
+        
         /// <summary>
         /// Displays the form for adding a new job.
         /// Accessible only by administrators.

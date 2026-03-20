@@ -5,7 +5,6 @@
 
     using ElProApp.Application.Services.Interfaces;
     using Models.JobDone;
-    using static Common.ApplicationConstants;
 
     [Authorize]
     public class JobDoneController(
@@ -15,17 +14,8 @@
     {
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) ||
-                User.IsInRole(OfficeManagerRoleName) ||
-                User.IsInRole(TechnicianRoleName))
-            {
-                return RedirectToAction("AllJobDones", "Admin", new { area = "admin" });
-            }
-
-            return View(await jobDoneService.GetAllAsync());
-        }
+        public async Task<IActionResult> All() => View(await jobDoneService.GetAllAsync());
+        
 
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]

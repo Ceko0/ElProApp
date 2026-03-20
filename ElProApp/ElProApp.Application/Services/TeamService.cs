@@ -173,8 +173,80 @@
             var team = await teamRepository.GetByIdAsync(model.Id)
                 ?? throw new InvalidOperationException("Team not found.");
 
-            AutoMapperConfig.MapperInstance.Map(model, team);
+            team.Name = model.Name;
             await teamRepository.SaveAsync();
+
+            var buildingTeamMappingService =
+                serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
+
+            var employeeTeamMappingService =
+                serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
+
+            var jobDoneTeamMappingService =
+                serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+
+            var existingBuildings = await helpMethodsService
+                .GetAllBuildingTeamMappings()
+                .Where(x => x.TeamId == model.Id)
+                .ToListAsync();
+
+            foreach (var mapping in existingBuildings)
+            {
+                if (!model.BuildingWithTeamIds.Contains(mapping.BuildingId))
+                {
+                    await buildingTeamMappingService.RemoveAsync(mapping);
+                }
+            }
+
+            foreach (var buildingId in model.BuildingWithTeamIds.Distinct())
+            {
+                if (!existingBuildings.Any(x => x.BuildingId == buildingId))
+                {
+                    await buildingTeamMappingService.AddAsync(buildingId, model.Id);
+                }
+            }
+
+            var existingEmployees = await helpMethodsService
+                .GetAllEmployeeTeamMappings()
+                .Where(x => x.TeamId == model.Id)
+                .ToListAsync();
+
+            foreach (var mapping in existingEmployees)
+            {
+                if (!model.EmployeesInTeamIds.Contains(mapping.EmployeeId))
+                {
+                    await employeeTeamMappingService.RemoveAsync(mapping);
+                }
+            }
+
+            foreach (var employeeId in model.EmployeesInTeamIds.Distinct())
+            {
+                if (!existingEmployees.Any(x => x.EmployeeId == employeeId))
+                {
+                    await employeeTeamMappingService.AddAsync(employeeId, model.Id);
+                }
+            }
+
+            var existingJobs = await helpMethodsService
+                .GetAllJobDoneTeamMappings()
+                .Where(x => x.TeamId == model.Id)
+                .ToListAsync();
+
+            foreach (var mapping in existingJobs)
+            {
+                if (!model.JobsDoneByTeamIds.Contains(mapping.JobDoneId))
+                {
+                    await jobDoneTeamMappingService.RemoveAsync(mapping);
+                }
+            }
+
+            foreach (var jobId in model.JobsDoneByTeamIds.Distinct())
+            {
+                if (!existingJobs.Any(x => x.JobDoneId == jobId))
+                {
+                    await jobDoneTeamMappingService.AddAsync(jobId, model.Id);
+                }
+            }
 
             return true;
         }
@@ -183,11 +255,39 @@
         /// Retrieves all non-deleted teams.
         /// </summary>
         public async Task<ICollection<TeamViewModel>> GetAllAsync()
-            => await teamRepository
+        {
+            var teams = await teamRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
-                .To<TeamViewModel>()
                 .ToListAsync();
+
+            var result = new List<TeamViewModel>();
+
+            foreach (var team in teams)
+            {
+                var model = new TeamViewModel
+                {
+                    Id = team.Id,
+                    Name = team.Name
+                };
+
+                model.BuildingWithTeam = await helpMethodsService
+                    .GetAllBuildingTeamMappings()
+                    .Include(x => x.Building)
+                    .Where(x => x.TeamId == team.Id)
+                    .ToListAsync();
+
+                model.EmployeesInTeam = await helpMethodsService
+                    .GetAllEmployeeTeamMappings()
+                    .Include(x => x.Employee)
+                    .Where(x => x.TeamId == team.Id)
+                    .ToListAsync();
+
+                result.Add(model);
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Retrieves all attached teams.
@@ -205,12 +305,36 @@
             Guid teamId = helpMethodsService.ConvertAndTestIdToGuid(id);
             await EnsureUserHasAccessAsync(teamId);
 
-            return await teamRepository
+            var entity = await teamRepository
                 .GetAllAttached()
-                .Where(x => !x.IsDeleted)
-                .To<TeamViewModel>()
-                .FirstOrDefaultAsync(x => x.Id == teamId)
+                .FirstOrDefaultAsync(x => x.Id == teamId && !x.IsDeleted)
                 ?? throw new InvalidOperationException("Team not found.");
+
+            var model = new TeamViewModel
+            {
+                Id = entity.Id,
+                Name = entity.Name
+            };
+
+            model.BuildingWithTeam = await helpMethodsService
+                .GetAllBuildingTeamMappings()
+                .Include(x => x.Building)
+                .Where(x => x.TeamId == teamId)
+                .ToListAsync();
+
+            model.EmployeesInTeam = await helpMethodsService
+                .GetAllEmployeeTeamMappings()
+                .Include(x => x.Employee)
+                .Where(x => x.TeamId == teamId)
+                .ToListAsync();
+
+            model.JobsDoneByTeam = await helpMethodsService
+                .GetAllJobDoneTeamMappings()
+                .Include(x => x.JobDone)
+                .Where(x => x.TeamId == teamId)
+                .ToListAsync();
+
+            return model;
         }
 
         /// <summary>

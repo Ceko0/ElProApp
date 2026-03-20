@@ -11,17 +11,8 @@
     public class MaterialsController(IMaterialService materialService) : Controller
     {
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            try
-            {
-                return View(await materialService.GetAllAsync());
-            }
-            catch
-            {
-                return RedirectToAction("Index", "Home");
-            }
-        }
+        public async Task<IActionResult> All() => 
+            View(await materialService.GetAllAsync());
 
         [Authorize(Roles = $"{AdminRoleName} , {OfficeManagerRoleName}")]
         [HttpGet]

@@ -5,24 +5,15 @@
 
     using ElProApp.Application.Services.Interfaces;
     using ElProApp.Web.Models.Material;
-    using static ElProApp.Common.ApplicationConstants;
 
     [Authorize]
     public class MaterialController (IMaterialService materialService): Controller
     {
 
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) ||
-                User.IsInRole(OfficeManagerRoleName) ||
-                User.IsInRole(TechnicianRoleName))
-            {
-                return RedirectToAction("AllMaterials", "Admin", new { area = "Admin" });
-            }
-
-            return View(await materialService.GetAllAsync());
-        }
+        public async Task<IActionResult> All() =>
+            View(await materialService.GetAllAsync());
+        
 
         [Authorize(Roles = "Admin,OfficeManager,Technician")]
         [HttpGet]

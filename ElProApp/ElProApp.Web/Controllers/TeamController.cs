@@ -5,7 +5,6 @@
 
     using ElProApp.Application.Services.Interfaces;
     using Models.Team;
-    using static Common.ApplicationConstants;
 
     /// <summary>
     /// Controller for managing team entries and operations.
@@ -21,14 +20,9 @@
         /// <returns>A view with the list of all Teams.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
-                return RedirectToAction("AllTeams", "Admin", new { area = "admin" });
-
-            var teams = await teamService.GetAllAsync();
-            return View(teams);
-        }
+        public async Task<IActionResult> All() => 
+            View(await teamService.GetAllAsync());
+        
         /// <summary>
         /// Retrieves the details of a specific team by its ID.
         /// </summary>

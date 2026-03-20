@@ -1,5 +1,4 @@
 ﻿@using ElProApp.Web.Models.Material
-@using Microsoft.AspNetCore.Mvc.Rendering
 @model ICollection<MaterialViewModel>
 
 @{
@@ -10,8 +9,16 @@
     <h1 class="display-4 text-center">Списък със материали</h1>
 
     <div class="d-flex justify-content-between mb-2">
-        <a asp-area="" asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-        <a asp-area="" asp-controller="Material" asp-action="Add" class="btn btn-success btn-sm">Добави материал</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            Начална страница
+        </a>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician"))
+        {
+            <a asp-controller="Material" asp-action="Add" class="btn btn-success btn-sm">
+                Добави материал
+            </a>
+        }
     </div>
 
     <div class="table-responsive">
@@ -25,18 +32,44 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var material in Model)
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var material in Model)
+                    {
+                        <tr>
+                            <td>@material.Name</td>
+                            <td>@material.Quantity</td>
+                            <td>@(material.BuildingName ?? "Няма")</td>
+
+                            <td>
+                                <a asp-action="Details" asp-route-id="@material.Id" class="btn btn-info btn-sm">
+                                    Информация
+                                </a>
+
+                                @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@material.Id" class="btn btn-warning btn-sm">
+                                        Редактиране
+                                    </a>
+                                }
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form asp-action="SoftDelete" asp-route-id="@material.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            Изтрий
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@material.Name</td>
-                        <td>@material.Quantity</td>
-                        <td>@material.BuildingName</td>
-                        <td>
-                            <a asp-controller="Material" asp-action="Details" asp-route-id="@material.Id" class="btn btn-info btn-sm">Информация</a>
-                            <a asp-controller="Material" asp-action="Edit" asp-route-id="@material.Id" class="btn btn-warning btn-sm">Редактиране</a>
-                            <form asp-controller="Material" asp-action="SoftDelete" asp-route-id="@material.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Изтрий</button>
-                            </form>
+                        <td colspan="4" class="text-center">
+                            Няма налични материали
                         </td>
                     </tr>
                 }
