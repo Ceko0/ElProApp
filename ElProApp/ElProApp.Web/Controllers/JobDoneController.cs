@@ -5,6 +5,8 @@
 
     using ElProApp.Application.Services.Interfaces;
     using Models.JobDone;
+    using static Common.EntityValidationConstants.CalculationAction;
+    using ElProApp.Common;
 
     [Authorize]
     public class JobDoneController(
@@ -24,6 +26,7 @@
 
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
             if (!ModelState.IsValid)
@@ -42,14 +45,6 @@
             }
 
             string jobDoneId = await jobDoneService.AddAsync(model);
-
-            await earningsCalculationService.CalculateMoneyAsync(
-                model.TeamId,
-                model.Jobs,
-                Guid.Parse(jobDoneId),
-                model.DaysForJob,
-                "Add"
-            );
 
             return RedirectToAction(nameof(Details), new { id = jobDoneId });
         }
@@ -80,7 +75,7 @@
                 oldJobDone.Jobs,
                 oldJobDone.Id,
                 oldJobDone.DaysForJob,
-                "Remove"
+                Remove
             );
 
             bool edited = await jobDoneService.EditByModelAsync(model);
@@ -95,7 +90,7 @@
                 model.Jobs,
                 model.Id,
                 model.DaysForJob,
-                "Add"
+                EntityValidationConstants.CalculationAction.Add
             );
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
@@ -103,7 +98,8 @@
 
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
-        public async Task<IActionResult> SoftDelete(string id, string teamId)
+        [HttpPost]
+        public async Task<IActionResult> SoftDelete(string id)
         {
             var jobDone = await jobDoneService.GetByIdAsync(id);
 
@@ -112,10 +108,9 @@
                 jobDone.Jobs,
                 jobDone.Id,
                 jobDone.DaysForJob,
-                "Remove"
-            );
+                Remove);
 
-            bool isDeleted = await jobDoneService.SoftDeleteAsync(id, teamId);
+            bool isDeleted = await jobDoneService.SoftDeleteAsync(id, jobDone.TeamId.ToString());
 
             if (!isDeleted)
             {

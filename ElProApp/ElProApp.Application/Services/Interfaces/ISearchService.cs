@@ -1,4 +1,6 @@
-﻿namespace ElProApp.Application.Services.Interfaces
+﻿using ElProApp.Web.Models.Search;
+
+namespace ElProApp.Application.Services.Interfaces
 {
     /// <summary>
     /// Provides functionality for performing search operations.
@@ -11,6 +13,6 @@
         /// <param name="query">The search query string.</param>
         /// <param name="searchIn">The target or context to search within.</param>
         /// <returns>A task that represents the asynchronous operation, containing a list of search results.</returns>
-        public Task<(List<object> Results, int TotalResults)> SearchAsync(string query, string searchIn, int pageNumber, int pageSize);
+        public Task<(List<SearchResultViewModel> Results, int TotalResults)> SearchAsync(string query, string searchIn, int pageNumber, int pageSize);
     }
 }

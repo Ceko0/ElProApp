@@ -76,7 +76,6 @@
                         </td>
 
                         <td>
-                            @* Детайли – само ако си в екипа или си админ *@
                             @if (isUserInTeam || User.IsInRole("Admin"))
                             {
                                 <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-info btn-sm">
@@ -84,7 +83,6 @@
                                 </a>
                             }
 
-                            @* Редакция *@
                             @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
                             {
                                 <a asp-action="Edit" asp-route-id="@team.Id" class="btn btn-warning btn-sm">
@@ -92,7 +90,6 @@
                                 </a>
                             }
 
-                            @* Изтриване *@
                             @if (User.IsInRole("Admin"))
                             {
                                 <form asp-action="SoftDelete" asp-route-id="@team.Id" method="post" style="display:inline;">

@@ -22,5 +22,6 @@
         public Task<bool> SoftDeleteAsync(string id);
 
         public Task<bool> EditByModelAsync(MaterialEditInputModel model);
+        Task<ICollection<BuildingMaterialViewModel>> GetByBuildingIdAsync(string buildingId);
     }
 }

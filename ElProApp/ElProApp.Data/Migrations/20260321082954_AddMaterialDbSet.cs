@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+
 #nullable disable
 
 namespace ElProApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMySQL : Migration
+    public partial class AddMaterialDbSet : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -106,6 +107,23 @@ namespace ElProApp.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Materials",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, comment: "Unique identifier for the material.", collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false, comment: "The name of the material with a maximum of 50 characters.")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false, comment: "Indicates if the material is active or soft deleted."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    DeletedDate = table.Column<DateTime>(type: "date", nullable: true, comment: "The date when the record was deleted (logically deleted).")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materials", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
@@ -126,8 +144,8 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimType = table.Column<string>(type: "longtext", nullable: true)
@@ -151,8 +169,8 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ClaimType = table.Column<string>(type: "longtext", nullable: true)
@@ -304,6 +322,34 @@ namespace ElProApp.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "BuildingMaterialMappings",
+                columns: table => new
+                {
+                    BuildingId = table.Column<Guid>(type: "char(36)", nullable: false, comment: "Foreign key referencing the Building entity.", collation: "ascii_general_ci"),
+                    MaterialId = table.Column<Guid>(type: "char(36)", nullable: false, comment: "Foreign key referencing the Material entity.", collation: "ascii_general_ci"),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "Quantity of material used at the Building."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    LastUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BuildingMaterialMappings", x => new { x.BuildingId, x.MaterialId });
+                    table.ForeignKey(
+                        name: "FK_BuildingMaterialMappings_Buildings_BuildingId",
+                        column: x => x.BuildingId,
+                        principalTable: "Buildings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BuildingMaterialMappings_Materials_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Materials",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "BuildingTeamMappings",
                 columns: table => new
                 {
@@ -377,6 +423,36 @@ namespace ElProApp.Data.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "JobDoneMaterialMappings",
+                columns: table => new
+                {
+                    JobDoneId = table.Column<Guid>(type: "char(36)", nullable: false, comment: "Foreign key referencing the JobDone entity.", collation: "ascii_general_ci"),
+                    MaterialId = table.Column<Guid>(type: "char(36)", nullable: false, comment: "Foreign key referencing the Material entity.", collation: "ascii_general_ci"),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, comment: "Quantity of material used for the job."),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false, comment: "Snapshot of material unit price at the time of job execution."),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false, comment: "The date when the record was created."),
+                    IsDeleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    DeletedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobDoneMaterialMappings", x => new { x.JobDoneId, x.MaterialId });
+                    table.ForeignKey(
+                        name: "FK_JobDoneMaterialMappings_JobsDone_JobDoneId",
+                        column: x => x.JobDoneId,
+                        principalTable: "JobsDone",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_JobDoneMaterialMappings_Materials_MaterialId",
+                        column: x => x.MaterialId,
+                        principalTable: "Materials",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "JobDoneTeamMappings",
                 columns: table => new
                 {
@@ -438,6 +514,11 @@ namespace ElProApp.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_BuildingMaterialMappings_MaterialId",
+                table: "BuildingMaterialMappings",
+                column: "MaterialId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BuildingTeamMappings_TeamId",
                 table: "BuildingTeamMappings",
                 column: "TeamId");
@@ -457,6 +538,11 @@ namespace ElProApp.Data.Migrations
                 name: "IX_JobDoneJobMapping_JobId",
                 table: "JobDoneJobMapping",
                 column: "JobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobDoneMaterialMappings_MaterialId",
+                table: "JobDoneMaterialMappings",
+                column: "MaterialId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobDoneTeamMappings_TeamId",
@@ -488,6 +574,9 @@ namespace ElProApp.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BuildingMaterialMappings");
+
+            migrationBuilder.DropTable(
                 name: "BuildingTeamMappings");
 
             migrationBuilder.DropTable(
@@ -495,6 +584,9 @@ namespace ElProApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobDoneJobMapping");
+
+            migrationBuilder.DropTable(
+                name: "JobDoneMaterialMappings");
 
             migrationBuilder.DropTable(
                 name: "JobDoneTeamMappings");
@@ -507,6 +599,9 @@ namespace ElProApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Jobs");
+
+            migrationBuilder.DropTable(
+                name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "JobsDone");

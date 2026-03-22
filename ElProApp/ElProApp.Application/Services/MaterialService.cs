@@ -142,20 +142,14 @@
 
             entity.Name = model.Name;
 
-            var mapping = entity.Buildings.FirstOrDefault();
+            entity.Buildings.Clear();
 
-            if (mapping == null)
+            entity.Buildings.Add(new BuildingMaterialMapping
             {
-                mapping = new BuildingMaterialMapping
-                {
-                    Material = entity
-                };
-
-                entity.Buildings.Add(mapping);
-            }
-
-            mapping.BuildingId = model.BuildingId;
-            mapping.Quantity = model.Quantity;
+                Material = entity,
+                BuildingId = model.BuildingId,
+                Quantity = model.Quantity
+            });
 
             await materialRepository.SaveAsync();
 
@@ -244,6 +238,7 @@
 
             return await materialRepository
                 .GetAllAttached()
+                .Where(m => !m.IsDeleted)
                 .SelectMany(m => m.Buildings)
                 .Where(bm => bm.BuildingId == validId)
                 .Select(bm => new BuildingMaterialViewModel

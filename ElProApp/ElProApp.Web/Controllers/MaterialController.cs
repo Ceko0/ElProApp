@@ -5,24 +5,33 @@
 
     using ElProApp.Application.Services.Interfaces;
     using ElProApp.Web.Models.Material;
+    using static Common.ApplicationConstants;
 
+    /// <summary>
+    /// Manages material operations.
+    /// </summary>
     [Authorize]
-    public class MaterialController (IMaterialService materialService): Controller
+    public class MaterialController(IMaterialService materialService) : Controller
     {
-
+        /// <summary>
+        /// Displays all material.
+        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> All() =>
-            View(await materialService.GetAllAsync());
-        
+        public async Task<IActionResult> All()
+            => View(await materialService.GetAllAsync());
 
-        [Authorize(Roles = "Admin,OfficeManager,Technician")]
+        /// <summary>
+        /// Displays add material form.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpGet]
         public async Task<IActionResult> Add()
-        {
-            return View(await materialService.GetAddModelAsync());
-        }
+            => View(await materialService.GetAddModelAsync());
 
-        [Authorize(Roles = "Admin,OfficeManager,Technician")]
+        /// <summary>
+        /// Creates a new material.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpPost]
         public async Task<IActionResult> Add(MaterialInputModel model)
         {
@@ -36,21 +45,35 @@
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        [Authorize(Roles = "Admin,OfficeManager,Technician,Worker")]
+        /// <summary>
+        /// Displays material details.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName},{TechnicianRoleName}")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
-            return View(await materialService.GetByIdAsync(id));
+            if (string.IsNullOrWhiteSpace(id))
+                throw new BadHttpRequestException("Material ID cannot be empty.");
+
+            var model = await materialService.GetByIdAsync(id);
+            return View(model);
         }
 
-        [Authorize(Roles = "Admin,OfficeManager,Technician")]
+        /// <summary>
+        /// Displays edit form.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            return View(await materialService.GetEditByIdAsync(id));
+            var model = await materialService.GetEditByIdAsync(id);
+            return View(model);
         }
 
-        [Authorize(Roles = "Admin,OfficeManager,Technician")]
+        /// <summary>
+        /// Edits material.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpPost]
         public async Task<IActionResult> Edit(MaterialEditInputModel model)
         {
@@ -64,12 +87,25 @@
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
-        [Authorize(Roles = "Admin,OfficeManager")]
+        /// <summary>
+        /// Soft deletes a material.
+        /// </summary>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {
             await materialService.SoftDeleteAsync(id);
             return RedirectToAction(nameof(All));
+        }
+
+        /// <summary>
+        /// Displays materials for a specific building.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> ByBuilding(string buildingId)
+        {
+            var materials = await materialService.GetByBuildingIdAsync(buildingId);
+            return View(materials);
         }
     }
 }

@@ -1,36 +1,37 @@
 ﻿namespace ElProApp.Data.Configurations.Mapping
 {
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    using ElProApp.Data.Models.Mappings;
+    using global::ElProApp.Data.Models.Mappings;
 
     /// <summary>
-    /// Configuration class for the BuildingMaterialMapping entity,
-    /// defining the schema for the BuildingMaterialMapping table.
+    /// Configuration for the <see cref="BuildingMaterialMapping"/> entity.
+    /// Defines the relationships between Building and Material and prevents EF Core
+    /// from creating shadow foreign keys such as BuildingId1 and MaterialId1.
     /// </summary>
     public class BuildingMaterialMappingConfiguration : IEntityTypeConfiguration<BuildingMaterialMapping>
     {
         /// <summary>
-        /// Configures the BuildingMaterialMapping entity properties and relationships.
+        /// Configures the entity properties and relationships.
         /// </summary>
-        /// <param name="builder">EntityTypeBuilder used to configure the BuildingMaterialMapping entity.</param>
+        /// <param name="builder">The builder used to configure the entity.</param>
         public void Configure(EntityTypeBuilder<BuildingMaterialMapping> builder)
         {
-            // Sets the primary key for the BuildingMaterialMapping entity.
-            builder.HasKey(bmm => new { bmm.BuildingId, bmm.MaterialId });
-
-            // Configures the relationship between Building and BuildingMaterialMapping.
             builder
-                .HasOne(bmm => bmm.Building)
-                .WithMany()
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasKey(x => new { x.BuildingId, x.MaterialId });
 
-            // Configures the relationship between Material and BuidlingMaterialMapping.
             builder
-                .HasOne(bmm => bmm.Material)
-                .WithMany()
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasOne(x => x.Building)
+                .WithMany(b => b.Materials)
+                .HasForeignKey(x => x.BuildingId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .HasOne(x => x.Material)
+                .WithMany(m => m.Buildings)
+                .HasForeignKey(x => x.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

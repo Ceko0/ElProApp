@@ -89,15 +89,19 @@
             var buildingService = serviceProvider.GetRequiredService<IBuildingService>();
             var jobDoneTeamMappingService =
                 serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
-
             var calculator =
                 serviceProvider.GetRequiredService<IEarningsCalculationService>();
-
             var buildingTeamMappingService =
                 serviceProvider.GetRequiredService<IBuildingTeamMappingService>();
 
             var jobDone =
                 AutoMapperConfig.MapperInstance.Map<JobDone>(model);
+
+            var team = await helpMethodsService
+                .GetAllTeams()
+                .FirstOrDefaultAsync(x => x.Id == model.TeamId);
+
+            jobDone.Name = $"От {model.StartDate:dd.MM.yyyy} до {model.EndDate:dd.MM.yyyy} Екип : {team?.Name}";
 
             jobDone.Building = await buildingService
                 .GetAllAttached()
@@ -105,7 +109,7 @@
 
             await jobDoneRepository.AddAsync(jobDone);
 
-            await jobDoneTeamMappingService.AddAsync(model.Id, model.TeamId);
+            await jobDoneTeamMappingService.AddAsync(jobDone.Id, model.TeamId);
 
             if (!buildingTeamMappingService.Any(model.BuildingId, model.TeamId))
             {
@@ -116,7 +120,7 @@
             await calculator.CalculateMoneyAsync(
                 model.TeamId,
                 model.Jobs,
-                model.Id,
+                jobDone.Id,
                 model.DaysForJob,
                 Add);
 
@@ -173,12 +177,10 @@
             ArgumentNullException.ThrowIfNull(model);
 
             var entity = await jobDoneRepository.GetByIdAsync(model.Id)
-                ?? throw new InvalidOperationException(
-                    "JobDone record not found.");
+                ?? throw new InvalidOperationException("JobDone record not found.");
 
             if (entity.IsDeleted)
-                throw new InvalidOperationException(
-                    "JobDone record is deleted.");
+                throw new InvalidOperationException("JobDone record is deleted.");
 
             var jobDoneJobService =
                 serviceProvider.GetRequiredService<IJobDoneJobMappingService>();
@@ -190,6 +192,14 @@
                 .GetAllAttached()
                 .Where(x => x.JobDoneId == model.Id)
                 .ToDictionaryAsync(x => x.JobId, x => x.Quantity);
+
+            foreach (var mapping in await jobDoneJobService
+                         .GetAllAttached()
+                         .Where(x => x.JobDoneId == model.Id)
+                         .ToListAsync())
+            {
+                await jobDoneJobService.RemoveAsync(mapping.JobDoneId, mapping.JobId);
+            }
 
             AutoMapperConfig.MapperInstance.Map(model, entity);
             await jobDoneRepository.SaveAsync();

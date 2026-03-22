@@ -4,10 +4,10 @@
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
     using System.Reflection;
+    using System.Linq.Expressions;
 
     using Models.Mappings;
     using Models;
-    using System.Linq.Expressions;
     using ElProApp.Services.Data.Interfaces;
 
     /// <summary>
@@ -15,7 +15,6 @@
     /// </summary>
     public class ElProAppDbContext(DbContextOptions<ElProAppDbContext> options) : IdentityDbContext<IdentityUser>(options)
     {
-
         /// <summary>
         /// DbSet for managing buildings in the database.
         /// </summary>
@@ -40,6 +39,11 @@
         /// DbSet for managing teams in the database.
         /// </summary>
         public DbSet<Team> Teams { get; set; }
+
+        /// <summary>
+        /// DbSet for managing materials in the database.
+        /// </summary>
+        public DbSet<Material> Materials { get; set; }
 
         /// <summary>
         /// DbSet for managing mappings between buildings and teams in the database.
@@ -95,6 +99,5 @@
 
             return Expression.Lambda(body, param);
         }
-
     }
 }

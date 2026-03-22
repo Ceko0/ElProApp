@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElProApp.Data.Migrations
 {
     [DbContext(typeof(ElProAppDbContext))]
-    [Migration("20260106165913_addJobDoneMaterialMappingTable")]
-    partial class addJobDoneMaterialMappingTable
+    [Migration("20260321082954_AddMaterialDbSet")]
+    partial class AddMaterialDbSet
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,6 +185,34 @@ namespace ElProApp.Data.Migrations
                     b.ToTable("JobsDone");
                 });
 
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialMapping", b =>
+                {
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the Building entity.");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the Material entity.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)")
+                        .HasComment("Quantity of material used at the Building.");
+
+                    b.HasKey("BuildingId", "MaterialId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("BuildingMaterialMappings");
+                });
+
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
                 {
                     b.Property<Guid>("BuildingId")
@@ -264,10 +292,20 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("date")
                         .HasComment("The date when the record was created.");
 
+                    b.Property<DateTime>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)")
                         .HasComment("Quantity of material used for the job.");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)")
+                        .HasComment("Snapshot of material unit price at the time of job execution.");
 
                     b.HasKey("JobDoneId", "MaterialId");
 
@@ -304,9 +342,6 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("char(36)")
                         .HasComment("Unique identifier for the material.");
 
-                    b.Property<Guid>("BuildingId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("date")
                         .HasComment("The date when the record was created.");
@@ -325,15 +360,9 @@ namespace ElProApp.Data.Migrations
                         .HasColumnType("varchar(50)")
                         .HasComment("The name of the material with a maximum of 50 characters.");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(65,30)")
-                        .HasComment("The quantity of the material.");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BuildingId");
-
-                    b.ToTable("Material");
+                    b.ToTable("Materials");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Team", b =>
@@ -584,6 +613,25 @@ namespace ElProApp.Data.Migrations
                     b.Navigation("Building");
                 });
 
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialMapping", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.Building", "Building")
+                        .WithMany("Materials")
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Material", "Material")
+                        .WithMany("Buildings")
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Building");
+
+                    b.Navigation("Material");
+                });
+
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.Building", "Building")
@@ -644,13 +692,13 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneMaterialMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.JobDone", "JobDone")
-                        .WithMany("JobDoneMaterials")
+                        .WithMany("Materials")
                         .HasForeignKey("JobDoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ElProApp.Data.Models.Material", "Material")
-                        .WithMany("JobDoneMaterials")
+                        .WithMany("JobDones")
                         .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -677,17 +725,6 @@ namespace ElProApp.Data.Migrations
                     b.Navigation("JobDone");
 
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("ElProApp.Data.Models.Material", b =>
-                {
-                    b.HasOne("ElProApp.Data.Models.Building", "Building")
-                        .WithMany("Materials")
-                        .HasForeignKey("BuildingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Building");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -748,12 +785,14 @@ namespace ElProApp.Data.Migrations
 
             modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
                 {
-                    b.Navigation("JobDoneMaterials");
+                    b.Navigation("Materials");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Material", b =>
                 {
-                    b.Navigation("JobDoneMaterials");
+                    b.Navigation("Buildings");
+
+                    b.Navigation("JobDones");
                 });
 #pragma warning restore 612, 618
         }

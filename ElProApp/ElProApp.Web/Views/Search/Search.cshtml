@@ -1,32 +1,30 @@
-﻿@using ElProApp.Data.Models
-@using System.Security.Claims
-@model List<object>
+﻿@using System.Security.Claims
+@model List<ElProApp.Web.Models.Search.SearchResultViewModel>
 
 <h3>Резултати от търсенето</h3>
 
 @if (Model.Any())
 {
     <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Тип</th>
-                <th>Име</th>
-                <th>Допълнителна информация</th>
-            </tr>
-        </thead>
+        <thead> <tr> <th>Тип</th> <th>Име</th> <th>Допълнителна информация</th> </tr> </thead>
         <tbody>
             @{
-                var distinctTypes = Model.Select(x => x.GetType()).Distinct().ToList();
+                var distinctTypes = Model.Select(x => x.Type).Distinct().ToList();
                 int emlpoyeeCounter = 0;
                 int buildingCounter = 0;
                 int teamCounter = 0;
                 int jobDoneCounter = 0;
                 int jobCounter = 0;
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isAdmin = User.IsInRole("Admin");
+                var isOffice = User.IsInRole("OfficeManager");
+                var isTech = User.IsInRole("Technician");
             }
 
             @foreach (var item in Model)
             {
-                if (item is Employee employee)
+                if (item.Type == "Employee")
                 {
                     if (distinctTypes.Count > 1 && emlpoyeeCounter++ == 0)
                     {
@@ -34,18 +32,26 @@
                     }
                     <tr>
                         <td>Служител</td>
-                        <td>@employee.Name  @employee.LastName</td>
+                        <td>@item.Name</td>
                         <td>
                             @{
-                                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                if (employee.UserId == currentUserId)
-                                {
-                                    <a asp-area="" asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">Информация за служителя</a>
-                                }
+                                bool canView = isAdmin || item.Id == currentUserId;
+                            }
+
+                            @item.AdditionalInfo
+
+                            @if (canView)
+                            {
+                                <div class="mt-1">
+                                    <a asp-controller="Employee" asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        Информация
+                                    </a>
+                                </div>
                             }
                         </td>
-                    </tr>                }
-                else if (item is Building building)
+                    </tr>
+                }
+                else if (item.Type == "Building")
                 {
                     if (distinctTypes.Count > 1 && buildingCounter++ == 0)
                     {
@@ -53,11 +59,22 @@
                     }
                     <tr>
                         <td>Сграда</td>
-                        <td>@building.Name</td>
-                        <td>@building.Location</td>
+                        <td>@item.Name</td>
+                        <td>
+                            @item.AdditionalInfo
+
+                            @if (isAdmin || isOffice || isTech)
+                            {
+                                <div class="mt-1">
+                                    <a asp-controller="Building" asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        Информация
+                                    </a>
+                                </div>
+                            }
+                        </td>
                     </tr>
                 }
-                else if (item is Team team)
+                else if (item.Type == "Team")
                 {
                     if (distinctTypes.Count > 1 && teamCounter++ == 0)
                     {
@@ -65,11 +82,22 @@
                     }
                     <tr>
                         <td>Екип</td>
-                        <td>@team.Name</td>
-                        <td>@team.CreatedDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Name</td>
+                        <td>
+                            @item.AdditionalInfo
+
+                            @if (isAdmin || isOffice || isTech)
+                            {
+                                <div class="mt-1">
+                                    <a asp-controller="Team" asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        Информация
+                                    </a>
+                                </div>
+                            }
+                        </td>
                     </tr>
                 }
-                else if (item is JobDone jobDone)
+                else if (item.Type == "JobDone")
                 {
                     if (distinctTypes.Count > 1 && jobDoneCounter++ == 0)
                     {
@@ -77,11 +105,22 @@
                     }
                     <tr>
                         <td>Свършена работа</td>
-                        <td>@jobDone.Name</td>
-                        <td>@jobDone.CreatedDate.ToString("dd/MM/yyyy") </td>
+                        <td>@item.Name</td>
+                        <td>
+                            @item.AdditionalInfo
+
+                            @if (isAdmin || isOffice || isTech)
+                            {
+                                <div class="mt-1">
+                                    <a asp-controller="JobDone" asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        Информация
+                                    </a>
+                                </div>
+                            }
+                        </td>
                     </tr>
                 }
-                else if (item is Job job)
+                else if (item.Type == "Job")
                 {
                     if (distinctTypes.Count > 1 && jobCounter++ == 0)
                     {
@@ -89,22 +128,33 @@
                     }
                     <tr>
                         <td>Работа</td>
-                        <td>@job.Name</td>
-                        <td>@job.Price.ToString("C2", new System.Globalization.CultureInfo("bg-BG"))</td>
+                        <td>@item.Name</td>
+                        <td>
+                            @item.AdditionalInfo
+
+                            @if (isAdmin || isOffice || isTech)
+                            {
+                                <div class="mt-1">
+                                    <a asp-controller="Job" asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm">
+                                        Информация
+                                    </a>
+                                </div>
+                            }
+                        </td>
                     </tr>
-                    
                 }
             }
         </tbody>
     </table>
+
     <nav aria-label="Page navigation" class="mt-4">
         <ul class="pagination">
             @if ((int)ViewData["CurrentPage"] > 1)
             {
                 <li class="page-item">
                     <a class="page-link" asp-action="Search"
-                       asp-route-pageNumber="@( (int)ViewData["CurrentPage"] - 1 )"
-                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-pageNumber="@((int)ViewData["CurrentPage"] - 1)"
+                       asp-route-query="@ViewData["SearchQuery"]"
                        asp-route-searchIn="@ViewData["SearchIn"]">
                         Предишна
                     </a>
@@ -116,7 +166,7 @@
                 <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
                     <a class="page-link" asp-action="Search"
                        asp-route-pageNumber="@i"
-                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-query="@ViewData["SearchQuery"]"
                        asp-route-searchIn="@ViewData["SearchIn"]">
                         @i
                     </a>
@@ -127,17 +177,18 @@
             {
                 <li class="page-item">
                     <a class="page-link" asp-action="Search"
-                       asp-route-pageNumber="@( (int)ViewData["CurrentPage"] + 1 )"
-                       asp-route-searchQuery="@ViewData["SearchQuery"]"
+                       asp-route-pageNumber="@((int)ViewData["CurrentPage"] + 1)"
+                       asp-route-query="@ViewData["SearchQuery"]"
                        asp-route-searchIn="@ViewData["SearchIn"]">
                         Следваща
                     </a>
                 </li>
             }
-        </ul>
-    </nav>
+    </ul>
+</nav>
+
 }
 else
 {
-    <p>Няма намерени резултати.</p>
+     <p>Няма намерени резултати.</p>
 }

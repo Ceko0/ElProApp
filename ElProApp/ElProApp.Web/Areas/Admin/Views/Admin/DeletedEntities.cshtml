@@ -1,0 +1,43 @@
+﻿@using ElProApp.Services.Data.Interfaces
+@model IEnumerable<ElProApp.Services.Data.Interfaces.IDeletableEntity>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Изтрити записи</h2>
+
+    <a href="/" class="btn btn-secondary">
+        Начална страница
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Име</th>
+                <th>Дата на изтриване</th>
+                <th>Възстанови</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Model)
+            {
+                <tr>
+                    <td>@entity.Name</td>
+                    <td>@entity.DeletedDate</td>
+                    <td>
+                        <form method="post" asp-action="DeletedEntities" asp-route-id="@entity.Id">
+                            <input type="hidden" name="entityType" value="@entity.GetType().Name" />
+                            <button type="submit" class="btn btn-primary">Възстанови</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Няма изтрити записи.</p>
+}

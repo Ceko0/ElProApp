@@ -37,7 +37,7 @@
         /// </summary>
         /// <typeparam name="T">The type of entity to retrieve. It must have the <see cref="IsDeleted"/> property.</typeparam>
         /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="IQueryable{T}"/> of deleted entities.</returns>
-        public IQueryable<T> GetDeletedEntities<T>() where T : class;
+        public Task<List<T>> GetDeletedEntitiesAsync<T>() where T : class;
 
         /// <summary>
         /// Restores a deleted entity back to the system.

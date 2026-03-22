@@ -21,11 +21,11 @@
         }
 
         public async Task<bool> CalculateMoneyAsync(
-            Guid teamId,
-            Dictionary<Guid, decimal> jobs,
-            Guid jobDoneId,
-            int daysForJob,
-            string action)
+    Guid teamId,
+    Dictionary<Guid, decimal> jobs,
+    Guid jobDoneId,
+    int daysForJob,
+    string action)
         {
             if (string.IsNullOrWhiteSpace(action))
             {
@@ -83,7 +83,12 @@
                 {
                     if (quantity != 0)
                     {
-                        await jobDoneJobService.AddAsync(jobDoneId, jobId, quantity);
+                        if (!jobDoneJobService
+                                .GetAllAttached()
+                                .Any(x => x.JobDoneId == jobDoneId && x.JobId == jobId))
+                        {
+                            await jobDoneJobService.AddAsync(jobDoneId, jobId, quantity);
+                        }
                     }
                 }
 

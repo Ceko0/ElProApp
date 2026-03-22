@@ -62,6 +62,9 @@
         /// <param name="roles">The list of roles to assign or remove.</param>
         /// <param name="state">The action to be performed ("add" or "remove").</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a boolean indicating whether the operation was successful.</returns>
+        /// <summary>
+        /// Assigns or removes roles for a specified user.
+        /// </summary>
         public async Task<bool> PostUsersRolesAsync(string userId, List<string> roles, string state)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -75,42 +78,39 @@
             {
                 case "add":
                     var rolesToAdd = roles.Except(currentRoles).ToList();
-                    await userManager.AddToRolesAsync(user, roles);
+                    if (rolesToAdd.Any())
+                        await userManager.AddToRolesAsync(user, rolesToAdd);
                     break;
+
                 case "remove":
-                    var rolesToRemove = currentRoles.Except(roles).ToList();
-                    await userManager.RemoveFromRolesAsync(user, roles);
+                    var rolesToRemove = roles.Intersect(currentRoles).ToList();
+                    if (rolesToRemove.Any())
+                        await userManager.RemoveFromRolesAsync(user, rolesToRemove);
                     break;
             }
 
             var currentUser = await userManager.GetUserAsync(httpContextAccessor.HttpContext.User);
 
-            if (currentUser == user)
+            if (currentUser != null && currentUser.Id == user.Id)
                 await signInManager.RefreshSignInAsync(user);
-
 
             return true;
         }
 
         /// <summary>
-        /// Retrieves a list of entities that are marked as deleted (i.e., have the 'IsDeleted' property set to true).
+        /// Retrieves deleted entities ignoring global query filters.
         /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve. The type must contain the 'IsDeleted' property.</typeparam>
-        /// <returns>An <see cref="IQueryable{T}"/> representing the collection of deleted entities.</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the entity type does not contain the 'IsDeleted' property.</exception>
-        public IQueryable<T> GetDeletedEntities<T>() where T : class
+        public async Task<List<T>> GetDeletedEntitiesAsync<T>() where T : class
         {
             var isDeletedProperty = typeof(T).GetProperty("IsDeleted");
 
             if (isDeletedProperty == null)
                 throw new InvalidOperationException("The type does not contain the 'IsDeleted' property.");
 
-            var dbSet = dbContext.Set<T>();
-
-            var deletedEntities = dbSet.AsQueryable()
-                .Where(entity => EF.Property<bool>(entity, "IsDeleted") == true);
-
-            return deletedEntities;
+            return await dbContext.Set<T>()
+                .IgnoreQueryFilters()
+                .Where(e => EF.Property<bool>(e, "IsDeleted") == true)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -134,7 +134,9 @@
 
             var dbSet = dbContext.Set<T>();
 
-            var entity = await dbSet.FindAsync(validId);
+            var entity = await dbSet
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == validId);
 
             if (entity == null)
                 return false;
@@ -153,9 +155,13 @@
                 };
 
                 var jboDoneTeamMappingService = serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+
                 var jobDoneTeamMapping = await jboDoneTeamMappingService.GetAllAttached()
-                    .Include(x => x.JobDone)
-                    .FirstOrDefaultAsync(x => x.JobDoneId == validId && x.JobDone.CreatedDate == jobDone.CreatedDate);
+                    .FirstOrDefaultAsync(x => x.JobDoneId == validId);
+
+                if (jobDoneTeamMapping == null)
+                    return false;
+
                 model.TeamId = jobDoneTeamMapping.TeamId;
                 var jobs = await serviceProvider.GetRequiredService<IJobDoneJobMappingService>()
                     .GetAllAttached().Where(x => x.JobDoneId == jobDone.Id)

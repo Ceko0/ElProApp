@@ -35,7 +35,7 @@
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public IActionResult DeletedEntities(string entityType)
+        public async Task<IActionResult> DeletedEntitiesAsync(string entityType)
         {
             if (string.IsNullOrEmpty(entityType))
                 return BadRequest("Entity type is required.");
@@ -45,22 +45,22 @@
             switch (entityType)
             {
                 case "Employee":
-                    deletedEntities = adminService.GetDeletedEntities<Employee>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Employee>();
                     break;
                 case "Building":
-                    deletedEntities = adminService.GetDeletedEntities<Building>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Building>();
                     break;
                 case "Team":
-                    deletedEntities = adminService.GetDeletedEntities<Team>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Team>();
                     break;
                 case "Job":
-                    deletedEntities = adminService.GetDeletedEntities<Job>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Job>();
                     break;
                 case "JobDone":
-                    deletedEntities = adminService.GetDeletedEntities<JobDone>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<JobDone>();
                     break;
                 case "Material":
-                    deletedEntities = adminService.GetDeletedEntities<Material>();
+                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Material>();
                     break;
                 default:
                     return BadRequest("Invalid entity type.");

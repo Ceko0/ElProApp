@@ -1,0 +1,52 @@
+﻿@using ElProApp.Web.Models.Material
+@model ICollection<BuildingMaterialViewModel>
+
+@{
+    ViewData["Title"] = "Материали за сградата";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center">Материали за сградата</h1>
+
+    <div class="d-flex justify-content-between mb-2">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            Начална страница
+        </a>
+
+        <a asp-action="All" class="btn btn-secondary">
+            Списъка с материали
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Име на материала</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var material in Model)
+                    {
+                        <tr>
+                            <td>@material.MaterialName</td>
+                            <td>@material.Quantity</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            Няма материали за тази сграда
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
