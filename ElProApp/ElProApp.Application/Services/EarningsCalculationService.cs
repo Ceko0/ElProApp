@@ -20,93 +20,83 @@
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task<bool> CalculateMoneyAsync(
-    Guid teamId,
-    Dictionary<Guid, decimal> jobs,
-    Guid jobDoneId,
-    int daysForJob,
-    string action)
+        public async Task<bool> CalculateMoneyAsync(Guid teamId,
+                                            Dictionary<Guid, decimal> jobs,
+                                            Guid jobDoneId,
+                                            int daysForJob,
+                                            string action)
         {
-            if (string.IsNullOrWhiteSpace(action))
-            {
-                throw new ArgumentException("Action cannot be null or empty.", nameof(action));
-            }
-
             bool isAdding = action == Add;
-            bool isRemoving = action == Remove;
-
-            if (isAdding == isRemoving)
-            {
-                throw new ArgumentOutOfRangeException(nameof(action), "Invalid action parameter.");
-            }
 
             var employeeTeamMappingService =
                 serviceProvider.GetRequiredService<IEmployeeTeamMappingService>();
 
-            var jobService =
-                serviceProvider.GetRequiredService<IJobService>();
+            var employeeService =
+                serviceProvider.GetRequiredService<IEmployeeService>();
 
             var jobDoneJobService =
                 serviceProvider.GetRequiredService<IJobDoneJobMappingService>();
 
-            var employeeService =
-                serviceProvider.GetRequiredService<IEmployeeService>();
-
-            var employeesId = await employeeTeamMappingService
+            var employees = await employeeTeamMappingService
                 .GetAllAttached()
                 .Where(x => x.TeamId == teamId)
-                .Select(x => x.EmployeeId)
+                .Select(x => x.Employee)
                 .ToListAsync();
 
-            decimal moneyForEmployee = 0m;
+            int peopleCount = employees.Count;
 
-            foreach ((Guid id, decimal quantity) in jobs)
-            {
-                var job = await jobService.GetByIdAsync(id.ToString());
-                var totalMoney = job.Price * quantity;
-                moneyForEmployee += totalMoney / employeesId.Count;
-            }
-
-            var employees = employeeService
-                .GetAllAttached()
-                .Where(x => employeesId.Contains(x.Id));
-
-            decimal CalculateMoneyToTake(decimal wages)
-            {
-                var takenMoneyFromEmployee = wages * daysForJob;
-                return moneyForEmployee - takenMoneyFromEmployee;
-            }
+            if (peopleCount == 0)
+                return false;
 
             if (isAdding)
             {
-                foreach ((Guid jobId, decimal quantity) in jobs)
+                var existing = await jobDoneJobService
+                    .GetAllAttached()
+                    .Where(x => x.JobDoneId == jobDoneId)
+                    .ToListAsync();
+
+                foreach (var m in existing)
                 {
-                    if (quantity != 0)
-                    {
-                        if (!jobDoneJobService
-                                .GetAllAttached()
-                                .Any(x => x.JobDoneId == jobDoneId && x.JobId == jobId))
-                        {
-                            await jobDoneJobService.AddAsync(jobDoneId, jobId, quantity);
-                        }
-                    }
+                    await jobDoneJobService.RemoveAsync(m.JobDoneId, m.JobId);
                 }
 
-                foreach (var employee in employees)
+                foreach ((Guid jobId, decimal quantity) in jobs)
                 {
-                    employee.MoneyToTake += CalculateMoneyToTake(employee.Wages);
+                    if (quantity > 0)
+                    {
+                        await jobDoneJobService.AddAsync(jobDoneId, jobId, quantity);
+                    }
+                }
+            }
+
+            var mappings = await jobDoneJobService
+                .GetAllAttached()
+                .Where(x => x.JobDoneId == jobDoneId)
+                .ToListAsync();
+
+            decimal totalMoney = 0m;
+
+            foreach (var mapping in mappings)
+            {
+                totalMoney += mapping.Job.Price * mapping.Quantity;
+            }
+
+            decimal moneyPerEmployee = totalMoney / peopleCount;
+
+            if (isAdding)
+            {
+                foreach (var e in employees)
+                {
+                    var profit = moneyPerEmployee - (e.Wages * daysForJob);
+                    e.MoneyToTake += profit;
                 }
             }
             else
             {
-                foreach ((Guid jobId, decimal quantity) in jobs)
+                foreach (var e in employees)
                 {
-                    await jobDoneJobService.RemoveAsync(jobDoneId, jobId);
-                }
-
-                foreach (var employee in employees)
-                {
-                    employee.MoneyToTake -= CalculateMoneyToTake(employee.Wages);
+                    var profit = moneyPerEmployee - (e.Wages * daysForJob);
+                    e.MoneyToTake -= profit;
                 }
             }
 

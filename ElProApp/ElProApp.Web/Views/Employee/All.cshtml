@@ -21,6 +21,12 @@
                 <th>Име</th>
                 <th>Фамилия</th>
                 <th>Екипи</th>
+
+                @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
+                {
+                    <th>Заработка</th>
+                }
+
                 <th>Действия</th>
             </tr>
         </thead>
@@ -53,6 +59,11 @@
                             <span class="text-muted">—</span>
                         }
                     </td>
+
+                    @if (isAdmin)
+                    {
+                        <td>@employee.MoneyToTake.ToString("F2") лв.</td>
+                    }
 
                     <td>
                         @if (isAdmin || isOwner)

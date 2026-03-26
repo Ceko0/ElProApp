@@ -70,6 +70,8 @@
         /// </summary>
         public DbSet<BuildingMaterialMapping> BuildingMaterialMappings { get; set; }
 
+        public DbSet<JobMaterialMapping> JobMaterialMappings { get; set; }
+
         /// <summary>
         /// Configures the entity mappings using the configurations defined in the current assembly.
         /// </summary>

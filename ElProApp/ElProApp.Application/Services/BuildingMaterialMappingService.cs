@@ -66,13 +66,7 @@
             var record = await GetRecordAsync(buildingId, materialId)
                 ?? throw new InvalidOperationException(
                     "Material is not available in the specified building.");
-
-            if (record.Quantity < quantity)
-            {
-                throw new InvalidOperationException(
-                    "Not enough material available in the building.");
-            }
-
+                       
             record.Quantity -= quantity;
             record.LastUpdated = DateTime.UtcNow;
 

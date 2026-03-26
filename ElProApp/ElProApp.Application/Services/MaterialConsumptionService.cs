@@ -38,40 +38,41 @@
         /// <param name="materials">
         /// A dictionary where the key is the material identifier and the value is the quantity.
         /// </param>
+
         public async Task ApplyAsync(
             Guid jobDoneId,
             Guid buildingId,
-            Dictionary<Guid, decimal> materials)
+            Dictionary<Guid, decimal> jobs)
         {
             if (jobDoneId == Guid.Empty)
-                throw new ArgumentException(
-                    "JobDoneId must not be empty.", nameof(jobDoneId));
+                throw new ArgumentException("JobDoneId must not be empty.");
 
             if (buildingId == Guid.Empty)
-                throw new ArgumentException(
-                    "BuildingId must not be empty.", nameof(buildingId));
+                throw new ArgumentException("BuildingId must not be empty.");
 
-            if (materials == null || materials.Count == 0)
+            if (jobs == null || jobs.Count == 0)
                 return;
 
-            foreach (var (materialId, quantity) in materials)
+            foreach (var (jobId, quantity) in jobs)
             {
                 if (quantity <= 0)
                     continue;
 
-                var material =
-                    await materialService.GetByIdAsync(materialId.ToString());
-
-                await jobDoneMaterialService.AddAsync(
-                    jobDoneId.ToString(),
-                    materialId.ToString(),
-                    quantity,
-                    material.Price);
-
-                await buildingMaterialService.DecreaseAsync(
-                    buildingId,
-                    materialId,
-                    quantity);
+               // var material = await materialService.GetMaterialByJobIdAsync(jobId);
+               //
+               // if (material == null)
+               //     throw new InvalidOperationException($"Job {jobId} няма материал!");
+               //
+               // await jobDoneMaterialService.AddAsync(
+               //     jobDoneId.ToString(),
+               //     material.Id.ToString(),
+               //     quantity,
+               //     material.Price);
+               //
+               // await buildingMaterialService.DecreaseAsync(
+               //     buildingId,
+               //     material.Id,
+               //     quantity);
             }
         }
 

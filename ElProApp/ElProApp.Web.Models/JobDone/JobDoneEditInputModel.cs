@@ -33,6 +33,7 @@
         public Guid TeamId { get; set; }
 
         public Team Team { get; set; } = null!;
+        public Dictionary<Guid, decimal> Materials { get; set; } = new();
 
     }
 }

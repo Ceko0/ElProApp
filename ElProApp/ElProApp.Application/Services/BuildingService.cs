@@ -31,7 +31,10 @@
                 throw new ArgumentException("Building name must be provided.");
             }
 
-            var existingBuilding = await buildingRepository.FirstOrDefaultAsync(x => x.Name == model.Name);
+            var existingBuilding = await buildingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x => x.Name == model.Name && !x.IsDeleted);
+
             if (existingBuilding != null)
                 throw new InvalidOperationException("A building with this name already exists!");
 

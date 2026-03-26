@@ -37,5 +37,6 @@
         public virtual ICollection<Job> JobsList { get; set; } = new List<Job>();
         public virtual ICollection<Team> Teams { get; set; } = new List<Team>();
         public virtual ICollection<Building> Buildings { get; set; } = new List<Building>();
+        public Dictionary<Guid, decimal> Materials { get; set; } = new();
     }
 }
