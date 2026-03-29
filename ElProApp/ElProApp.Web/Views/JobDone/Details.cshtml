@@ -7,29 +7,31 @@
     <div class="card mt-4">
         <div class="card-body">
             <h5 class="card-title">Основна информация</h5>
+
             <p><strong>Име:</strong> @Model.Name</p>
             <p><strong>Дни за изпълнение:</strong> @Model.DaysForJob</p>
             <p><strong>Сграда:</strong> @Model.Building.Name</p>
-            <p><strong>Екип:</strong> @Model.Team.Name</p> 
+            <p><strong>Екип:</strong> @Model.Team.Name</p>
+
+            <hr />
+
+            <h5>Материали (дейности)</h5>
+
             <table class="table">
                 <thead>
-                <tr>
-                    <th>Име на Работа</th>
-                    <th>Количество</th>
-                </tr>
+                    <tr>
+                        <th>Материал</th>
+                        <th>Количество</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @foreach ((Guid Id , decimal quantity) in Model.Jobs)
-                {
-                    <tr>
-                        <td>
-                            @Model.JobsList.FirstOrDefault(x => x.Id == Id).Name
-                        </td>
-                        <td>
-                            @quantity
-                        </td>
-                    </tr>
-                }
+                    @foreach (var material in Model.Materials)
+                    {
+                        <tr>
+                            <td>@material.MaterialName</td>
+                            <td>@material.Quantity</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -37,7 +39,7 @@
 
     <div class="d-flex justify-content-between">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
-        <a asp-action="All" class="btn btn-secondary">Списъка със свършена работа</a>
-        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <a asp-action="All" class="btn btn-secondary">Списък</a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начало</a>
     </div>
 </div>

@@ -17,7 +17,6 @@
 
     /// <summary>
     /// Provides helper methods for retrieving user, identity and commonly used application data.
-    /// Acts as a shared utility service across the application layer.
     /// </summary>
     public class HelpMethodsService : IHelpMethodsService
     {
@@ -28,6 +27,9 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="HelpMethodsService"/> class.
         /// </summary>
+        /// <param name="httpContextAccessor">HTTP context accessor.</param>
+        /// <param name="userManager">User manager.</param>
+        /// <param name="serviceProvider">Service provider.</param>
         public HelpMethodsService(
             IHttpContextAccessor httpContextAccessor,
             UserManager<IdentityUser> userManager,
@@ -41,6 +43,7 @@
         /// <summary>
         /// Retrieves the identifier of the currently authenticated user.
         /// </summary>
+        /// <returns>The user identifier.</returns>
         /// <exception cref="InvalidOperationException">
         /// Thrown when the user context is not available.
         /// </exception>
@@ -59,8 +62,13 @@
         }
 
         /// <summary>
-        /// Retrieves an <see cref="IdentityUser"/> by identifier.
+        /// Retrieves a user by identifier.
         /// </summary>
+        /// <param name="id">The user identifier.</param>
+        /// <returns>The user.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the user is not found.
+        /// </exception>
         public async Task<IdentityUser> GetUserAsync(string id)
             => await userManager.FindByIdAsync(id)
                ?? throw new InvalidOperationException("User not found.");
@@ -68,6 +76,11 @@
         /// <summary>
         /// Converts and validates a string identifier to <see cref="Guid"/>.
         /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The parsed <see cref="Guid"/>.</returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the identifier is invalid.
+        /// </exception>
         public Guid ConvertAndTestIdToGuid(string id)
         {
             if (string.IsNullOrWhiteSpace(id) ||
@@ -83,6 +96,10 @@
         /// <summary>
         /// Retrieves the currently authenticated user.
         /// </summary>
+        /// <returns>The current user.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the user is not found.
+        /// </exception>
         public async Task<IdentityUser> GetCurrentUserAsync()
         {
             var userId = httpContextAccessor
@@ -100,6 +117,8 @@
         /// <summary>
         /// Retrieves all team mappings for a specific building.
         /// </summary>
+        /// <param name="id">The building identifier.</param>
+        /// <returns>A collection of mappings.</returns>
         public async Task<List<BuildingTeamMapping>> GetBuildingTeamMapping(Guid id)
         {
             var service =
@@ -117,8 +136,10 @@
         }
 
         /// <summary>
-        /// Retrieves team information associated with a job done.
+        /// Retrieves team information associated with a job-done record.
         /// </summary>
+        /// <param name="id">The job-done identifier.</param>
+        /// <returns>The team.</returns>
         public async Task<Team> GetTeamInforamtion(Guid id)
         {
             var service =
@@ -135,12 +156,15 @@
         /// <summary>
         /// Retrieves the roles assigned to a user.
         /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>A collection of roles.</returns>
         public async Task<IList<string>> GetUserRolesAsync(IdentityUser user)
             => await userManager.GetRolesAsync(user);
 
         /// <summary>
         /// Retrieves all non-deleted buildings.
         /// </summary>
+        /// <returns>Queryable buildings.</returns>
         public IQueryable<Building> GetAllBuildings()
         {
             var service = serviceProvider.GetRequiredService<IBuildingService>();
@@ -150,6 +174,7 @@
         /// <summary>
         /// Retrieves all non-deleted employees.
         /// </summary>
+        /// <returns>Queryable employees.</returns>
         public IQueryable<Employee> GetAllEmployees()
         {
             var service = serviceProvider.GetRequiredService<IEmployeeService>();
@@ -157,8 +182,9 @@
         }
 
         /// <summary>
-        /// Retrieves all non-deleted job done records.
+        /// Retrieves all non-deleted job-done records.
         /// </summary>
+        /// <returns>Queryable job-done records.</returns>
         public IQueryable<JobDone> GetAllJobDones()
         {
             var service = serviceProvider.GetRequiredService<IJobDoneService>();
@@ -166,8 +192,9 @@
         }
 
         /// <summary>
-        /// Retrieves all non-deleted jobs.
+        /// Retrieves all non-deleted jobs (legacy).
         /// </summary>
+        /// <returns>Queryable jobs.</returns>
         public IQueryable<Job> GetAllJobs()
         {
             var service = serviceProvider.GetRequiredService<IJobService>();
@@ -177,6 +204,7 @@
         /// <summary>
         /// Retrieves all non-deleted teams.
         /// </summary>
+        /// <returns>Queryable teams.</returns>
         public IQueryable<Team> GetAllTeams()
         {
             var service = serviceProvider.GetRequiredService<ITeamService>();
@@ -186,6 +214,7 @@
         /// <summary>
         /// Retrieves all building-team mappings.
         /// </summary>
+        /// <returns>Queryable mappings.</returns>
         public IQueryable<BuildingTeamMapping> GetAllBuildingTeamMappings()
         {
             var service =
@@ -197,6 +226,7 @@
         /// <summary>
         /// Retrieves all employee-team mappings.
         /// </summary>
+        /// <returns>Queryable mappings.</returns>
         public IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMappings()
         {
             var service =
@@ -206,8 +236,9 @@
         }
 
         /// <summary>
-        /// Retrieves all job done-team mappings.
+        /// Retrieves all job-done team mappings.
         /// </summary>
+        /// <returns>Queryable mappings.</returns>
         public IQueryable<JobDoneTeamMapping> GetAllJobDoneTeamMappings()
         {
             var service =

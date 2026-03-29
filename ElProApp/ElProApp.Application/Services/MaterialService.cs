@@ -13,7 +13,6 @@
     using ElProApp.Services.Mapping;
     using ElProApp.Web.Models.Material;
     using ElProApp.Application.Services.Interfaces;
-    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
     /// Provides application-level operations for managing materials.
@@ -22,16 +21,19 @@
     {
         private readonly IRepository<Material, Guid> materialRepository;
         private readonly IHelpMethodsService helpMethodsService;
+        private readonly IBuildingMaterialMappingService buildingMaterialService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialService"/> class.
         /// </summary>
         public MaterialService(
             IRepository<Material, Guid> materialRepository,
-            IHelpMethodsService helpMethodsService)
+            IHelpMethodsService helpMethodsService,
+            IBuildingMaterialMappingService buildingMaterialService)
         {
             this.materialRepository = materialRepository;
             this.helpMethodsService = helpMethodsService;
+            this.buildingMaterialService = buildingMaterialService;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@
         /// </summary>
         public async Task<MaterialInputModel> GetAddModelAsync()
         {
-            var model = new MaterialInputModel
+            return new MaterialInputModel
             {
                 Buildings = await helpMethodsService
                     .GetAllBuildings()
@@ -50,12 +52,10 @@
                     })
                     .ToListAsync()
             };
-
-            return model;
         }
 
         /// <summary>
-        /// Creates a new material.
+        /// Creates a new material and assigns initial quantity to a building.
         /// </summary>
         public async Task<string> AddAsync(MaterialInputModel model)
         {
@@ -63,9 +63,7 @@
 
             bool exists = await materialRepository
                 .GetAllAttached()
-                .AnyAsync(x =>
-                    x.Name == model.Name &&
-                    !x.IsDeleted);
+                .AnyAsync(x => x.Name == model.Name && !x.IsDeleted);
 
             if (exists)
                 throw new InvalidOperationException(
@@ -74,17 +72,16 @@
             var entity =
                 AutoMapperConfig.MapperInstance.Map<Material>(model);
 
-            var mapping = new BuildingMaterialMapping
-            {
-                BuildingId = model.BuildingId,
-                Quantity = model.Quantity,
-                Material = entity
-            };
-
-            entity.Buildings.Add(mapping);
-
             await materialRepository.AddAsync(entity);
             await materialRepository.SaveAsync();
+
+            if (model.BuildingId != Guid.Empty && model.Quantity > 0)
+            {
+                await buildingMaterialService.IncreaseAsync(
+                    model.BuildingId,
+                    entity.Id,
+                    model.Quantity);
+            }
 
             return entity.Id.ToString();
         }
@@ -103,12 +100,14 @@
                 .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
                 ?? throw new InvalidOperationException("Material not found or is deleted.");
 
+            var mapping = entity.Buildings.FirstOrDefault();
+
             var model = new MaterialEditInputModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Quantity = entity.Buildings.FirstOrDefault()?.Quantity ?? 0,
-                BuildingId = entity.Buildings.FirstOrDefault()?.BuildingId ?? Guid.Empty
+                Quantity = mapping?.Quantity ?? 0,
+                BuildingId = mapping?.BuildingId ?? Guid.Empty
             };
 
             model.Buildings = await helpMethodsService
@@ -125,16 +124,14 @@
         }
 
         /// <summary>
-        /// Updates an existing material.
+        /// Updates an existing material and its assigned quantity.
         /// </summary>
         public async Task<bool> EditByModelAsync(MaterialEditInputModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
 
             var entity = await materialRepository
-                .GetAllAttached()
-                .Include(x => x.Buildings)
-                .FirstOrDefaultAsync(x => x.Id == model.Id)
+                .GetByIdAsync(model.Id)
                 ?? throw new InvalidOperationException("Material not found.");
 
             if (entity.IsDeleted)
@@ -142,16 +139,15 @@
 
             entity.Name = model.Name;
 
-            entity.Buildings.Clear();
-
-            entity.Buildings.Add(new BuildingMaterialMapping
-            {
-                Material = entity,
-                BuildingId = model.BuildingId,
-                Quantity = model.Quantity
-            });
-
             await materialRepository.SaveAsync();
+
+            if (model.BuildingId != Guid.Empty && model.Quantity > 0)
+            {
+                await buildingMaterialService.IncreaseAsync(
+                    model.BuildingId,
+                    entity.Id,
+                    model.Quantity);
+            }
 
             return true;
         }
@@ -203,15 +199,21 @@
                 .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
                 ?? throw new InvalidOperationException("Material not found or is deleted.");
 
-            var mapping = entity.Buildings.FirstOrDefault();
-
             return new MaterialViewModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Quantity = mapping?.Quantity ?? 0,
-                BuildingId = mapping?.BuildingId ?? Guid.Empty,
-                BuildingName = mapping?.Building.Name
+
+                BuildingMaterials = entity.Buildings
+                    .Select(x => new BuildingMaterialViewModel
+                    {
+                        MaterialId = x.MaterialId,
+                        MaterialName = entity.Name,
+                        BuildingId = x.BuildingId,
+                        BuildingName = x.Building.Name,
+                        Quantity = x.Quantity
+                    })
+                    .ToList()
             };
         }
 
@@ -230,8 +232,7 @@
         /// <summary>
         /// Retrieves all materials assigned to a specific building.
         /// </summary>
-        public async Task<ICollection<BuildingMaterialViewModel>> GetByBuildingIdAsync(
-            string buildingId)
+        public async Task<ICollection<BuildingMaterialViewModel>> GetByBuildingIdAsync(string buildingId)
         {
             Guid validId =
                 helpMethodsService.ConvertAndTestIdToGuid(buildingId);

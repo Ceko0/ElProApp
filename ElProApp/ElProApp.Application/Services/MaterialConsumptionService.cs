@@ -36,13 +36,12 @@
         /// <param name="jobDoneId">The job-done identifier.</param>
         /// <param name="buildingId">The building identifier.</param>
         /// <param name="materials">
-        /// A dictionary where the key is the material identifier and the value is the quantity.
+        /// A dictionary where the key is the material identifier and the value is a tuple of quantity and price.
         /// </param>
-
         public async Task ApplyAsync(
             Guid jobDoneId,
             Guid buildingId,
-            Dictionary<Guid, decimal> jobs)
+            Dictionary<Guid, (decimal Quantity, decimal Price)> materials)
         {
             if (jobDoneId == Guid.Empty)
                 throw new ArgumentException("JobDoneId must not be empty.");
@@ -50,29 +49,24 @@
             if (buildingId == Guid.Empty)
                 throw new ArgumentException("BuildingId must not be empty.");
 
-            if (jobs == null || jobs.Count == 0)
+            if (materials == null || materials.Count == 0)
                 return;
 
-            foreach (var (jobId, quantity) in jobs)
+            foreach (var (materialId, data) in materials)
             {
-                if (quantity <= 0)
+                if (data.Quantity <= 0)
                     continue;
 
-               // var material = await materialService.GetMaterialByJobIdAsync(jobId);
-               //
-               // if (material == null)
-               //     throw new InvalidOperationException($"Job {jobId} няма материал!");
-               //
-               // await jobDoneMaterialService.AddAsync(
-               //     jobDoneId.ToString(),
-               //     material.Id.ToString(),
-               //     quantity,
-               //     material.Price);
-               //
-               // await buildingMaterialService.DecreaseAsync(
-               //     buildingId,
-               //     material.Id,
-               //     quantity);
+                await jobDoneMaterialService.AddAsync(
+                    jobDoneId.ToString(),
+                    materialId.ToString(),
+                    data.Quantity,
+                    data.Price);
+
+                await buildingMaterialService.DecreaseAsync(
+                    buildingId,
+                    materialId,
+                    data.Quantity);
             }
         }
 

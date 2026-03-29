@@ -6,66 +6,119 @@
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
-        
-        <div class="form-group">
-            <label asp-for="Name" class="control-label">Име</label>
+
+        <div class="form-group mb-3">
+            <label asp-for="Name">Име</label>
             <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="DaysForJob" class="control-label">Дни за изпълнение</label>
+        <div class="form-group mb-3">
+            <label asp-for="DaysForJob">Дни</label>
             <input asp-for="DaysForJob" class="form-control" />
-            <span asp-validation-for="DaysForJob" class="text-danger"></span>
-        </div>
-     
-        <div class="form-group">
-            <label class="control-label">Екип</label>
-            <ul class="list-group">
-                @Model.Team.Name
-                <input type="hidden" asp-for="TeamId" />
-                <input type="hidden" asp-for="Team.Name" />
-            </ul>
         </div>
 
-        <div class="form-group">
-            <label class="control-label">Сграда</label>
-            <ul class="list-group">
-                @Model.Building.Name
-                <input type="hidden" asp-for="BuildingId" />
-                <input type="hidden" asp-for="Building.Name" />
-                <input type="hidden" asp-for="Building.Location" />
-            </ul>
+        <div class="form-group mb-3">
+            <label>Екип</label>
+            <div class="form-control">@Model.Team.Name</div>
+            <input type="hidden" asp-for="TeamId" />
         </div>
-        <table class="table table-bordered">
+
+        <div class="form-group mb-3">
+            <label>Сграда</label>
+            <div class="form-control">@Model.Building.Name</div>
+            <input type="hidden" asp-for="BuildingId" />
+        </div>
+
+        <hr />
+
+        <h4>Материали</h4>
+
+        <table class="table" id="materialsTable">
             <thead>
                 <tr>
-                    <th>Име на работа</th>
+                    <th>Материал</th>
                     <th>Количество</th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach ((Guid id, decimal quantity) in Model.Jobs)
+            <tbody id="materialsBody">
+                @for (int i = 0; i < Model.Materials.Count; i++)
                 {
                     <tr>
                         <td>
-                            @Model.JobList.FirstOrDefault(x => x.Id == id).Name 
+                            <select name="Materials[@i].MaterialId" class="form-control">
+                                @foreach (var m in Model.MaterialsList)
+                                {
+                                    <option value="@m.Id"
+                                            selected="@(m.Id == Model.Materials[i].MaterialId)">
+                                        @m.Name
+                                    </option>
+                                }
+                            </select>
                         </td>
                         <td>
-                            <input type="number" name="Jobs[@id]" class="form-control" value="@quantity" />
+                            <input type="number"
+                                   name="Materials[@i].Quantity"
+                                   value="@Model.Materials[i].Quantity"
+                                   class="form-control"
+                                   step="0.01" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger remove-row">X</button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <div class="d-flex justify-content-between mt-4">
+
+        <button type="button" class="btn btn-primary mb-3" id="addRow">
+            + Добави материал
+        </button>
+
+        <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-warning">Запази</button>
-            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка със свършена работа</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+            <a asp-action="All" class="btn btn-secondary">Назад</a>
         </div>
     </form>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let index = @Model.Materials.Count;
+
+        document.getElementById("addRow").addEventListener("click", function () {
+
+            let options = `
+                <option value="">Избери материал</option>
+        @foreach (var m in Model.MaterialsList)
+        {
+                        <option value="@m.Id">@m.Name</option>
+        }
+            `;
+
+            const row = `
+            <tr>
+                <td>
+                    <select name="Materials[${index}].MaterialId" class="form-control">
+                        ${options}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="Materials[${index}].Quantity" class="form-control" step="0.01"/>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-row">X</button>
+                </td>
+            </tr>`;
+
+            document.getElementById("materialsBody").insertAdjacentHTML("beforeend", row);
+            index++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-row")) {
+                e.target.closest("tr").remove();
+            }
+        });
+    </script>
 }

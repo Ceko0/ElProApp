@@ -1,79 +1,157 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model JobDoneInputModel
 
-<h1 class="mb-4">добави нова свършена работа</h1>
+<h1 class="mb-4">Добави нова свършена работа</h1>
 
 <form asp-action="Add" method="post">
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Име на Работа</th>
-            <th>Количество</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var job in Model.JobsList)
-        {
-            <tr>
-                <td>
-                    @job.Name
-                </td>
-                <td>
-                    <input type="number" name="Jobs[@job.Id]" class="form-control" value="@Model.Jobs[job.Id]" step="0.1"/>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-
     <div class="form-group mb-3">
-        <label for="startDate" class="form-label">Начална дата</label>
-        <input type="date" id="startDate" name="StartDate" class="form-control"/>
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="endDate" class="form-label">Крайна дата</label>
-        <input type="date" id="endDate" name="EndDate" class="form-control"/>
-    </div>
-
-    <div class="form-group mb-3">
-        <label for="workDays" class="form-label">Брой работни дни</label>
-        <input type="number" id="workDays" asp-for="DaysForJob" class="form-control" readonly/>
-        <span asp-validation-for="DaysForJob" class="text-danger"></span>
+        <label asp-for="BuildingId" class="form-label">Избери сграда</label>
+        <select asp-for="BuildingId" class="form-control" id="buildingSelect">
+            <option value="">Сграда</option>
+            @foreach (var building in Model.Buildings)
+            {
+                <option value="@building.Id">@building.Name</option>
+            }
+        </select>
     </div>
 
     <div class="form-group mb-3">
         <label asp-for="TeamId" class="form-label">Избери екип</label>
-        <select asp-for="TeamId" class="form-control custom-select" id="teamSelect">
+        <select asp-for="TeamId" class="form-control">
             <option value="">Екип</option>
             @foreach (var team in Model.Teams)
             {
-                <option value="@team.Id" data-name="@team.Name">@team.Name</option>
+                <option value="@team.Id">@team.Name</option>
             }
         </select>
-        <span asp-validation-for="TeamId" class="text-danger"></span>
+    </div>
+
+    <hr />
+
+    <h4>Материали (дейности)</h4>
+
+    <table class="table" id="materialsTable">
+        <thead>
+            <tr>
+                <th>Материал</th>
+                <th>Количество</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="materialsBody">
+            <tr>
+                <td>
+                    <select name="Materials[0].MaterialId" class="form-control material-select">
+                        <option value="">Избери материал</option>
+                        @foreach (var material in Model.MaterialsList)
+                        {
+                            <option value="@material.Id">@material.Name</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="Materials[0].Quantity" class="form-control" step="0.01" />
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-row">X</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary mb-3" id="addRow">
+        + Добави материал
+    </button>
+
+    <hr />
+
+    <div class="form-group mb-3">
+        <label>Начална дата</label>
+        <input type="date" asp-for="StartDate" class="form-control" />
     </div>
 
     <div class="form-group mb-3">
-        <label asp-for="BuildingId" class="form-label">Избери сграда</label>
-        <select asp-for="BuildingId" class="form-control custom-select" id="buildingSelect">
-            <option value="">Сграда</option>
-            @foreach (var building in Model.Buildings)
-            {
-                <option value="@building.Id" data-name="@building.Name">@building.Name</option>
-            }
-        </select>
-        <span asp-validation-for="BuildingId" class="text-danger"></span>
+        <label>Крайна дата</label>
+        <input type="date" asp-for="EndDate" class="form-control" />
     </div>
 
-    <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-success btn-sm">Добави свършена работа</button>
-        <a asp-action="All" class="btn btn-secondary">Списъка със свършена работа</a>
-        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+    <div class="form-group mb-3">
+        <label>Брой работни дни</label>
+        <input type="number" asp-for="DaysForJob" class="form-control" readonly />
     </div>
+
+    <div id="weekendContainer" class="mb-3"></div>
+
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success">Добави</button>
+        <a asp-action="All" class="btn btn-secondary">Назад</a>
+    </div>
+
 </form>
+
 @section Scripts {
-    <script src="~/js/job-done.js"></script>
-}
+    <script>
+        let index = 1;
+
+        document.getElementById("addRow").addEventListener("click", function () {
+            const row = `
+            <tr>
+                <td>
+                    <select name="Materials[${index}].MaterialId" class="form-control">
+                        <option value="">Избери материал</option>
+        @foreach (var material in Model.MaterialsList)
+        {
+                                <option value="@material.Id">@material.Name</option>
+        }
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="Materials[${index}].Quantity" class="form-control" step="0.01"/>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger remove-row">X</button>
+                </td>
+            </tr>`;
+
+            document.getElementById("materialsBody").insertAdjacentHTML("beforeend", row);
+            index++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-row")) {
+                e.target.closest("tr").remove();
+            }
+        });
+
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            input.addEventListener("change", generateWeekends);
+        });
+
+        function generateWeekends() {
+            const start = new Date(document.querySelector('[name="StartDate"]').value);
+            const end = new Date(document.querySelector('[name="EndDate"]').value);
+
+            const container = document.getElementById("weekendContainer");
+            container.innerHTML = "";
+
+            if (!start || !end) return;
+
+            let current = new Date(start);
+
+            while (current <= end) {
+                if (current.getDay() === 6 || current.getDay() === 0) {
+                    const dateStr = current.toISOString().split('T')[0];
+
+                    container.innerHTML += `
+                        <div>
+                            <input type="checkbox" name="WorkedWeekends" value="${dateStr}" />
+                            ${dateStr}
+                        </div>`;
+                }
+
+                current.setDate(current.getDate() + 1);
+            }
+        }
+    </script>
 }

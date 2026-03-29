@@ -7,15 +7,17 @@
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Материали за сградата</h1>
+    <h1 class="display-4 text-center">
+        Материали за: @Model.FirstOrDefault()?.BuildingName
+    </h1>
 
-    <div class="d-flex justify-content-between mb-2">
+    <div class="d-flex justify-content-between mb-3">
         <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
             Начална страница
         </a>
 
         <a asp-action="All" class="btn btn-secondary">
-            Списъка с материали
+            Списък с материали
         </a>
     </div>
 
@@ -23,30 +25,63 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Име на материала</th>
+                    <th>Материал</th>
                     <th>Количество</th>
+                    <th>Статус</th>
                 </tr>
             </thead>
+
             <tbody>
                 @if (Model != null && Model.Any())
                 {
-                    @foreach (var material in Model)
+                    foreach (var material in Model)
                     {
                         <tr>
                             <td>@material.MaterialName</td>
-                            <td>@material.Quantity</td>
+
+                            <td class="@(material.Quantity < 0 ? "text-danger fw-bold" : "")">
+                                @material.Quantity
+                            </td>
+
+                            <td>
+                                @if (material.Quantity < 0)
+                                {
+                                    <span class="badge bg-danger">Недостиг</span>
+                                }
+                                else if (material.Quantity == 0)
+                                {
+                                    <span class="badge bg-warning text-dark">Нула</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">OK</span>
+                                }
+                            </td>
                         </tr>
                     }
                 }
                 else
                 {
                     <tr>
-                        <td colspan="2" class="text-center">
+                        <td colspan="3" class="text-center">
                             Няма материали за тази сграда
                         </td>
                     </tr>
                 }
             </tbody>
+
+            @if (Model != null && Model.Any())
+            {
+                <tfoot>
+                    <tr>
+                        <td><strong>Общо</strong></td>
+                        <td>
+                            <strong>@Model.Sum(x => x.Quantity)</strong>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            }
         </table>
     </div>
 </div>

@@ -1,0 +1,29 @@
+﻿@model ElProApp.Web.Models.Material.BuildingMaterialInputModel
+
+<div class="container mt-4">
+    <h1 class="text-center">Добавяне на материал към обект</h1>
+
+    <form asp-action="AddToBuilding" method="post">
+
+        <div class="form-group mb-3">
+            <label>Сграда</label>
+            <select asp-for="BuildingId" asp-items="Model.Buildings" class="form-control">
+                <option value="">-- избери --</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Материал</label>
+            <select asp-for="MaterialId" asp-items="Model.Materials" class="form-control">
+                <option value="">-- избери --</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Количество</label>
+            <input asp-for="Quantity" class="form-control" />
+        </div>
+
+        <button class="btn btn-success">Добави</button>
+    </form>
+</div>

@@ -36,7 +36,7 @@
 
         public static class CalculationAction
         {
-            public const string Add = "add";
+            public const string Adding = "add";
             public const string Remove = "remove";
         }
 

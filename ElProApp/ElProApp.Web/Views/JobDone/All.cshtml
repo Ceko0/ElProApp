@@ -6,9 +6,9 @@
 }
 
 <div class="container mt-4">
-    <h1 class="display-4 text-center">Списък с изпълнени свършени работи</h1>
+    <h1 class="display-4 text-center">Списък със свършена работа</h1>
 
-    <div class="d-flex justify-content-between mb-2">
+    <div class="d-flex justify-content-between mb-3">
         <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
             Начална страница
         </a>
@@ -21,26 +21,31 @@
         }
     </div>
 
-    <table class="table table-striped mt-4">
+    <table class="table table-striped mt-3">
         <thead>
             <tr>
                 <th>Име</th>
                 <th>Екип</th>
                 <th>Сграда</th>
-                <th>Дни за изпълнение</th>
+                <th>Дни</th>
+                <th>Материали</th>
                 <th>Действия</th>
             </tr>
         </thead>
         <tbody>
             @if (Model != null && Model.Any())
             {
-                @foreach (var jobDone in Model)
+                foreach (var jobDone in Model)
                 {
                     <tr>
                         <td>@jobDone.Name</td>
                         <td>@jobDone.Team?.Name</td>
                         <td>@jobDone.Building?.Name</td>
                         <td>@jobDone.DaysForJob</td>
+
+                        <td>
+                            @(jobDone.Materials?.Count ?? 0)
+                        </td>
 
                         <td>
                             <a asp-action="Details" asp-route-id="@jobDone.Id" class="btn btn-info btn-sm">
@@ -56,7 +61,10 @@
 
                             @if (User.IsInRole("Admin"))
                             {
-                                <form asp-action="SoftDelete" asp-route-id="@jobDone.Id" method="post" style="display:inline;">
+                                <form asp-action="SoftDelete"
+                                      asp-route-id="@jobDone.Id"
+                                      method="post"
+                                      style="display:inline;">
                                     <button class="btn btn-danger btn-sm">
                                         Изтрий
                                     </button>
@@ -69,8 +77,8 @@
             else
             {
                 <tr>
-                    <td colspan="5" class="text-center">
-                        Няма налични изпълнени задачи
+                    <td colspan="6" class="text-center">
+                        Няма налични записи
                     </td>
                 </tr>
             }

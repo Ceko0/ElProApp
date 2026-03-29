@@ -1,39 +1,69 @@
 ﻿namespace ElProApp.Web.Models.JobDone
-{ 
+{
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    using ElProApp.Data.Models;    
-    using Services.Mapping;
-    using static Common.EntityValidationErrorMessage.JobDobe;
-    using static Common.EntityValidationErrorMessage.Master;
-    using static Common.EntityValidationConstants.JobDone;
+    using ElProApp.Data.Models;
+    using ElProApp.Services.Mapping;
 
-    public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone> 
+    using static ElProApp.Common.EntityValidationConstants.JobDone;
+    using static ElProApp.Common.EntityValidationErrorMessage.JobDobe;
+    using static ElProApp.Common.EntityValidationErrorMessage.Master;
+
+    /// <summary>
+    /// Input model for editing a job-done record.
+    /// </summary>
+    public class JobDoneEditInputModel : IMapTo<JobDone>, IMapFrom<JobDone>
     {
-
+        /// <summary>
+        /// Gets or sets identifier.
+        /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets name.
+        /// </summary>
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
-        [Display(Name = "Име")]      
+        [Display(Name = "Име")]
         public string Name { get; set; } = null!;
 
+        /// <summary>
+        /// Gets or sets working days count.
+        /// </summary>
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
-
         public int DaysForJob { get; set; }
 
-        public Dictionary<Guid, decimal> Jobs { get; set; } = new();
-
-        public List<Job> JobList { get; set; } = new(); 
+        /// <summary>
+        /// Gets or sets building identifier.
+        /// </summary>
         public Guid BuildingId { get; set; }
 
+        /// <summary>
+        /// Gets or sets building.
+        /// </summary>
         public Building Building { get; set; } = null!;
 
+        /// <summary>
+        /// Gets or sets team identifier.
+        /// </summary>
         public Guid TeamId { get; set; }
 
+        /// <summary>
+        /// Gets or sets team.
+        /// </summary>
         public Team Team { get; set; } = null!;
-        public Dictionary<Guid, decimal> Materials { get; set; } = new();
 
+        /// <summary>
+        /// Gets or sets selected materials with quantities.
+        /// </summary>
+        public List<MaterialInputPair> Materials { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets available materials for selection.
+        /// </summary>
+        public ICollection<Material> MaterialsList { get; set; } = new List<Material>();
     }
 }

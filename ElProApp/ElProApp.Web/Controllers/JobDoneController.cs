@@ -5,27 +5,39 @@
 
     using ElProApp.Application.Services.Interfaces;
     using Models.JobDone;
-    using static Common.EntityValidationConstants.CalculationAction;
-    using ElProApp.Common;
 
+    using static ElProApp.Common.EntityValidationConstants.CalculationAction;
+
+    /// <summary>
+    /// Controller responsible for managing job-done operations.
+    /// </summary>
     [Authorize]
     public class JobDoneController(
         IJobDoneService jobDoneService,
-        IEarningsCalculationService earningsCalculationService
-    ) : Controller
+        IEarningsCalculationService earningsCalculationService)
+        : Controller
     {
+        /// <summary>
+        /// Retrieves all job-done records.
+        /// </summary>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
-        public async Task<IActionResult> All() => View(await jobDoneService.GetAllAsync());
-        
+        public async Task<IActionResult> All()
+            => View(await jobDoneService.GetAllAsync());
 
+        /// <summary>
+        /// Displays the create job-done form.
+        /// </summary>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Add()
             => View(await jobDoneService.AddAsync());
 
+        /// <summary>
+        /// Creates a new job-done record.
+        /// </summary>
+        /// <param name="model">The input model.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
@@ -39,7 +51,7 @@
                 freshModel.DaysForJob = model.DaysForJob;
                 freshModel.TeamId = model.TeamId;
                 freshModel.BuildingId = model.BuildingId;
-                freshModel.Jobs = model.Jobs;
+                freshModel.Materials = model.Materials;
 
                 return View(freshModel);
             }
@@ -49,16 +61,28 @@
             return RedirectToAction(nameof(Details), new { id = jobDoneId });
         }
 
+        /// <summary>
+        /// Displays details for a job-done record.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
             => View(await jobDoneService.GetByIdAsync(id));
 
+        /// <summary>
+        /// Displays the edit form.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
             => View(await jobDoneService.EditByIdAsync(id));
 
+        /// <summary>
+        /// Updates a job-done record.
+        /// </summary>
+        /// <param name="model">The edit model.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpPost]
         public async Task<IActionResult> Edit(JobDoneEditInputModel model)
@@ -72,11 +96,9 @@
 
             await earningsCalculationService.CalculateMoneyAsync(
                 oldJobDone.TeamId,
-                oldJobDone.Jobs,
                 oldJobDone.Id,
                 oldJobDone.DaysForJob,
-                Remove
-            );
+                Remove);
 
             bool edited = await jobDoneService.EditByModelAsync(model);
 
@@ -87,17 +109,18 @@
 
             await earningsCalculationService.CalculateMoneyAsync(
                 model.TeamId,
-                model.Jobs,
                 model.Id,
                 model.DaysForJob,
-                EntityValidationConstants.CalculationAction.Add
-            );
+                Adding);
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
+        /// <summary>
+        /// Soft deletes a job-done record.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager")]
-        [HttpPost]
         [HttpPost]
         public async Task<IActionResult> SoftDelete(string id)
         {
@@ -105,12 +128,12 @@
 
             await earningsCalculationService.CalculateMoneyAsync(
                 jobDone.TeamId,
-                jobDone.Jobs,
                 jobDone.Id,
                 jobDone.DaysForJob,
                 Remove);
 
-            bool isDeleted = await jobDoneService.SoftDeleteAsync(id, jobDone.TeamId.ToString());
+            bool isDeleted = await jobDoneService
+                .SoftDeleteAsync(id, jobDone.TeamId.ToString());
 
             if (!isDeleted)
             {

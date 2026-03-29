@@ -1,0 +1,37 @@
+﻿@model ElProApp.Web.Models.Material.BuildingMaterialPriceInputModel
+
+<div class="container mt-4">
+    <h1 class="text-center">Задаване на цена на материал</h1>
+
+    ```
+    <form asp-action="SetPrice" method="post">
+
+        <div class="form-group mb-3">
+            <label>Сграда</label>
+            <select asp-for="BuildingId" asp-items="Model.Buildings" class="form-control">
+                <option value="">-- избери --</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Материал</label>
+            <select asp-for="MaterialId" asp-items="Model.Materials" class="form-control">
+                <option value="">-- избери --</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Цена</label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <button class="btn btn-success">Запази</button>
+    </form>
+    ```
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

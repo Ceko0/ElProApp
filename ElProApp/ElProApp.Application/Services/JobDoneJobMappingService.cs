@@ -12,7 +12,7 @@
     using ElProApp.Application.Services.Interfaces;
 
     /// <summary>
-    /// Provides operations for managing job-done to job mappings.
+    /// Provides operations for managing job-done to job mappings (legacy).
     /// </summary>
     public class JobDoneJobMappingService : IJobDoneJobMappingService
     {
@@ -22,6 +22,8 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="JobDoneJobMappingService"/> class.
         /// </summary>
+        /// <param name="jobDoneJobRepository">Repository for mappings.</param>
+        /// <param name="helpMethodsService">Helper service.</param>
         public JobDoneJobMappingService(
             IRepository<JobDoneJobMapping, object> jobDoneJobRepository,
             IHelpMethodsService helpMethodsService)
@@ -33,6 +35,16 @@
         /// <summary>
         /// Creates a new job-done to job mapping.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <param name="jobId">The job identifier.</param>
+        /// <param name="quantity">The quantity.</param>
+        /// <returns>The created mapping.</returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when identifiers are invalid.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when related entities are not found.
+        /// </exception>
         public async Task<JobDoneJobMapping> AddAsync(
             Guid jobDoneId,
             Guid jobId,
@@ -76,6 +88,8 @@
         /// <summary>
         /// Retrieves all mappings for a given job identifier.
         /// </summary>
+        /// <param name="jobId">The job identifier.</param>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneJobMapping>> GetByJobIdAsync(Guid jobId)
             => await jobDoneJobRepository
                 .GetAllAttached()
@@ -85,6 +99,8 @@
         /// <summary>
         /// Retrieves all mappings for a given job-done identifier.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneJobMapping>> GetByJobDoneIdAsync(Guid jobDoneId)
             => await jobDoneJobRepository
                 .GetAllAttached()
@@ -92,8 +108,9 @@
                 .ToListAsync();
 
         /// <summary>
-        /// Retrieves all mappings including related job and job-done entities.
+        /// Retrieves all mappings including related entities.
         /// </summary>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneJobMapping>> GetAllAttachedAsync()
             => await jobDoneJobRepository
                 .GetAllAttached()
@@ -102,14 +119,21 @@
                 .ToListAsync();
 
         /// <summary>
-        /// Returns all job-done to job mappings as an attached query.
+        /// Returns all mappings as an attached query.
         /// </summary>
+        /// <returns>Queryable mappings.</returns>
         public IQueryable<JobDoneJobMapping> GetAllAttached()
             => jobDoneJobRepository.GetAllAttached();
 
         /// <summary>
-        /// Determines whether a mapping exists for the specified job-done and job.
+        /// Determines whether a mapping exists.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <param name="jobId">The job identifier.</param>
+        /// <returns>True if exists; otherwise, false.</returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when identifiers are invalid.
+        /// </exception>
         public bool Any(Guid jobDoneId, Guid jobId)
         {
             if (jobDoneId == Guid.Empty)
@@ -128,8 +152,14 @@
         }
 
         /// <summary>
-        /// Removes an existing job-done to job mapping.
+        /// Removes an existing mapping.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <param name="jobId">The job identifier.</param>
+        /// <returns>True if removed successfully.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when mapping does not exist.
+        /// </exception>
         public async Task<bool> RemoveAsync(Guid jobDoneId, Guid jobId)
         {
             bool exists = await jobDoneJobRepository

@@ -22,6 +22,8 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="JobDoneMaterialMappingService"/> class.
         /// </summary>
+        /// <param name="jobDoneMaterialMappingRepository">Repository for job-done material mappings.</param>
+        /// <param name="helpMethodsService">Helper service for ID conversion and validation.</param>
         public JobDoneMaterialMappingService(
             IRepository<JobDoneMaterialMapping, object> jobDoneMaterialMappingRepository,
             IHelpMethodsService helpMethodsService)
@@ -33,6 +35,11 @@
         /// <summary>
         /// Creates a new job-done material mapping.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <param name="materialId">The material identifier.</param>
+        /// <param name="quantity">The quantity used.</param>
+        /// <param name="unitPrice">The unit price at the time (snapshot).</param>
+        /// <returns>The created <see cref="JobDoneMaterialMapping"/> entity.</returns>
         public async Task<JobDoneMaterialMapping> AddAsync(
             string jobDoneId,
             string materialId,
@@ -76,6 +83,8 @@
         /// <summary>
         /// Retrieves all material mappings for a specific job-done identifier.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneMaterialMapping>> GetByJobDoneIdAsync(
             string jobDoneId)
         {
@@ -92,6 +101,8 @@
         /// <summary>
         /// Retrieves all job-done mappings for a specific material identifier.
         /// </summary>
+        /// <param name="materialId">The material identifier.</param>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneMaterialMapping>> GetByMaterialIdAsync(
             string materialId)
         {
@@ -108,6 +119,7 @@
         /// <summary>
         /// Retrieves all mappings including related entities.
         /// </summary>
+        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneMaterialMapping>> GetAllAttachedAsync()
             => await jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -119,6 +131,7 @@
         /// <summary>
         /// Returns queryable mappings.
         /// </summary>
+        /// <returns>An <see cref="IQueryable{JobDoneMaterialMapping}"/>.</returns>
         public IQueryable<JobDoneMaterialMapping> GetAllAttached()
             => jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -127,6 +140,9 @@
         /// <summary>
         /// Checks whether a mapping exists.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
+        /// <param name="materialId">The material identifier.</param>
+        /// <returns>True if mapping exists; otherwise, false.</returns>
         public bool Any(string jobDoneId, string materialId)
         {
             Guid jobDoneGuidId =
@@ -146,6 +162,8 @@
         /// <summary>
         /// Removes a job-done material mapping.
         /// </summary>
+        /// <param name="mapping">The mapping to remove.</param>
+        /// <returns>True if successfully removed.</returns>
         public async Task<bool> RemoveAsync(JobDoneMaterialMapping mapping)
         {
             if (mapping == null)
@@ -160,6 +178,7 @@
         /// <summary>
         /// Soft deletes all material mappings for a job-done record.
         /// </summary>
+        /// <param name="jobDoneId">The job-done identifier.</param>
         public async Task RemoveByJobDoneIdAsync(string jobDoneId)
         {
             Guid jobDoneGuidId =

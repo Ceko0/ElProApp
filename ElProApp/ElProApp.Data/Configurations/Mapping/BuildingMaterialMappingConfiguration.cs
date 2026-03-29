@@ -3,19 +3,18 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    using global::ElProApp.Data.Models.Mappings;
+    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
-    /// Configuration for the <see cref="BuildingMaterialMapping"/> entity.
-    /// Defines the relationships between Building and Material and prevents EF Core
-    /// from creating shadow foreign keys such as BuildingId1 and MaterialId1.
+    /// Configures the <see cref="BuildingMaterialMapping"/> entity.
     /// </summary>
-    public class BuildingMaterialMappingConfiguration : IEntityTypeConfiguration<BuildingMaterialMapping>
+    public class BuildingMaterialMappingConfiguration
+        : IEntityTypeConfiguration<BuildingMaterialMapping>
     {
         /// <summary>
-        /// Configures the entity properties and relationships.
+        /// Configures the entity relationships and keys.
         /// </summary>
-        /// <param name="builder">The builder used to configure the entity.</param>
+        /// <param name="builder">The entity builder.</param>
         public void Configure(EntityTypeBuilder<BuildingMaterialMapping> builder)
         {
             builder
