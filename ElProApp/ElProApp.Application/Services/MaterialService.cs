@@ -55,8 +55,13 @@
         }
 
         /// <summary>
-        /// Creates a new material and assigns initial quantity to a building.
+        /// Creates a new material.
         /// </summary>
+        /// <param name="model">Material data.</param>
+        /// <returns>Created material ID.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if material with the same name exists.
+        /// </exception>
         public async Task<string> AddAsync(MaterialInputModel model)
         {
             ArgumentNullException.ThrowIfNull(model);
@@ -73,14 +78,6 @@
                 AutoMapperConfig.MapperInstance.Map<Material>(model);
 
             await materialRepository.AddAsync(entity);
-
-            if (model.BuildingId != Guid.Empty && model.Quantity > 0)
-            {
-                await buildingMaterialService.IncreaseAsync(
-                    model.BuildingId,
-                    entity.Id,
-                    model.Quantity);
-            }
 
             return entity.Id.ToString();
         }
