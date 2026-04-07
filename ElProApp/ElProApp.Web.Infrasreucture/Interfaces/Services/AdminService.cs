@@ -177,7 +177,14 @@
             if (entity is JobDone jobDone)
             {
                 var jobDoneTeamMappingService =
-                    serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();
+                    serviceProvider.GetRequiredService<IJobDoneTeamMappingService>();  
+                
+                var calculator =
+                    serviceProvider.GetRequiredService<IEarningsCalculationService>();
+
+                var helpMethodsService =
+                    serviceProvider.GetRequiredService<IHelpMethodsService>();
+
 
                 var mapping = await jobDoneTeamMappingService
                     .GetAllAttached()
@@ -186,14 +193,9 @@
                 if (mapping == null)
                     return false;
 
-                var calculator =
-                    serviceProvider.GetRequiredService<IEarningsCalculationService>();
+                var materials = await helpMethodsService.GetMaterialWhitQuantityAndPrice(jobDone.Materials , jobDone.BuildingId);
 
-                await calculator.CalculateMoneyAsync(
-                    mapping.TeamId,
-                    jobDone.Id,
-                    jobDone.DaysForJob,
-                    Adding);
+                await calculator.CalculateMoneyAsync(mapping.TeamId, jobDone.Id, jobDone.DaysForJob,materials, Adding);
             }
 
             await dbContext.SaveChangesAsync();

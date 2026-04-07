@@ -246,5 +246,24 @@
 
             return service.GetAllAttached();
         }
+
+        public async Task<Dictionary<Guid, (decimal, decimal)>> GetMaterialWhitQuantityAndPrice(ICollection<JobDoneMaterialMapping> Materials, Guid BuildingId)
+        {
+         var materialsDict = Materials
+            .Where(x => x.Quantity > 0)
+            .ToDictionary(x => x.MaterialId, x => x.Quantity);
+
+            var materialsWithPrices = new Dictionary<Guid, (decimal Quantity, decimal Price)>();
+
+            var priceService = serviceProvider.GetRequiredService<IBuildingMaterialPriceService>();
+
+            foreach (var kvp in materialsDict)
+            {
+                var price = await priceService.GetPriceAsync(BuildingId, kvp.Key) ?? 0m;
+                materialsWithPrices[kvp.Key] = (kvp.Value, price);
+            } 
+        
+            return materialsWithPrices;
+        }
     }
 }

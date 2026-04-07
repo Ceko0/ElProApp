@@ -22,8 +22,6 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="JobDoneMaterialMappingService"/> class.
         /// </summary>
-        /// <param name="jobDoneMaterialMappingRepository">Repository for job-done material mappings.</param>
-        /// <param name="helpMethodsService">Helper service for ID conversion and validation.</param>
         public JobDoneMaterialMappingService(
             IRepository<JobDoneMaterialMapping, object> jobDoneMaterialMappingRepository,
             IHelpMethodsService helpMethodsService)
@@ -35,11 +33,6 @@
         /// <summary>
         /// Creates a new job-done material mapping.
         /// </summary>
-        /// <param name="jobDoneId">The job-done identifier.</param>
-        /// <param name="materialId">The material identifier.</param>
-        /// <param name="quantity">The quantity used.</param>
-        /// <param name="unitPrice">The unit price at the time (snapshot).</param>
-        /// <returns>The created <see cref="JobDoneMaterialMapping"/> entity.</returns>
         public async Task<JobDoneMaterialMapping> AddAsync(
             string jobDoneId,
             string materialId,
@@ -47,26 +40,31 @@
             decimal unitPrice)
         {
             if (string.IsNullOrWhiteSpace(jobDoneId))
-                throw new ArgumentException(
-                    "JobDoneId must not be empty.", nameof(jobDoneId));
+                throw new ArgumentException("JobDoneId must not be empty.", nameof(jobDoneId));
 
             if (string.IsNullOrWhiteSpace(materialId))
-                throw new ArgumentException(
-                    "MaterialId must not be empty.", nameof(materialId));
+                throw new ArgumentException("MaterialId must not be empty.", nameof(materialId));
 
             if (quantity <= 0)
-                throw new ArgumentException(
-                    "Quantity must be greater than zero.", nameof(quantity));
+                throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
 
             if (unitPrice < 0)
-                throw new ArgumentException(
-                    "Unit price cannot be negative.", nameof(unitPrice));
+                throw new ArgumentException("Unit price cannot be negative.", nameof(unitPrice));
 
-            Guid jobDoneGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
+            Guid jobDoneGuidId = helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
+            Guid materialGuidId = helpMethodsService.ConvertAndTestIdToGuid(materialId);
 
-            Guid materialGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(materialId);
+            var existing = await jobDoneMaterialMappingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x =>
+                    x.JobDoneId == jobDoneGuidId &&
+                    x.MaterialId == materialGuidId &&
+                    !x.IsDeleted);
+
+            if (existing != null)
+            {
+                return existing;
+            }
 
             var mapping = new JobDoneMaterialMapping
             {
@@ -77,19 +75,55 @@
             };
 
             await jobDoneMaterialMappingRepository.AddAsync(mapping);
+
             return mapping;
         }
 
         /// <summary>
-        /// Retrieves all material mappings for a specific job-done identifier.
+        /// Updates the quantity of an existing mapping safely (no EF tracking conflicts).
         /// </summary>
-        /// <param name="jobDoneId">The job-done identifier.</param>
-        /// <returns>A collection of mappings.</returns>
-        public async Task<ICollection<JobDoneMaterialMapping>> GetByJobDoneIdAsync(
-            string jobDoneId)
+        public async Task UpdateQuantityAsync(Guid jobDoneId, Guid materialId, decimal quantity)
         {
-            Guid jobDoneGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
+            var entity = await jobDoneMaterialMappingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x =>
+                    x.JobDoneId == jobDoneId &&
+                    x.MaterialId == materialId &&
+                    !x.IsDeleted);
+
+            if (entity == null)
+                throw new InvalidOperationException("Mapping not found.");
+
+            entity.Quantity = quantity;
+
+            await jobDoneMaterialMappingRepository.SaveAsync();
+        }
+
+        /// <summary>
+        /// Removes a mapping using composite key (safe for EF tracking).
+        /// </summary>
+        public async Task RemoveByIdsAsync(Guid jobDoneId, Guid materialId)
+        {
+            var entity = await jobDoneMaterialMappingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x =>
+                    x.JobDoneId == jobDoneId &&
+                    x.MaterialId == materialId &&
+                    !x.IsDeleted);
+
+            if (entity == null)
+                return;
+
+            await jobDoneMaterialMappingRepository
+                .DeleteByCompositeKeyAsync(jobDoneId, materialId);
+        }
+
+        /// <summary>
+        /// Retrieves all material mappings for a job-done.
+        /// </summary>
+        public async Task<ICollection<JobDoneMaterialMapping>> GetByJobDoneIdAsync(string jobDoneId)
+        {
+            Guid jobDoneGuidId = helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
 
             return await jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -99,15 +133,11 @@
         }
 
         /// <summary>
-        /// Retrieves all job-done mappings for a specific material identifier.
+        /// Retrieves all mappings for a material.
         /// </summary>
-        /// <param name="materialId">The material identifier.</param>
-        /// <returns>A collection of mappings.</returns>
-        public async Task<ICollection<JobDoneMaterialMapping>> GetByMaterialIdAsync(
-            string materialId)
+        public async Task<ICollection<JobDoneMaterialMapping>> GetByMaterialIdAsync(string materialId)
         {
-            Guid materialGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(materialId);
+            Guid materialGuidId = helpMethodsService.ConvertAndTestIdToGuid(materialId);
 
             return await jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -117,9 +147,8 @@
         }
 
         /// <summary>
-        /// Retrieves all mappings including related entities.
+        /// Retrieves all mappings.
         /// </summary>
-        /// <returns>A collection of mappings.</returns>
         public async Task<ICollection<JobDoneMaterialMapping>> GetAllAttachedAsync()
             => await jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -131,25 +160,18 @@
         /// <summary>
         /// Returns queryable mappings.
         /// </summary>
-        /// <returns>An <see cref="IQueryable{JobDoneMaterialMapping}"/>.</returns>
         public IQueryable<JobDoneMaterialMapping> GetAllAttached()
             => jobDoneMaterialMappingRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted);
 
         /// <summary>
-        /// Checks whether a mapping exists.
+        /// Checks if mapping exists.
         /// </summary>
-        /// <param name="jobDoneId">The job-done identifier.</param>
-        /// <param name="materialId">The material identifier.</param>
-        /// <returns>True if mapping exists; otherwise, false.</returns>
         public bool Any(string jobDoneId, string materialId)
         {
-            Guid jobDoneGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
-
-            Guid materialGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(materialId);
+            Guid jobDoneGuidId = helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
+            Guid materialGuidId = helpMethodsService.ConvertAndTestIdToGuid(materialId);
 
             return jobDoneMaterialMappingRepository
                 .GetAllAttached()
@@ -160,35 +182,27 @@
         }
 
         /// <summary>
-        /// Removes a job-done material mapping.
+        /// Removes a mapping.
         /// </summary>
-        /// <param name="mapping">The mapping to remove.</param>
-        /// <returns>True if successfully removed.</returns>
         public async Task<bool> RemoveAsync(JobDoneMaterialMapping mapping)
         {
             if (mapping == null)
                 throw new ArgumentNullException(nameof(mapping));
 
             return await jobDoneMaterialMappingRepository
-                .DeleteByCompositeKeyAsync(
-                    mapping.JobDoneId,
-                    mapping.MaterialId);
+                .DeleteByCompositeKeyAsync(mapping.JobDoneId, mapping.MaterialId);
         }
 
         /// <summary>
-        /// Soft deletes all material mappings for a job-done record.
+        /// Soft deletes all mappings for a job-done.
         /// </summary>
-        /// <param name="jobDoneId">The job-done identifier.</param>
         public async Task RemoveByJobDoneIdAsync(string jobDoneId)
         {
-            Guid jobDoneGuidId =
-                helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
+            Guid jobDoneGuidId = helpMethodsService.ConvertAndTestIdToGuid(jobDoneId);
 
             var mappings = await jobDoneMaterialMappingRepository
                 .GetAllAttached()
-                .Where(x =>
-                    x.JobDoneId == jobDoneGuidId &&
-                    !x.IsDeleted)
+                .Where(x => x.JobDoneId == jobDoneGuidId && !x.IsDeleted)
                 .ToListAsync();
 
             if (!mappings.Any())

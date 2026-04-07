@@ -35,11 +35,7 @@
         /// <param name="daysForJob">The number of working days.</param>
         /// <param name="action">The calculation action (Add or Remove).</param>
         /// <returns>True if the calculation was successful.</returns>
-        public async Task<bool> CalculateMoneyAsync(
-            Guid teamId,
-            Guid jobDoneId,
-            int daysForJob,
-            string action)
+        public async Task<bool> CalculateMoneyAsync(Guid teamId, Guid jobDoneId, int daysForJob, Dictionary<Guid, (decimal Quantity, decimal Price)> materials, string action)
         {
             bool isAdding = action == Adding;
 
@@ -52,6 +48,9 @@
             var materialMappingService =
                 serviceProvider.GetRequiredService<IJobDoneMaterialMappingService>();
 
+            var buildingMaterialPriceService =
+                serviceProvider.GetRequiredService<IBuildingMaterialPriceService>();
+
             var employees = await employeeTeamMappingService
                 .GetAllAttached()
                 .Where(x => x.TeamId == teamId)
@@ -63,16 +62,11 @@
             if (peopleCount == 0)
                 return false;
 
-            var materials = await materialMappingService
-                .GetAllAttached()
-                .Where(x => x.JobDoneId == jobDoneId)
-                .ToListAsync();
-
             decimal totalMoney = 0m;
 
             foreach (var m in materials)
             {
-                totalMoney += m.Quantity * m.UnitPrice;
+                totalMoney += m.Value.Quantity * m.Value.Price;
             }
 
             decimal moneyPerEmployee = totalMoney / peopleCount;

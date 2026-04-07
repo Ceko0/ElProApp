@@ -10,6 +10,7 @@
     using ElProApp.Data.Models.Mappings;
     using ElProApp.Data.Repository.Interfaces;
     using ElProApp.Application.Services.Interfaces;
+    using ElProApp.Web.Models.Material;
 
     /// <summary>
     /// Provides operations for retrieving material prices per building.
@@ -74,12 +75,55 @@
         /// <summary>
         /// Retrieves all material prices for a building.
         /// </summary>
-        public async Task<IEnumerable<BuildingMaterialPrice>> GetByBuildingAsync(Guid buildingId)
-        {
-            return await repository
+        public async Task<IEnumerable<BuildingMaterialPrice>> GetByBuildingAsync(Guid buildingId) =>
+            await repository
                 .GetAllAttached()
                 .Where(x => x.BuildingId == buildingId)
                 .ToListAsync();
+        
+
+        /// <summary>
+        /// Retrieves all prices for a given material across all buildings.
+        /// </summary>
+        /// <param name="materialId">The material identifier.</param>
+        /// <returns>
+        /// A collection of <see cref="BuildingMaterialPrice"/> for the specified material.
+        /// </returns>
+        public async Task<ICollection<BuildingMaterialPriceViewModel>> GetAllByMaterialIdAsync(Guid materialId) => 
+            await repository
+                .GetAllAttached()
+                .Include(x => x.Building)
+                .Where(x => x.MaterialId == materialId)
+                .Select(x => new BuildingMaterialPriceViewModel
+                {
+                    BuildingId = x.BuildingId,
+                    BuildingName = x.Building.Name,
+                    MaterialId = x.MaterialId,
+                    Price = x.Price
+                })
+                .ToListAsync();
+
+        /// <summary>
+        /// Retrieves prices based on building-material mappings.
+        /// </summary>
+        public async Task<Dictionary<Guid, decimal>> GetByJobDoneMaterialMapping(
+            ICollection<JobDoneMaterialMapping> mappings)
+        {
+            if (mappings == null || !mappings.Any())
+                return new Dictionary<Guid, decimal>();
+
+            var buildingId = mappings.First().JobDone.BuildingId;
+
+            var materialIds = mappings
+                .Select(x => x.MaterialId)
+                .Distinct()
+                .ToList();
+
+            return await repository
+                .GetAllAttached()
+                .Where(x => x.BuildingId == buildingId &&
+                            materialIds.Contains(x.MaterialId))
+                .ToDictionaryAsync(x => x.MaterialId, x => x.Price);
         }
     }
 }

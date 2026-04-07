@@ -7,10 +7,14 @@
     using ElProApp.Services.Mapping;
     using Web.Models.Building;
     using Interfaces;
+    using ElProApp.Web.Models.JobDone;
+    using Microsoft.Extensions.DependencyInjection;
+    using ElProApp.Web.Models.Material;
 
     public class BuildingService(IRepository<Building, Guid> buildingRepository,
                                  IBuildingTeamMappingService buildingTeamMappingService,
-                                 IHelpMethodsService helpMethodsService) :
+                                 IHelpMethodsService helpMethodsService,
+                                 IBuildingMaterialMappingService buildingMaterialMappingService) :
                                  IBuildingService
     {
         /// <summary>
@@ -179,7 +183,6 @@
 
             var entity = await buildingRepository
                 .GetAllAttached()
-                .Include(b => b.Materials)
                 .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == validId)
                 ?? throw new InvalidOperationException("Building not found or is deleted.");
 
@@ -192,6 +195,23 @@
 
             model.TeamsOnBuilding = await helpMethodsService
                 .GetBuildingTeamMapping(model.Id);
+
+            var materials = await buildingMaterialMappingService
+                .GetAllAttached()
+                .Include(x => x.Material)
+                .Where(x => x.BuildingId == model.Id)
+                .ToListAsync();
+
+            model.Materials = materials
+                .Select(x => new BuildingMaterialViewModel
+                {
+                    MaterialId = x.MaterialId,
+                    MaterialName = x.Material.Name,
+                    Quantity = x.Quantity,
+                    BuildingId = x.BuildingId,
+                    BuildingName = x.Building.Name
+                })
+                .ToList();
 
             return model;
         }

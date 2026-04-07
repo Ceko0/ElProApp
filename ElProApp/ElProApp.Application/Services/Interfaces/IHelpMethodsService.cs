@@ -37,5 +37,6 @@ using ElProApp.Data.Models.Mappings;
         IQueryable<EmployeeTeamMapping> GetAllEmployeeTeamMappings();
 
         IQueryable<JobDoneTeamMapping> GetAllJobDoneTeamMappings();
+        Task<Dictionary<Guid, (decimal, decimal)>> GetMaterialWhitQuantityAndPrice(ICollection<JobDoneMaterialMapping> Materials, Guid BuildingId);
     }
 }

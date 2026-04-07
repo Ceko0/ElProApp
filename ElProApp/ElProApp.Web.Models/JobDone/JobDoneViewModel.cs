@@ -61,5 +61,10 @@
             configuration.CreateMap<JobDone, JobDoneViewModel>()
                 .ForMember(d => d.Materials, x => x.Ignore());
         }
+
+        /// <summary>
+        /// Gets or sets total material cost for the job.
+        /// </summary>
+        public decimal TotalCost { get; set; }
     }
 }

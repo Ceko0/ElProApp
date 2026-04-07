@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     using ElProApp.Data.Models;
     using ElProApp.Services.Mapping;
 
@@ -44,6 +46,7 @@
         /// <summary>
         /// Gets or sets building.
         /// </summary>
+        [ValidateNever]
         public Building Building { get; set; } = null!;
 
         /// <summary>
@@ -54,6 +57,7 @@
         /// <summary>
         /// Gets or sets team.
         /// </summary>
+        [ValidateNever]
         public Team Team { get; set; } = null!;
 
         /// <summary>
@@ -64,6 +68,7 @@
         /// <summary>
         /// Gets or sets available materials for selection.
         /// </summary>
+        [ValidateNever]
         public ICollection<Material> MaterialsList { get; set; } = new List<Material>();
     }
 }

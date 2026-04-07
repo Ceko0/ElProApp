@@ -4,7 +4,10 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
     using ElProApp.Data.Models;
+    using ElProApp.Data.Models.Mappings;
     using ElProApp.Services.Mapping;
 
     using static ElProApp.Common.EntityValidationConstants.JobDone;
@@ -60,32 +63,51 @@
         public Guid BuildingId { get; set; }
 
         /// <summary>
+        /// Gets or sets selected team name.
+        /// </summary>
+        public string? TeamName { get; set; }
+
+        /// <summary>
+        /// Gets or sets selected building name.
+        /// </summary>
+        public string? BuildingName { get; set; }
+
+        /// <summary>
         /// Gets or sets selected materials with quantities.
         /// </summary>
+        [ValidateNever]
         public List<MaterialInputPair> Materials { get; set; } = new();
 
         /// <summary>
         /// Gets or sets available materials for selection.
         /// </summary>
+        [ValidateNever]
         public ICollection<Material> MaterialsList { get; set; } = new List<Material>();
 
         /// <summary>
         /// Gets or sets available teams.
         /// </summary>
+        [ValidateNever]
         public ICollection<Team> Teams { get; set; } = new List<Team>();
 
         /// <summary>
         /// Gets or sets available buildings.
         /// </summary>
+        [ValidateNever]
         public ICollection<Building> Buildings { get; set; } = new List<Building>();
     }
 
     /// <summary>
     /// Represents material selection with quantity.
     /// </summary>
-    public class MaterialInputPair
+    public class MaterialInputPair : IMapTo<JobDoneMaterialMapping>, IMapFrom<JobDoneMaterialMapping>
     {
+        /// <summary>
+        /// Gets or sets material name.
+        /// </summary>
+        [ValidateNever]
         public string MaterialName { get; set; } = null!;
+
         /// <summary>
         /// Gets or sets material identifier.
         /// </summary>

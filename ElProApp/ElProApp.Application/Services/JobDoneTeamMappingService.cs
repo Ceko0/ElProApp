@@ -59,7 +59,7 @@
         /// <summary>
         /// Retrieves the job-done team mapping for a given job-done identifier.
         /// </summary>
-        public async Task<JobDoneTeamMapping> GetByJobDoneIdAsync(Guid jobDoneId)
+        public async Task<JobDoneTeamMapping?> GetByJobDoneIdAsync(Guid jobDoneId)
         {
             if (jobDoneId == Guid.Empty)
                 throw new ArgumentException(
@@ -70,9 +70,7 @@
                 .Include(x => x.Team)
                 .Include(x => x.JobDone)
                 .ThenInclude(jd => jd.Building)
-                .FirstOrDefaultAsync(x => x.JobDoneId == jobDoneId)
-                ?? throw new InvalidOperationException(
-                    "Job-done team mapping not found.");
+                .FirstOrDefaultAsync(x => x.JobDoneId == jobDoneId);
         }
 
         /// <summary>

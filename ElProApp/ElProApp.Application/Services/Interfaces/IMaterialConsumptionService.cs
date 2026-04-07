@@ -17,11 +17,7 @@
         /// <param name="materials">
         /// A dictionary where the key is the material identifier and the value contains quantity and price.
         /// </param>
-        Task ApplyAsync(
-            Guid jobDoneId,
-            Guid buildingId,
-            Dictionary<Guid, (decimal Quantity, decimal Price)> materials
-        );
+        Task ApplyAsync(Guid jobDoneId, Guid buildingId, Dictionary<Guid, (decimal Quantity, decimal Price)> materials);
 
         /// <summary>
         /// Rolls back material consumption.

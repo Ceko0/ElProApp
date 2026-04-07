@@ -132,5 +132,42 @@
                 .FirstOrDefaultAsync(x =>
                     x.BuildingId == buildingId &&
                     x.MaterialId == materialId);
+
+        /// <summary>
+        /// Sets exact quantity for a material in a building (overwrite).
+        /// </summary>
+        public async Task SetQuantityAsync(
+            Guid buildingId,
+            Guid materialId,
+            decimal quantity)
+        {
+            var record = await repository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x =>
+                    x.BuildingId == buildingId &&
+                    x.MaterialId == materialId);
+
+            if (record == null)
+            {
+                record = new BuildingMaterialMapping
+                {
+                    BuildingId = buildingId,
+                    MaterialId = materialId,
+                    Quantity = quantity,
+                    LastUpdated = DateTime.UtcNow
+                };
+
+                await repository.AddAsync(record);
+            }
+            else
+            {
+                record.Quantity = quantity;
+                record.LastUpdated = DateTime.UtcNow;
+            }
+
+            await repository.SaveAsync();
+        }
     }
+
+
 }

@@ -73,7 +73,6 @@
                 AutoMapperConfig.MapperInstance.Map<Material>(model);
 
             await materialRepository.AddAsync(entity);
-            await materialRepository.SaveAsync();
 
             if (model.BuildingId != Guid.Empty && model.Quantity > 0)
             {
@@ -96,35 +95,18 @@
 
             var entity = await materialRepository
                 .GetAllAttached()
-                .Include(x => x.Buildings)
                 .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
                 ?? throw new InvalidOperationException("Material not found or is deleted.");
 
-            var mapping = entity.Buildings.FirstOrDefault();
-
-            var model = new MaterialEditInputModel
+            return new MaterialEditInputModel
             {
                 Id = entity.Id,
-                Name = entity.Name,
-                Quantity = mapping?.Quantity ?? 0,
-                BuildingId = mapping?.BuildingId ?? Guid.Empty
+                Name = entity.Name
             };
-
-            model.Buildings = await helpMethodsService
-                .GetAllBuildings()
-                .Select(b => new SelectListItem
-                {
-                    Value = b.Id.ToString(),
-                    Text = b.Name,
-                    Selected = b.Id == model.BuildingId
-                })
-                .ToListAsync();
-
-            return model;
         }
 
         /// <summary>
-        /// Updates an existing material and its assigned quantity.
+        /// Updates an existing material.
         /// </summary>
         public async Task<bool> EditByModelAsync(MaterialEditInputModel model)
         {
@@ -139,40 +121,27 @@
 
             entity.Name = model.Name;
 
-            await materialRepository.SaveAsync();
-
-            if (model.BuildingId != Guid.Empty && model.Quantity > 0)
-            {
-                await buildingMaterialService.IncreaseAsync(
-                    model.BuildingId,
-                    entity.Id,
-                    model.Quantity);
-            }
+            await materialRepository.UpdateAsync(entity);
 
             return true;
         }
 
         /// <summary>
-        /// Retrieves all non-deleted materials.
+        /// Retrieves all materials.
         /// </summary>
         public async Task<ICollection<MaterialViewModel>> GetAllAsync()
         {
             var materials = await materialRepository
                 .GetAllAttached()
                 .Where(x => !x.IsDeleted)
-                .Include(x => x.Buildings)
-                    .ThenInclude(x => x.Building)
                 .ToListAsync();
 
             return materials
-                .SelectMany(m => m.Buildings.Select(bm => new MaterialViewModel
+                .Select(m => new MaterialViewModel
                 {
                     Id = m.Id,
-                    Name = m.Name,
-                    Quantity = bm.Quantity,
-                    BuildingId = bm.BuildingId,
-                    BuildingName = bm.Building.Name
-                }))
+                    Name = m.Name
+                })
                 .ToList();
         }
 
@@ -194,17 +163,20 @@
 
             var entity = await materialRepository
                 .GetAllAttached()
-                .Include(x => x.Buildings)
-                    .ThenInclude(x => x.Building)
                 .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
                 ?? throw new InvalidOperationException("Material not found or is deleted.");
+
+            var buildingMaterials = await buildingMaterialService
+                .GetAllAttached()
+                .Include(x => x.Building)
+                .Where(x => x.MaterialId == validId)
+                .ToListAsync();
 
             return new MaterialViewModel
             {
                 Id = entity.Id,
                 Name = entity.Name,
-
-                BuildingMaterials = entity.Buildings
+                BuildingMaterials = buildingMaterials
                     .Select(x => new BuildingMaterialViewModel
                     {
                         MaterialId = x.MaterialId,
@@ -237,18 +209,18 @@
             Guid validId =
                 helpMethodsService.ConvertAndTestIdToGuid(buildingId);
 
-            return await materialRepository
+            return await buildingMaterialService
                 .GetAllAttached()
-                .Where(m => !m.IsDeleted)
-                .SelectMany(m => m.Buildings)
-                .Where(bm => bm.BuildingId == validId)
-                .Select(bm => new BuildingMaterialViewModel
+                .Include(x => x.Material)
+                .Include(x => x.Building)
+                .Where(x => x.BuildingId == validId)
+                .Select(x => new BuildingMaterialViewModel
                 {
-                    MaterialId = bm.MaterialId,
-                    MaterialName = bm.Material.Name,
-                    BuildingId = bm.BuildingId,
-                    BuildingName = bm.Building.Name,
-                    Quantity = bm.Quantity
+                    MaterialId = x.MaterialId,
+                    MaterialName = x.Material.Name,
+                    BuildingId = x.BuildingId,
+                    BuildingName = x.Building.Name,
+                    Quantity = x.Quantity
                 })
                 .ToListAsync();
         }

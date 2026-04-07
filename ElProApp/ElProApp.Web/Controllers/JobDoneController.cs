@@ -12,9 +12,7 @@
     /// Controller responsible for managing job-done operations.
     /// </summary>
     [Authorize]
-    public class JobDoneController(
-        IJobDoneService jobDoneService,
-        IEarningsCalculationService earningsCalculationService)
+    public class JobDoneController(IJobDoneService jobDoneService)
         : Controller
     {
         /// <summary>
@@ -37,15 +35,17 @@
         /// Creates a new job-done record.
         /// </summary>
         /// <param name="model">The input model.</param>
-        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
+
         [HttpPost]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
+            model.Name = $"От {model.StartDate:dd.MM.yyyy} до {model.EndDate:dd.MM.yyyy} Екип : {model.TeamName}";
+
             if (!ModelState.IsValid)
             {
                 var freshModel = await jobDoneService.AddAsync();
 
-                freshModel.Name = model.Name;
                 freshModel.StartDate = model.StartDate;
                 freshModel.EndDate = model.EndDate;
                 freshModel.DaysForJob = model.DaysForJob;
@@ -89,29 +89,16 @@
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                var freshModel = await jobDoneService.EditByIdAsync(model.Id.ToString());
+
+                freshModel.Name = model.Name;
+                freshModel.DaysForJob = model.DaysForJob;
+                freshModel.Materials = model.Materials ?? new List<MaterialInputPair>();
+
+                return View(freshModel);
             }
 
-            var oldJobDone = await jobDoneService.GetByIdAsync(model.Id.ToString());
-
-            await earningsCalculationService.CalculateMoneyAsync(
-                oldJobDone.TeamId,
-                oldJobDone.Id,
-                oldJobDone.DaysForJob,
-                Remove);
-
-            bool edited = await jobDoneService.EditByModelAsync(model);
-
-            if (!edited)
-            {
-                return View(model);
-            }
-
-            await earningsCalculationService.CalculateMoneyAsync(
-                model.TeamId,
-                model.Id,
-                model.DaysForJob,
-                Adding);
+            await jobDoneService.EditByModelAsync(model);
 
             return RedirectToAction(nameof(Details), new { id = model.Id });
         }
@@ -125,12 +112,6 @@
         public async Task<IActionResult> SoftDelete(string id)
         {
             var jobDone = await jobDoneService.GetByIdAsync(id);
-
-            await earningsCalculationService.CalculateMoneyAsync(
-                jobDone.TeamId,
-                jobDone.Id,
-                jobDone.DaysForJob,
-                Remove);
 
             bool isDeleted = await jobDoneService
                 .SoftDeleteAsync(id, jobDone.TeamId.ToString());

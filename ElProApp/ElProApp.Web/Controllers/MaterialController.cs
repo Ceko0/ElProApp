@@ -2,10 +2,10 @@
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
 
     using ElProApp.Application.Services.Interfaces;
     using ElProApp.Web.Models.Material;
-    using Microsoft.AspNetCore.Mvc.Rendering;
 
     using static Common.ApplicationConstants;
 
@@ -13,10 +13,27 @@
     /// Manages material operations.
     /// </summary>
     [Authorize]
-    public class MaterialController(IMaterialService materialService) : Controller
+    public class MaterialController : Controller
     {
+        private readonly IMaterialService materialService;
+        private readonly IBuildingMaterialMappingService buildingMaterialMappingService;
+        private readonly IBuildingMaterialPriceService buildingMaterialPriceService;
+
         /// <summary>
-        /// Displays all material mappings (materials per building).
+        /// Initializes a new instance of the <see cref="MaterialController"/> class.
+        /// </summary>
+        public MaterialController(
+            IMaterialService materialService,
+            IBuildingMaterialMappingService buildingMaterialMappingService,
+            IBuildingMaterialPriceService buildingMaterialPriceService)
+        {
+            this.materialService = materialService;
+            this.buildingMaterialMappingService = buildingMaterialMappingService;
+            this.buildingMaterialPriceService = buildingMaterialPriceService;
+        }
+
+        /// <summary>
+        /// Displays all materials.
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> All()
@@ -47,7 +64,7 @@
         }
 
         /// <summary>
-        /// Displays material details (all buildings).
+        /// Displays material details.
         /// </summary>
         [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName},{TechnicianRoleName}")]
         [HttpGet]
@@ -111,21 +128,28 @@
         /// <summary>
         /// Displays form for assigning material to a building.
         /// </summary>
+        /// <param name="buildingId">Optional building identifier.</param>
+        /// <param name="materialId">Optional material identifier.</param>
         [HttpGet]
-        public async Task<IActionResult> AddToBuilding()
+        public async Task<IActionResult> AddToBuilding(Guid? buildingId, Guid? materialId)
         {
             var model = new BuildingMaterialInputModel
             {
                 Buildings = (await materialService.GetAddModelAsync()).Buildings,
 
                 Materials = (await materialService.GetAllAsync())
-                    .GroupBy(x => x.Id)
                     .Select(x => new SelectListItem
                     {
-                        Value = x.Key.ToString(),
-                        Text = x.First().Name
+                        Value = x.Id.ToString(),
+                        Text = x.Name
                     })
             };
+
+            if (buildingId.HasValue)
+                model.BuildingId = buildingId.Value;
+
+            if (materialId.HasValue)
+                model.MaterialId = materialId.Value;
 
             return View(model);
         }
@@ -139,10 +163,7 @@
             if (!ModelState.IsValid)
                 return View(model);
 
-            var mappingService =
-                HttpContext.RequestServices.GetRequiredService<IBuildingMaterialMappingService>();
-
-            await mappingService.IncreaseAsync(
+            await buildingMaterialMappingService.IncreaseAsync(
                 model.BuildingId,
                 model.MaterialId,
                 model.Quantity);
@@ -155,20 +176,25 @@
         /// </summary>
         [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
         [HttpGet]
-        public async Task<IActionResult> SetPrice()
+        public async Task<IActionResult> SetPrice(Guid? buildingId, Guid? materialId)
         {
             var model = new BuildingMaterialPriceInputModel
             {
                 Buildings = (await materialService.GetAddModelAsync()).Buildings,
 
                 Materials = (await materialService.GetAllAsync())
-                    .GroupBy(x => x.Id)
                     .Select(x => new SelectListItem
                     {
-                        Value = x.Key.ToString(),
-                        Text = x.First().Name
+                        Value = x.Id.ToString(),
+                        Text = x.Name
                     })
             };
+
+            if (buildingId.HasValue)
+                model.BuildingId = buildingId.Value;
+
+            if (materialId.HasValue)
+                model.MaterialId = materialId.Value;
 
             return View(model);
         }
@@ -183,15 +209,69 @@
             if (!ModelState.IsValid)
                 return View(model);
 
-            var priceService =
-                HttpContext.RequestServices.GetRequiredService<IBuildingMaterialPriceService>();
-
-            await priceService.SetPriceAsync(
+            await buildingMaterialPriceService.SetPriceAsync(
                 model.BuildingId,
                 model.MaterialId,
                 model.Price);
 
             return RedirectToAction(nameof(All));
+        }
+
+        /// <summary>
+        /// Displays all prices for a given material across buildings.
+        /// </summary>
+        /// <param name="materialId">The material identifier.</param>
+        /// <returns>
+        /// A view containing all building-price mappings for the specified material.
+        /// </returns>
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName}")]
+        [HttpGet]
+        public async Task<IActionResult> Prices(Guid materialId)
+        {
+            var priceService =
+                HttpContext.RequestServices.GetRequiredService<IBuildingMaterialPriceService>();
+
+            var model = await priceService.GetAllByMaterialIdAsync(materialId);
+
+            return View(model);
+        }
+        /// <summary>
+        /// Displays edit quantities for materials in a building.
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName},{TechnicianRoleName}")]
+        public async Task<IActionResult> EditQuantities(string buildingId)
+        {
+            if (string.IsNullOrWhiteSpace(buildingId))
+                throw new BadHttpRequestException("Building ID is required.");
+
+            var materials = await materialService.GetByBuildingIdAsync(buildingId);
+
+            return View(materials);
+        }
+
+        /// <summary>
+        /// Updates quantities for materials in a building.
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = $"{AdminRoleName},{OfficeManagerRoleName},{TechnicianRoleName}")]
+        public async Task<IActionResult> EditQuantities(string buildingId, List<BuildingMaterialViewModel> model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var mappingService =
+                HttpContext.RequestServices.GetRequiredService<IBuildingMaterialMappingService>();
+
+            foreach (var item in model)
+            {
+                await mappingService.SetQuantityAsync(
+                    item.BuildingId,
+                    item.MaterialId,
+                    item.Quantity);
+            }
+
+            return RedirectToAction("Details", "Building", new { id = buildingId });
         }
     }
 }

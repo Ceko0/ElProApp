@@ -3,6 +3,6 @@
     using ElProApp.Web.Models.JobDone;
     public interface IEarningsCalculationService
     {
-        Task<bool> CalculateMoneyAsync(Guid teamId, Guid jobDoneId, int daysForJob, string action);
+        Task<bool> CalculateMoneyAsync(Guid teamId, Guid jobDoneId, int daysForJob, Dictionary<Guid, (decimal Quantity, decimal Price)> materials, string action);
     }
 }

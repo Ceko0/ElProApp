@@ -3,8 +3,6 @@
     using System;
     using System.ComponentModel.DataAnnotations;
 
-    using Microsoft.AspNetCore.Mvc.Rendering;
-
     using ElProApp.Services.Mapping;
     using ElProApp.Data.Models;
 
@@ -29,25 +27,5 @@
         [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         public string Name { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets material quantity.
-        /// </summary>
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        [Range(0.01, 9999.99, ErrorMessage = ErrorMassagePozitive)]
-        [RegularExpression(@"^\d{1,6}(\.\d{1,2})?$", ErrorMessage = ErrorMassageQuantity)]
-        public decimal Quantity { get; set; }
-
-        /// <summary>
-        /// Gets or sets building identifier.
-        /// </summary>
-        [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
-        public Guid BuildingId { get; set; }
-
-        /// <summary>
-        /// Gets or sets available buildings for selection.
-        /// </summary>
-        public IEnumerable<SelectListItem> Buildings { get; set; }
-            = new List<SelectListItem>();
     }
 }
