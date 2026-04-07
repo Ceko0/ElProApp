@@ -1,54 +1,47 @@
 ﻿@using ElProApp.Web.Models.Employee
 @model EmployeeEditInputModel
+
 @{
-    ViewData["Title"] = "Редактиране на информация за служител";
+    ViewData["Title"] = "Редактиране";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Редактиране на информация за служител</h1>
-</div>
+<div class="page-container">
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <h3>@Model.Name @Model.LastName</h3>
-            <hr/>
+    <h2 class="section-title">Редактиране: @Model.Name @Model.LastName</h2>
 
-            <form asp-action="Edit" method="post">
-                <dl class="row">
-                    <dt class="col-sm-3">Име:</dt>
-                    <dd class="col-sm-9">
-                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                    </dd>
+    <form asp-action="Edit" method="post">
 
-                    <dt class="col-sm-3">Фамилия:</dt>
-                    <dd class="col-sm-9">
-                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                    </dd>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="MoneyToTake" />
 
-                    <dt class="col-sm-3">Дневно възнаграждение:</dt>
-                    <dd class="col-sm-9">
-                        @Html.EditorFor(model => model.Wages, new { htmlAttributes = new { @class = "form-control" } })
-                    </dd>
-                    @{
-                        if (User.IsInRole("Admin"))
-                        {
-                            <dt class="col-sm-3">Заработка:</dt>
-                            <dd class="col-sm-9">
-                                @Html.EditorFor(model => model.MoneyToTake, new { htmlAttributes = new { @class = "form-control" } })
-                            </dd>
-                        }
-                    }
-
-                </dl>
-                <input type="hidden" asp-for="@Model.Id"/>
-                <input type="hidden" asp-for="MoneyToTake" />
-                <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-warning">Запази</button>
-                    <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с служители</a>
-                    <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-                </div>
-            </form>
+        <div class="mb-3">
+            <label class="form-label">Име</label>
+            <input asp-for="Name" class="form-control" />
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label class="form-label">Фамилия</label>
+            <input asp-for="LastName" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Дневно възнаграждение</label>
+            <input asp-for="Wages" class="form-control" />
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="mb-3">
+                <label class="form-label">Заработка</label>
+                <input asp-for="MoneyToTake" class="form-control" />
+            </div>
+        }
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Запази</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
+        </div>
+
+    </form>
+
 </div>

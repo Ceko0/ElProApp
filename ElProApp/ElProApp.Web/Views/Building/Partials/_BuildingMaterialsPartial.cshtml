@@ -1,23 +1,61 @@
-﻿@model IEnumerable<ElProApp.Web.Models.Material.BuildingMaterialViewModel>
+﻿@using ElProApp.Web.Models.Material
+@using static ElProApp.Common.ApplicationConstants
+@model ICollection<BuildingMaterialViewModel>
 
 @if (Model != null && Model.Any())
 {
-    <div class="card mt-4">
-        <div class="card-body">
-            <h5 class="card-title">Материали в сградата</h5>
-            <select class="form-select" onchange="location.href=this.value;">
-                <option selected disabled>Изберете материал за информация</option>
-                @foreach (var material in Model)
-                {
-                    <option value="@Url.Action("Details", "Material", new { id = material.MaterialId })">
-                        @material.MaterialName - Количество: @material.Quantity
-                    </option>
-                }
-            </select>
+    <h5 class="section-title mt-3">Материали</h5>
+
+    @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
+    {
+        <div class="mb-2">
+            <a asp-controller="Material"
+               asp-action="EditQuantities"
+               asp-route-buildingId="@Model.First().BuildingId"
+               class="btn btn-success">
+                Редактирай количества
+            </a>
         </div>
-    </div>
+    }
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Материал</th>
+                <th>Количество</th>
+
+                @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                {
+                    <th>Действия</th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var material in Model)
+            {
+                <tr>
+                    <td>@material.MaterialName</td>
+                    <td>@material.Quantity</td>
+
+                    @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                    {
+                        <td>
+                            <a asp-controller="Material"
+                               asp-action="AddToBuilding"
+                               asp-route-buildingId="@material.BuildingId"
+                               asp-route-materialId="@material.MaterialId"
+                               class="btn btn-success btn-sm">
+                                Добави количество
+                            </a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 else
 {
-    <span class="text-muted">Няма материали за тази сграда</span>
+    <p class="text-muted">Няма материали.</p>
 }

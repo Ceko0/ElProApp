@@ -1,157 +1,217 @@
 ﻿@using ElProApp.Web.Models.JobDone
 @model JobDoneInputModel
 
-<h1 class="mb-4">Добави нова свършена работа</h1>
+@{
+    ViewData["Title"] = "Добавяне на работа";
+}
 
-<form asp-action="Add" method="post">
+<div class="page-container">
 
-    <div class="form-group mb-3">
-        <label asp-for="BuildingId" class="form-label">Избери сграда</label>
-        <select asp-for="BuildingId" class="form-control" id="buildingSelect">
-            <option value="">Сграда</option>
-            @foreach (var building in Model.Buildings)
-            {
-                <option value="@building.Id">@building.Name</option>
-            }
-        </select>
-    </div>
+    <h2 class="section-title">Добавяне на работа</h2>
 
-    <div class="form-group mb-3">
-        <label asp-for="TeamId" class="form-label">Избери екип</label>
-        <select asp-for="TeamId" class="form-control">
-            <option value="">Екип</option>
-            @foreach (var team in Model.Teams)
-            {
-                <option value="@team.Id">@team.Name</option>
-            }
-        </select>
-    </div>
+    <form asp-action="Add" method="post">
 
-    <hr />
+        <input type="hidden" name="TeamName" id="teamName" />
+        <input type="hidden" name="BuildingName" id="buildingName" />
 
-    <h4>Материали (дейности)</h4>
+        <div class="mb-3">
+            <label>Сграда</label>
+            <select asp-for="BuildingId" class="form-control" id="buildingSelect">
+                <option value="">Избери</option>
+                @foreach (var b in Model.Buildings)
+                {
+                    <option value="@b.Id">@b.Name</option>
+                }
+            </select>
+        </div>
 
-    <table class="table" id="materialsTable">
-        <thead>
-            <tr>
-                <th>Материал</th>
-                <th>Количество</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="materialsBody">
-            <tr>
-                <td>
-                    <select name="Materials[0].MaterialId" class="form-control material-select">
-                        <option value="">Избери материал</option>
-                        @foreach (var material in Model.MaterialsList)
-                        {
-                            <option value="@material.Id">@material.Name</option>
-                        }
-                    </select>
-                </td>
-                <td>
-                    <input type="number" name="Materials[0].Quantity" class="form-control" step="0.01" />
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">X</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="mb-3">
+            <label>Екип</label>
+            <select asp-for="TeamId" class="form-control" id="teamSelect">
+                <option value="">Избери</option>
+                @foreach (var t in Model.Teams)
+                {
+                    <option value="@t.Id">@t.Name</option>
+                }
+            </select>
+        </div>
 
-    <button type="button" class="btn btn-primary mb-3" id="addRow">
-        + Добави материал
-    </button>
+        <hr />
 
-    <hr />
+        <h5 class="section-title">Материали</h5>
 
-    <div class="form-group mb-3">
-        <label>Начална дата</label>
-        <input type="date" asp-for="StartDate" class="form-control" />
-    </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Материал</th>
+                    <th>Количество</th>
+                    <th style="width:60px;"></th>
+                </tr>
+            </thead>
+            <tbody id="materialsBody"></tbody>
+        </table>
 
-    <div class="form-group mb-3">
-        <label>Крайна дата</label>
-        <input type="date" asp-for="EndDate" class="form-control" />
-    </div>
+        <button type="button" class="btn btn-success mb-3" id="addRow">
+            + Добави материал
+        </button>
 
-    <div class="form-group mb-3">
-        <label>Брой работни дни</label>
-        <input type="number" asp-for="DaysForJob" class="form-control" readonly />
-    </div>
+        <hr />
 
-    <div id="weekendContainer" class="mb-3"></div>
+        <div class="mb-3">
+            <label>Начална дата</label>
+            <input type="date" asp-for="StartDate" class="form-control" id="startDate" />
+        </div>
 
-    <div class="d-flex justify-content-between">
-        <button type="submit" class="btn btn-success">Добави</button>
-        <a asp-action="All" class="btn btn-secondary">Назад</a>
-    </div>
+        <div class="mb-3">
+            <label>Крайна дата</label>
+            <input type="date" asp-for="EndDate" class="form-control" id="endDate" />
+        </div>
 
-</form>
+        <div class="mb-3">
+            <label>Работни дни</label>
+            <input type="number" asp-for="DaysForJob" class="form-control" readonly id="daysInput" value="1" />
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Добави</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
+        </div>
+
+    </form>
+
+</div>
 
 @section Scripts {
     <script>
-        let index = 1;
+            let index = 0;
 
-        document.getElementById("addRow").addEventListener("click", function () {
-            const row = `
-            <tr>
-                <td>
-                    <select name="Materials[${index}].MaterialId" class="form-control">
-                        <option value="">Избери материал</option>
-        @foreach (var material in Model.MaterialsList)
-        {
-                                <option value="@material.Id">@material.Name</option>
-        }
-                    </select>
-                </td>
-                <td>
-                    <input type="number" name="Materials[${index}].Quantity" class="form-control" step="0.01"/>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger remove-row">X</button>
-                </td>
-            </tr>`;
+            const materials = @Html.Raw(
+        System.Text.Json.JsonSerializer.Serialize(
+            Model.MaterialsList.Select(x => new { id = x.Id, name = x.Name })
+        )
+    );
 
-            document.getElementById("materialsBody").insertAdjacentHTML("beforeend", row);
-            index++;
-        });
-
-        document.addEventListener("click", function (e) {
-            if (e.target.classList.contains("remove-row")) {
-                e.target.closest("tr").remove();
+            function getSelectedMaterials() {
+                return Array.from(document.querySelectorAll(".material-select"))
+                    .map(x => x.value)
+                    .filter(x => x !== "");
             }
-        });
 
-        document.querySelectorAll('input[type="date"]').forEach(input => {
-            input.addEventListener("change", generateWeekends);
-        });
+            function renderOptions(select, selectedValue = "") {
+                const selected = getSelectedMaterials();
 
-        function generateWeekends() {
-            const start = new Date(document.querySelector('[name="StartDate"]').value);
-            const end = new Date(document.querySelector('[name="EndDate"]').value);
+                select.innerHTML = `<option value="">Избери материал</option>`;
 
-            const container = document.getElementById("weekendContainer");
-            container.innerHTML = "";
+                materials.forEach(m => {
+                    if (!selected.includes(m.id) || m.id === selectedValue) {
+                        const option = document.createElement("option");
+                        option.value = m.id;
+                        option.textContent = m.name;
 
-            if (!start || !end) return;
+                        if (m.id === selectedValue)
+                            option.selected = true;
 
-            let current = new Date(start);
+                        select.appendChild(option);
+                    }
+                });
+            }
 
-            while (current <= end) {
-                if (current.getDay() === 6 || current.getDay() === 0) {
-                    const dateStr = current.toISOString().split('T')[0];
+            function createRow(selectedValue = "") {
+                const tr = document.createElement("tr");
 
-                    container.innerHTML += `
-                        <div>
-                            <input type="checkbox" name="WorkedWeekends" value="${dateStr}" />
-                            ${dateStr}
-                        </div>`;
+                tr.innerHTML = `
+                    <td><select name="Materials[${index}].MaterialId" class="form-control material-select"></select></td>
+                    <td><input type="number" name="Materials[${index}].Quantity" class="form-control" step="0.01" /></td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-row">X</button></td>
+                `;
+
+                document.getElementById("materialsBody").appendChild(tr);
+
+                const select = tr.querySelector(".material-select");
+
+                renderOptions(select, selectedValue);
+
+                select.addEventListener("change", () => {
+                    document.querySelectorAll(".material-select").forEach(s => {
+                        const val = s.value;
+                        renderOptions(s, val);
+                    });
+                });
+
+                index++;
+            }
+
+            function reindexRows() {
+                const rows = document.querySelectorAll("#materialsBody tr");
+
+                rows.forEach((row, i) => {
+                    const select = row.querySelector("select");
+                    const input = row.querySelector("input[type='number']");
+
+                    select.name = `Materials[${i}].MaterialId`;
+                    input.name = `Materials[${i}].Quantity`;
+                });
+
+                index = rows.length;
+            }
+
+            document.getElementById("addRow").addEventListener("click", () => {
+                createRow();
+            });
+
+            document.addEventListener("click", function (e) {
+                if (e.target.classList.contains("remove-row")) {
+                    e.target.closest("tr").remove();
+
+                    reindexRows();
+
+                    document.querySelectorAll(".material-select").forEach(s => {
+                        const val = s.value;
+                        renderOptions(s, val);
+                    });
+                }
+            });
+
+            createRow();
+
+            document.getElementById("teamSelect").addEventListener("change", function () {
+                document.getElementById("teamName").value =
+                    this.options[this.selectedIndex].text;
+            });
+
+            document.getElementById("buildingSelect").addEventListener("change", function () {
+                document.getElementById("buildingName").value =
+                    this.options[this.selectedIndex].text;
+            });
+
+            document.getElementById("startDate").addEventListener("change", calculateDays);
+            document.getElementById("endDate").addEventListener("change", calculateDays);
+
+            function calculateDays() {
+                const startVal = document.getElementById("startDate").value;
+                const endVal = document.getElementById("endDate").value;
+
+                if (!startVal || !endVal) return;
+
+                const start = new Date(startVal);
+                const end = new Date(endVal);
+
+                let current = new Date(start);
+                let workingDays = 0;
+
+                while (current <= end) {
+                    const day = current.getDay();
+
+                    if (day !== 0 && day !== 6) {
+                        workingDays++;
+                    }
+
+                    current.setDate(current.getDate() + 1);
                 }
 
-                current.setDate(current.getDate() + 1);
+                if (workingDays <= 0) workingDays = 1;
+
+                document.getElementById("daysInput").value = workingDays;
             }
-        }
     </script>
 }

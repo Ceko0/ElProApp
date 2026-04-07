@@ -1,10 +1,11 @@
-﻿@model ElProApp.Web.Models.Material.BuildingMaterialInputModel
+﻿@using ElProApp.Web.Models.Material
+@model BuildingMaterialPriceInputModel
 
 <div class="page-container">
 
-    <h2 class="section-title">Добавяне на материал към обект</h2>
+    <h2 class="section-title">Задаване на цена</h2>
 
-    <form asp-action="AddToBuilding" method="post">
+    <form asp-action="SetPrice" method="post">
 
         <div class="mb-3">
             <label>Сграда</label>
@@ -21,15 +22,20 @@
         </div>
 
         <div class="mb-3">
-            <label>Количество</label>
-            <input asp-for="Quantity" class="form-control" />
+            <label>Цена</label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
         <div class="mt-3">
-            <button class="btn btn-success">Добави</button>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Начало</a>
+            <button type="submit" class="btn btn-success">Запази</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
         </div>
 
     </form>
 
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

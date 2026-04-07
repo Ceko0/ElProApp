@@ -1,27 +1,23 @@
 ﻿@using ElProApp.Web.Models.Material
 @model MaterialViewModel
 
-@{
-    ViewData["Title"] = "Детайли за материал";
-    Layout = "_Layout";
-}
+<div class="page-container">
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">
-        Материал: @Model.Name
-    </h1>
+    <h2 class="section-title">Материал: @Model.Name</h2>
 
     <div class="card mt-3">
         <div class="card-body">
-            <h5 class="card-title">Наличности по обекти</h5>
 
-            <table class="table">
+            <h5>Наличности по обекти</h5>
+
+            <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Сграда</th>
                         <th>Количество</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @if (Model.BuildingMaterials != null && Model.BuildingMaterials.Any())
                     {
@@ -36,27 +32,18 @@
                     else
                     {
                         <tr>
-                            <td colspan="2" class="text-center">
-                                Няма наличности
-                            </td>
+                            <td colspan="2" class="text-center">Няма наличности</td>
                         </tr>
                     }
                 </tbody>
             </table>
+
         </div>
     </div>
 
-    <div class="d-flex justify-content-between mt-3">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-            Редактиране
-        </a>
-
-        <a asp-action="All" class="btn btn-secondary">
-            Списък с материали
-        </a>
-
-        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
-            Начална страница
-        </a>
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">Редакция</a>
+        <a asp-action="All" class="btn btn-primary">Назад</a>
     </div>
+
 </div>

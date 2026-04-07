@@ -1,35 +1,35 @@
 ﻿@model ElProApp.Web.Models.Building.BuildingInputModel
 @{
-    ViewData["Title"] = "Добавяне на нова сграда";
-    Layout = "_Layout";
+    ViewData["Title"] = "Добавяне";
 }
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Добавяне на нова сграда</h1>
+<div class="page-container">
+
+    <h2 class="section-title">Добавяне на сграда</h2>
 
     <form asp-action="Add" method="post">
-        <div class="form-group mb-3">
-            <label asp-for="Name" class="control-label">Име на сградата</label>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Име</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group mb-3">
-            <label asp-for="Location" class="control-label">Локация на сградата</label>
+        <div class="mb-3">
+            <label asp-for="Location" class="form-label">Локация</label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
-        <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-success">Добави сграда</button>
-            <a asp-action="All" class="btn btn-secondary">Списък със сгради</a>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Начална страница</a>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Добави</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
         </div>
+
     </form>
+
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

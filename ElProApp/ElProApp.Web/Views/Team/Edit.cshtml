@@ -7,19 +7,21 @@
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
 
-        <div class="form-group">
-            <label asp-for="Name" class="control-label">Име на екипа</label>
+        <div class="mb-3">
+            <label class="form-label">Име на екипа</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         @if (Model.BuildingWithTeam != null && Model.BuildingWithTeam.Any())
         {
-            <div class="form-group">
-                <label>Сгради, свързани с екипа</label>
+            <div class="mb-3">
+                <label class="form-label">Сгради</label>
+
                 @foreach (var building in Model.BuildingWithTeam)
                 {
                     var isSelected = Model.BuildingWithTeamIds.Contains(building.Id);
+
                     <div class="form-check">
                         <input type="checkbox"
                                name="BuildingWithTeamIds"
@@ -31,59 +33,33 @@
                 }
             </div>
         }
-        else
-        {
-            <p>Няма налични сгради.</p>
-        }
-
-        @if (Model.JobsDoneByTeam != null && Model.JobsDoneByTeam.Any())
-        {
-            <div class="form-group">
-                <label>Извършени дейности от екипа</label>
-                <ul class="list-group">
-                    @foreach (var job in Model.JobsDoneByTeam)
-                    {
-                    }
-                </ul>
-            </div>
-        }
-        else
-        {
-            <p>Няма извършени дейности от екипа.</p>
-        }
 
         @if (Model.EmployeesInTeam != null && Model.EmployeesInTeam.Any())
         {
-            var selectItemsEmployees = Model.EmployeesInTeam
-            .Where(e => e != null && e != null && e.Id != Guid.Empty)
-            .Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Name + " " + e.LastName,
-                    Selected = Model.EmployeesInTeamIds.Contains(e.Id)
-                }).ToList();
+            <div class="mb-3">
+                <label class="form-label">Служители</label>
 
-            <div class="form-group">
-                <label>Служители в екипа</label>
-                @foreach (var item in selectItemsEmployees)
+                @foreach (var e in Model.EmployeesInTeam)
                 {
+                    var isSelected = Model.EmployeesInTeamIds.Contains(e.Id);
+
                     <div class="form-check">
-                        <input type="checkbox" name="EmployeesInTeamIds" value="@item.Value" class="form-check-input" @(item.Selected ? "checked" : "") />
-                        <label class="form-check-label">@item.Text</label>
+                        <input type="checkbox"
+                               name="EmployeesInTeamIds"
+                               value="@e.Id"
+                               class="form-check-input"
+                        @(isSelected ? "checked" : "") />
+                        <label class="form-check-label">@e.Name @e.LastName</label>
                     </div>
                 }
             </div>
         }
-        else
-        {
-            <p>Няма служители в екипа.</p>
-        }
 
-        <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-warning">Запази</button>
-            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с екипи</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Запази</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
         </div>
+
     </form>
 </div>
 

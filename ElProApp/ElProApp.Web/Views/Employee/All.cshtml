@@ -3,19 +3,20 @@
 @model ICollection<EmployeeViewModel>
 
 @{
-    ViewData["Title"] = "Списък със служители";
+    ViewData["Title"] = "Служители";
 }
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Списък със служители</h1>
+<div class="page-container">
 
-    <div class="d-flex justify-content-between mb-2">
-        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
-            Начална страница
+    <h2 class="section-title">Списък със служители</h2>
+
+    <div class="mb-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            Начало
         </a>
     </div>
 
-    <table class="table table-striped mt-4">
+    <table class="table table-bordered table-hover">
         <thead>
             <tr>
                 <th>Име</th>
@@ -27,9 +28,10 @@
                     <th>Заработка</th>
                 }
 
-                <th>Действия</th>
+                <th style="width:200px;">Действия</th>
             </tr>
         </thead>
+
         <tbody>
             @foreach (var employee in Model)
             {
@@ -68,19 +70,20 @@
                     <td>
                         @if (isAdmin || isOwner)
                         {
-                            <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-info btn-sm">
+                            <a asp-action="Details" asp-route-id="@employee.Id" class="btn btn-details btn-sm">
                                 Детайли
                             </a>
                         }
 
                         @if (isAdmin)
                         {
-                            <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-warning btn-sm">
+                            <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-success btn-sm">
                                 Редактирай
                             </a>
 
                             <form asp-action="SoftDelete" asp-route-id="@employee.Id" method="post" style="display:inline;">
-                                <button class="btn btn-danger btn-sm">
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Сигурен ли си?')">
                                     Изтрий
                                 </button>
                             </form>
@@ -90,4 +93,5 @@
             }
         </tbody>
     </table>
+
 </div>
