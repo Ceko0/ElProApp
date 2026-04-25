@@ -14,7 +14,7 @@
             Начало
         </a>
 
-        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician"))
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician") || User.IsInRole("Worker"))
         {
             <a asp-controller="JobDone" asp-action="Add" class="btn btn-success">
                 Добави работа

@@ -25,12 +25,7 @@
         /// Gets or sets employees.
         /// </summary>
         public DbSet<Employee> Employees { get; set; }
-
-        /// <summary>
-        /// Gets or sets jobs (legacy).
-        /// </summary>
-        public DbSet<Job> Jobs { get; set; }
-
+                
         /// <summary>
         /// Gets or sets job-done records.
         /// </summary>
@@ -75,11 +70,6 @@
         /// Gets or sets building-material price mappings.
         /// </summary>
         public DbSet<BuildingMaterialPrice> BuildingMaterialPrices { get; set; }
-
-        /// <summary>
-        /// Gets or sets job-material mappings (legacy).
-        /// </summary>
-        public DbSet<JobMaterialMapping> JobMaterialMappings { get; set; }
 
         /// <summary>
         /// Configures the entity mappings and global query filters.

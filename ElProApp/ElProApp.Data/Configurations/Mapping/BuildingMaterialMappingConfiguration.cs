@@ -31,6 +31,8 @@
                 .WithMany(m => m.Buildings)
                 .HasForeignKey(x => x.MaterialId)
                 .OnDelete(DeleteBehavior.Restrict);
+
         }
+
     }
 }

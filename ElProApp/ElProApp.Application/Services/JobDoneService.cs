@@ -412,8 +412,6 @@
             model.Materials = materials
                 .Select(x =>
                 {
-                    total += x.Quantity * x.UnitPrice;
-
                     return new MaterialInputPair
                     {
                         MaterialId = x.MaterialId,
@@ -422,8 +420,6 @@
                     };
                 })
                 .ToList();
-
-            model.TotalCost = total;
 
             return model;
         }

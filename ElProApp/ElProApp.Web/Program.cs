@@ -12,6 +12,7 @@
     using Data;
     using Models;
     using Infrastructure.Extensions;
+    using ElProApp.Web.Areas.Identity.Pages.Account;
 
     public class Program
     {
@@ -25,10 +26,10 @@
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = false;
+                options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
+                options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 6;
 
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -36,7 +37,7 @@
 
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedAccount = false;
             })
                 .AddEntityFrameworkStores<ElProAppDbContext>()
@@ -46,7 +47,7 @@
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 options.ExpireTimeSpan = TimeSpan.FromDays(14);
                 options.LoginPath = new PathString("/Identity/Account/Login");
                 options.AccessDeniedPath = new PathString("/Home/Error/403");
@@ -54,10 +55,8 @@
 
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
-            builder.Services.AddScoped<
-            Infrastructure.Interfaces.IAdminService,
-            Infrastructure.Services.AdminService>();
-
+            builder.Services.AddScoped<Infrastructure.Interfaces.IAdminService,Infrastructure.Services.AdminService>();
+            builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,EmailSender>();
 
             builder.Services.AddControllersWithViews(cfg =>
             {

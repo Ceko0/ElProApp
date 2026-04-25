@@ -52,10 +52,7 @@
                     break;
                 case "Team":
                     deletedEntities = await adminService.GetDeletedEntitiesAsync<Team>();
-                    break;
-                case "Job":
-                    deletedEntities = await adminService.GetDeletedEntitiesAsync<Job>();
-                    break;
+                    break;                
                 case "JobDone":
                     deletedEntities = await adminService.GetDeletedEntitiesAsync<JobDone>();
                     break;
@@ -94,10 +91,7 @@
                     break;
                 case "Team":
                     result = await adminService.RestoreDeletedEntityAsync<Team>(id);
-                    break;
-                case "Job":
-                    result = await adminService.RestoreDeletedEntityAsync<Job>(id);
-                    break;
+                    break;               
                 case "JobDone":
                     result = await adminService.RestoreDeletedEntityAsync<JobDone>(id);
                     break;

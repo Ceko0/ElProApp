@@ -9,7 +9,7 @@
     using ElProApp.Web.Models.Building;
     using ElProApp.Web.Models.Employee;
     using ElProApp.Web.Models.JobDone;
-    using ElProApp.Web.Models.Job;
+
     using static ElProApp.Common.EntityValidationConstants.Team;
     using static ElProApp.Common.EntityValidationErrorMessage.Team;
     using static ElProApp.Common.EntityValidationErrorMessage.Master;
@@ -39,6 +39,5 @@
         // List of all available employees to display as checkboxes
         public ICollection<EmployeeViewModel> AvailableEmployees { get; set; } = new List<EmployeeViewModel>();
 
-        public ICollection<JobViewModel> AllJobs { get; set; } = new List<JobViewModel>();
     }
 }

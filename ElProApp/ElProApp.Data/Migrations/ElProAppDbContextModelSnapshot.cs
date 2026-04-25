@@ -53,7 +53,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Buildings");
+                    b.ToTable("Buildings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Employee", b =>
@@ -105,7 +105,7 @@ namespace ElProApp.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Job", b =>
@@ -139,7 +139,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
@@ -179,7 +179,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("BuildingId");
 
-                    b.ToTable("JobsDone");
+                    b.ToTable("JobsDone", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialMapping", b =>
@@ -207,7 +207,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.ToTable("BuildingMaterialMappings");
+                    b.ToTable("BuildingMaterialMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialPrice", b =>
@@ -225,7 +225,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.ToTable("BuildingMaterialPrices");
+                    b.ToTable("BuildingMaterialPrices", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
@@ -246,7 +246,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("BuildingTeamMappings");
+                    b.ToTable("BuildingTeamMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.EmployeeTeamMapping", b =>
@@ -267,7 +267,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("EmployeeTeamMappings");
+                    b.ToTable("EmployeeTeamMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneJobMapping", b =>
@@ -290,7 +290,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("JobDoneJobMapping");
+                    b.ToTable("JobDoneJobMapping", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneMaterialMapping", b =>
@@ -326,7 +326,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.ToTable("JobDoneMaterialMappings");
+                    b.ToTable("JobDoneMaterialMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
@@ -347,7 +347,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("JobDoneTeamMappings");
+                    b.ToTable("JobDoneTeamMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobMaterialMapping", b =>
@@ -362,7 +362,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("MaterialId");
 
-                    b.ToTable("JobMaterialMappings");
+                    b.ToTable("JobMaterialMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Material", b =>
@@ -392,7 +392,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Materials");
+                    b.ToTable("Materials", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Team", b =>
@@ -422,7 +422,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

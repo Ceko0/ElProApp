@@ -27,7 +27,8 @@
         ElProAppDbContext dbContext,
         SignInManager<IdentityUser> signInManager,
         IHttpContextAccessor httpContextAccessor,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IHelpMethodsService helpMethodsService)
         : IAdminService
     {
         /// <summary>
@@ -40,15 +41,17 @@
         {
             var users = userManager.Users.ToList();
             var userRolesViewModel = new List<UserRolesViewModel>();
-
+            
             foreach (var user in users)
             {
                 var roles = await userManager.GetRolesAsync(user);
-
+                var employee = helpMethodsService.GetEmployeeByUserId(user.Id);
                 userRolesViewModel.Add(new UserRolesViewModel
                 {
                     UserId = user.Id,
                     UserName = user!.UserName!,
+                    firstName = employee.Name,
+                    lastName = employee.LastName,
                     Roles = roles
                 });
             }

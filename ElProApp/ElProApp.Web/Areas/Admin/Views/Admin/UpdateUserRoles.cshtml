@@ -26,7 +26,11 @@
         @foreach (var user in Model)
         {
             <tr>
-                <td>@user.UserName</td>
+                <td>
+                    <p>@user.UserName</p>
+                    <p>@user.firstName</p>
+                    <p>@user.lastName</p>
+                </td>
 
                 <td>
                     <form asp-action="UpdateUserRoles" method="post">

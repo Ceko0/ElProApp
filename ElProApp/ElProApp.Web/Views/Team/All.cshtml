@@ -13,11 +13,8 @@
 
     <div class="mb-3 d-flex justify-content-between">
         <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Начало</a>
-
-        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
-        {
-            <a asp-controller="Team" asp-action="Add" class="btn btn-success">Добави екип</a>
-        }
+        <a asp-controller="Team" asp-action="Add" class="btn btn-success">Създай екип</a>
+       
     </div>
 
     <table class="table table-bordered table-hover">

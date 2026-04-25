@@ -192,16 +192,6 @@
         }
 
         /// <summary>
-        /// Retrieves all non-deleted jobs (legacy).
-        /// </summary>
-        /// <returns>Queryable jobs.</returns>
-        public IQueryable<Job> GetAllJobs()
-        {
-            var service = serviceProvider.GetRequiredService<IJobService>();
-            return service.GetAllAttached().Where(x => !x.IsDeleted);
-        }
-
-        /// <summary>
         /// Retrieves all non-deleted teams.
         /// </summary>
         /// <returns>Queryable teams.</returns>
@@ -265,5 +255,9 @@
         
             return materialsWithPrices;
         }
+
+        public Employee GetEmployeeByUserId(string? id) 
+            => serviceProvider.GetRequiredService<IEmployeeService>().GetByUserId(id);
+             
     }
 }

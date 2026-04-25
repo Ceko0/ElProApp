@@ -27,7 +27,6 @@
                 results.AddRange(await SearchEmployees(query));
                 results.AddRange(await SearchBuildings(query));
                 results.AddRange(await SearchTeams(query));
-                results.AddRange(await SearchJobs(query));
                 results.AddRange(await SearchJobDones(query));
                 results.AddRange(await SearchMaterials(query));
             }
@@ -43,10 +42,7 @@
                         break;
                     case "Team":
                         results.AddRange(await SearchTeams(query));
-                        break;
-                    case "Job":
-                        results.AddRange(await SearchJobs(query));
-                        break;
+                        break;                   
                     case "JobDone":
                         results.AddRange(await SearchJobDones(query));
                         break;
@@ -117,22 +113,7 @@
                 })
                 .ToListAsync();
         }
-
-        private async Task<List<SearchResultViewModel>> SearchJobs(string query)
-        {
-            return await data.Jobs
-                .Where(x => !x.IsDeleted &&
-                    EF.Functions.Like(x.Name, $"%{query}%"))
-                .Select(x => new SearchResultViewModel
-                {
-                    Id = x.Id.ToString(),
-                    Name = x.Name,
-                    Type = "Job",
-                    AdditionalInfo = x.Price.ToString()
-                })
-                .ToListAsync();
-        }
-
+        
         private async Task<List<SearchResultViewModel>> SearchJobDones(string query)
         {
             return await data.JobsDone
