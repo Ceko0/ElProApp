@@ -1,8 +1,8 @@
 # ElPro Management System
 
-Web-based business management system built with ASP.NET Core MVC.
+Web-based business management system built with ASP.NET Core MVC and Entity Framework Core.
 
-The application is designed to help manage employees, teams, buildings, materials and completed work activities through a structured admin system and relational database architecture.
+The application is designed to manage employees, teams, buildings, materials and completed work activities through a structured admin system and relational database architecture.
 
 ---
 
@@ -27,7 +27,7 @@ The application is designed to help manage employees, teams, buildings, material
 - C#
 - ASP.NET Core MVC
 - Entity Framework Core
-- SQL Server
+- MySQL
 - ASP.NET Identity
 - HTML5
 - CSS3
@@ -39,13 +39,16 @@ The application is designed to help manage employees, teams, buildings, material
 ## Screenshots
 
 ### Authentication System
-Login and registration functionality using ASP.NET Core Identity.
+
+![Authentication System](Screenshots/login.jpg)
 
 ### Employee Management
-Admin panel for managing employees, teams and work assignments.
+
+![Employee Management](Screenshots/employee-admin.jpg)
 
 ### Team Management
-Management system for teams and building relationships.
+
+![Team Management](Screenshots/teams-admin.jpg)
 
 ---
 
@@ -63,21 +66,52 @@ The project follows a layered architecture approach with:
 
 ---
 
+## Database
+
+The application uses MySQL with Entity Framework Core for database management and relationships.
+
+---
+
 ## Run Locally
+
+### Requirements
+
+Before running the project, make sure you have:
+
+- .NET SDK installed
+- Visual Studio 2022 or newer
+- MySQL Server installed
+- MySQL Workbench (optional)
+
+---
+
+### Installation
 
 1. Clone the repository
 
 ```bash
-git clone [https://github.com/Ceko0/ElProApp.git](https://github.com/Ceko0/ElProApp/tree/ElProAppWithMySQL)
+git clone https://github.com/Ceko0/ElProApp.git
 ```
 
 2. Open the solution in Visual Studio
 
-3. Configure the database connection string
+3. Configure the MySQL connection string in:
 
-4. Run migrations
+```text
+appsettings.json
+```
 
-```bash
+Example:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "server=localhost;port=3306;database=elprodb;user=root;password=YOUR_PASSWORD;"
+}
+```
+
+4. Run Entity Framework Core migrations
+
+```powershell
 Update-Database
 ```
 
@@ -85,13 +119,13 @@ Update-Database
 
 ---
 
-## Future Improvements
+## Planned Improvements
 
-- Improved UI/UX
-- Better responsive design
-- Advanced reporting system
-- API integration
-- Performance optimization
+- Better mobile responsiveness
+- Notifications system
+- Export functionality
+- Activity logging
+- UI/UX improvements
 
 ---
 
