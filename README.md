@@ -68,7 +68,7 @@ The project follows a layered architecture approach with:
 1. Clone the repository
 
 ```bash
-git clone https://github.com/Ceko0/ElProApp.git
+git clone [https://github.com/Ceko0/ElProApp.git](https://github.com/Ceko0/ElProApp/tree/ElProAppWithMySQL)
 ```
 
 2. Open the solution in Visual Studio
