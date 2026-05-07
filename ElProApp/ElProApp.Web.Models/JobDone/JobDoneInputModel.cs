@@ -1,42 +1,121 @@
 ﻿namespace ElProApp.Web.Models.JobDone
 {
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    using ElProApp.Data.Models;
-    using Services.Mapping;
-    using static Common.EntityValidationErrorMessage.JobDobe;
-    using static Common.EntityValidationErrorMessage.Master;
-    using static ElProApp.Common.EntityValidationConstants.JobDone;
+    using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-    public class JobDoneInputModel : IMapTo<JobDone> , IMapFrom<JobDone>
+    using ElProApp.Data.Models;
+    using ElProApp.Data.Models.Mappings;
+    using ElProApp.Services.Mapping;
+
+    using static ElProApp.Common.EntityValidationConstants.JobDone;
+    using static ElProApp.Common.EntityValidationErrorMessage.JobDobe;
+    using static ElProApp.Common.EntityValidationErrorMessage.Master;
+
+    /// <summary>
+    /// Input model for creating a job-done record.
+    /// </summary>
+    public class JobDoneInputModel : IMapTo<JobDone>, IMapFrom<JobDone>
     {
+        /// <summary>
+        /// Gets or sets identifier.
+        /// </summary>
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Required(ErrorMessage = ErrorMassageFieldForNameIsRequired)]
+        /// <summary>
+        /// Gets or sets name.
+        /// </summary>
         [MaxLength(NameMaxLength, ErrorMessage = ErrorMassageNameMaxLength)]
         [Display(Name = "Име")]
         public string? Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets start date.
+        /// </summary>
         [Required(ErrorMessage = "Началната дата е задължителна.")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
 
+        /// <summary>
+        /// Gets or sets end date.
+        /// </summary>
         [Required(ErrorMessage = "Крайната дата е задължителна.")]
         [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
 
+        /// <summary>
+        /// Gets or sets working days count.
+        /// </summary>
         [Required(ErrorMessage = ErrorMassageFieldIsRequired)]
         [Range(1, 30, ErrorMessage = ErrorMassageDaysForJob)]
         public int DaysForJob { get; set; }
 
+        /// <summary>
+        /// Gets or sets team identifier.
+        /// </summary>
         public Guid TeamId { get; set; }
 
+        /// <summary>
+        /// Gets or sets building identifier.
+        /// </summary>
         public Guid BuildingId { get; set; }
 
-        public Dictionary<Guid, decimal> Jobs { get; set; } = new();
+        /// <summary>
+        /// Gets or sets selected team name.
+        /// </summary>
+        public string? TeamName { get; set; }
 
-        public virtual ICollection<Job> JobsList { get; set; } = new List<Job>();
-        public virtual ICollection<Team> Teams { get; set; } = new List<Team>();
-        public virtual ICollection<Building> Buildings { get; set; } = new List<Building>();
+        /// <summary>
+        /// Gets or sets selected building name.
+        /// </summary>
+        public string? BuildingName { get; set; }
+
+        /// <summary>
+        /// Gets or sets selected materials with quantities.
+        /// </summary>
+        [ValidateNever]
+        public List<MaterialInputPair> Materials { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets available materials for selection.
+        /// </summary>
+        [ValidateNever]
+        public ICollection<Material> MaterialsList { get; set; } = new List<Material>();
+
+        /// <summary>
+        /// Gets or sets available teams.
+        /// </summary>
+        [ValidateNever]
+        public ICollection<Team> Teams { get; set; } = new List<Team>();
+
+        /// <summary>
+        /// Gets or sets available buildings.
+        /// </summary>
+        [ValidateNever]
+        public ICollection<Building> Buildings { get; set; } = new List<Building>();
+    }
+
+    /// <summary>
+    /// Represents material selection with quantity.
+    /// </summary>
+    public class MaterialInputPair : IMapTo<JobDoneMaterialMapping>, IMapFrom<JobDoneMaterialMapping>
+    {
+        /// <summary>
+        /// Gets or sets material name.
+        /// </summary>
+        [ValidateNever]
+        public string MaterialName { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets material identifier.
+        /// </summary>
+        public Guid MaterialId { get; set; }
+
+        /// <summary>
+        /// Gets or sets quantity.
+        /// </summary>
+        public decimal Quantity { get; set; }
     }
 }

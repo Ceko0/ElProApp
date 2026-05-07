@@ -36,8 +36,15 @@
 
         public static class CalculationAction
         {
-            public const string Add = "add";
+            public const string Adding = "add";
             public const string Remove = "remove";
+        }
+
+        public static class Material
+        {
+
+            public const int NameMinLength = 3;
+            public const int NameMaxLength = 50;
         }
     }
 }

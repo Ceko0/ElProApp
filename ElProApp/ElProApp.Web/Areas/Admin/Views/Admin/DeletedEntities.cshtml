@@ -1,7 +1,13 @@
 ﻿@using ElProApp.Services.Data.Interfaces
-@model IQueryable<IDeletableEntity>
+@model IEnumerable<ElProApp.Services.Data.Interfaces.IDeletableEntity>
 
-<h2>Изтрити записи</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Изтрити записи</h2>
+
+    <a href="/" class="btn btn-secondary">
+        Начална страница
+    </a>
+</div>
 
 @if (Model.Any())
 {
@@ -11,7 +17,7 @@
                 <th>Име</th>
                 <th>Дата на изтриване</th>
                 <th>Възстанови</th>
-                
+
             </tr>
         </thead>
         <tbody>

@@ -17,16 +17,14 @@ namespace ElProApp.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+                .HasAnnotation("ProductVersion", "8.0.13")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("ElProApp.Data.Models.Building", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Unique identifier for the building.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -38,31 +36,31 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasComment("Indicates if the building is active or soft deleted.");
 
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasComment("The location of the building with a minimum of 10 and a maximum of 100 characters.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasComment("The name of the building with a minimum of 3 and a maximum of 50 characters.");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Buildings");
+                    b.ToTable("Buildings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Employee", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Unique identifier for the employee.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -74,13 +72,13 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasComment("Indicates if the employee is active or soft deleted.");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("varchar(20)")
                         .HasComment("The last name of the employee with a maximum of 20 characters.");
 
                     b.Property<decimal>("MoneyToTake")
@@ -90,12 +88,12 @@ namespace ElProApp.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("varchar(20)")
                         .HasComment("The first name of the employee with a maximum of 20 characters.");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)")
+                        .HasColumnType("varchar(255)")
                         .HasComment("Foreign key representing the user account associated with this employee.");
 
                     b.Property<decimal>("Wages")
@@ -107,14 +105,14 @@ namespace ElProApp.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Job", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Unique identifier for the job.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -126,13 +124,13 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasComment("Indicates if the job is active or soft deleted.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasComment("The name of the job with a maximum of 50 characters.");
 
                     b.Property<decimal>("Price")
@@ -141,18 +139,18 @@ namespace ElProApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Unique identifier for the job done record.");
 
                     b.Property<Guid>("BuildingId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key for the building where was completing the job.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -168,30 +166,76 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasComment("Indicates if the jobDone is active or soft deleted.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasComment("The name of the job with a maximum of 50 characters.");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BuildingId");
 
-                    b.ToTable("JobsDone");
+                    b.ToTable("JobsDone", (string)null);
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialMapping", b =>
+                {
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the Building entity.");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the Material entity.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)")
+                        .HasComment("Quantity of material used at the Building.");
+
+                    b.HasKey("BuildingId", "MaterialId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("BuildingMaterialMappings", (string)null);
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialPrice", b =>
+                {
+                    b.Property<Guid>("BuildingId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("BuildingId", "MaterialId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("BuildingMaterialPrices", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
                 {
                     b.Property<Guid>("BuildingId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the Building entity.");
 
                     b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -202,17 +246,17 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("BuildingTeamMappings");
+                    b.ToTable("BuildingTeamMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.EmployeeTeamMapping", b =>
                 {
                     b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the Employee entity.");
 
                     b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -223,16 +267,16 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("EmployeeTeamMappings");
+                    b.ToTable("EmployeeTeamMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneJobMapping", b =>
                 {
                     b.Property<Guid>("JobDoneId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("JobId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("date")
@@ -246,17 +290,53 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("JobDoneJobMapping");
+                    b.ToTable("JobDoneJobMapping", (string)null);
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneMaterialMapping", b =>
+                {
+                    b.Property<Guid>("JobDoneId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the JobDone entity.");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("char(36)")
+                        .HasComment("Foreign key referencing the Material entity.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasComment("Quantity of material used for the job.");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)")
+                        .HasComment("Snapshot of material unit price at the time of job execution.");
+
+                    b.HasKey("JobDoneId", "MaterialId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("JobDoneMaterialMappings", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
                 {
                     b.Property<Guid>("JobDoneId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the JobDone entity.");
 
                     b.Property<Guid>("TeamId")
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Foreign key referencing the Team entity.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -267,14 +347,59 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("JobDoneTeamMappings");
+                    b.ToTable("JobDoneTeamMappings", (string)null);
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobMaterialMapping", b =>
+                {
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("MaterialId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("JobId", "MaterialId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.ToTable("JobMaterialMappings", (string)null);
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Material", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)")
+                        .HasComment("Unique identifier for the material.");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was created.");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date")
+                        .HasComment("The date when the record was deleted (logically deleted).");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)")
+                        .HasComment("Indicates if the material is active or soft deleted.");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasComment("The name of the material with a maximum of 50 characters.");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Materials", (string)null);
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Team", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
+                        .HasColumnType("char(36)")
                         .HasComment("Primary key and unique identifier for the team.");
 
                     b.Property<DateTime>("CreatedDate")
@@ -286,43 +411,42 @@ namespace ElProApp.Data.Migrations
                         .HasComment("The date when the record was deleted (logically deleted).");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
+                        .HasColumnType("tinyint(1)")
                         .HasComment("Indicates if the team is active or soft deleted.");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasComment("The name of the team, limited by maximum length.");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -333,17 +457,17 @@ namespace ElProApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -355,54 +479,54 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
 
@@ -411,8 +535,7 @@ namespace ElProApp.Data.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -423,17 +546,17 @@ namespace ElProApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -445,17 +568,17 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -467,10 +590,10 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -482,16 +605,16 @@ namespace ElProApp.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -518,6 +641,44 @@ namespace ElProApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Building");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialMapping", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.Building", "Building")
+                        .WithMany("Materials")
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Material", "Material")
+                        .WithMany("Buildings")
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Building");
+
+                    b.Navigation("Material");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingMaterialPrice", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.Building", "Building")
+                        .WithMany()
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Building");
+
+                    b.Navigation("Material");
                 });
 
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.BuildingTeamMapping", b =>
@@ -577,6 +738,25 @@ namespace ElProApp.Data.Migrations
                     b.Navigation("JobDone");
                 });
 
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneMaterialMapping", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.JobDone", "JobDone")
+                        .WithMany("Materials")
+                        .HasForeignKey("JobDoneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Material", "Material")
+                        .WithMany("JobDones")
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobDone");
+
+                    b.Navigation("Material");
+                });
+
             modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobDoneTeamMapping", b =>
                 {
                     b.HasOne("ElProApp.Data.Models.JobDone", "JobDone")
@@ -594,6 +774,25 @@ namespace ElProApp.Data.Migrations
                     b.Navigation("JobDone");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Mappings.JobMaterialMapping", b =>
+                {
+                    b.HasOne("ElProApp.Data.Models.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ElProApp.Data.Models.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Material");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -645,6 +844,23 @@ namespace ElProApp.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Building", b =>
+                {
+                    b.Navigation("Materials");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.JobDone", b =>
+                {
+                    b.Navigation("Materials");
+                });
+
+            modelBuilder.Entity("ElProApp.Data.Models.Material", b =>
+                {
+                    b.Navigation("Buildings");
+
+                    b.Navigation("JobDones");
                 });
 #pragma warning restore 612, 618
         }

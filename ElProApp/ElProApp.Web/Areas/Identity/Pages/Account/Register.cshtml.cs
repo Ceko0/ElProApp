@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
@@ -28,19 +29,21 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        
+        private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
-            ILogger<RegisterModel> logger)
+            ILogger<RegisterModel> logger,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
-            _logger = logger;            
+            _logger = logger;
+            _emailSender = emailSender;
         }
 
         /// <summary>
@@ -124,11 +127,12 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId, code, returnUrl },
-                        protocol: Request.Scheme);
+                    var callbackUrl = $"{Request.Scheme}://{Request.Host}/Identity/Account/ConfirmEmail?userId={userId}&code={WebUtility.UrlEncode(code)}";
+
+                    await _emailSender.SendEmailAsync(
+                            Input.Email,
+                            "Потвърди акаунта си",
+                            $"Моля потвърди акаунта си като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>кликнеш тук</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -136,8 +140,7 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("Add", "Employee", new { area = "" });
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
                     }
                 }
                 foreach (var error in result.Errors)

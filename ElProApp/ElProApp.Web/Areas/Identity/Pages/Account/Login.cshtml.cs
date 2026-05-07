@@ -104,26 +104,30 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                var user = await _signInManager.UserManager.FindByNameAsync(Input.UserName);
+
+                if (user != null)
                 {
+                    if (!await _signInManager.UserManager.CheckPasswordAsync(user, Input.Password))
+                    {
+                        ModelState.AddModelError(string.Empty, "Грешно потребителско име или парола.");
+                        return Page();
+                    }
+
+                    if (!await _signInManager.UserManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty, "Трябва да потвърдите имейла си преди да влезете.");
+                        return Page();
+                    }
+
+                    await _signInManager.SignInAsync(user, Input.RememberMe);
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
+
+                ModelState.AddModelError(string.Empty, "Грешно потребителско име или парола.");
+                return Page();
+                
             }
 
             // If we got this far, something failed, redisplay form

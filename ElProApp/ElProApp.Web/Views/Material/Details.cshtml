@@ -1,0 +1,49 @@
+﻿@using ElProApp.Web.Models.Material
+@model MaterialViewModel
+
+<div class="page-container">
+
+    <h2 class="section-title">Материал: @Model.Name</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+
+            <h5>Наличности по обекти</h5>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Сграда</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.BuildingMaterials != null && Model.BuildingMaterials.Any())
+                    {
+                        foreach (var item in Model.BuildingMaterials)
+                        {
+                            <tr>
+                                <td>@item.BuildingName</td>
+                                <td>@item.Quantity</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center">Няма наличности</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">Редакция</a>
+        <a asp-action="All" class="btn btn-primary">Назад</a>
+    </div>
+
+</div>

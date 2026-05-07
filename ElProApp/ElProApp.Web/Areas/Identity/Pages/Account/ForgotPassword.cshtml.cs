@@ -4,6 +4,7 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -64,11 +65,7 @@ namespace ElProApp.Web.Areas.Identity.Pages.Account
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ResetPassword",
-                    pageHandler: null,
-                    values: new { area = "Identity", code },
-                    protocol: Request.Scheme);
+                var callbackUrl = $"{Request.Scheme}://{Request.Host}/Identity/Account/ResetPassword?code={WebUtility.UrlEncode(code)}&email={Input.Email}";
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,

@@ -10,6 +10,7 @@
     using static Common.EntityValidationErrorMessage.Building;
     using static Common.EntityValidationErrorMessage.Master;
     using AutoMapper;
+    using ElProApp.Web.Models.Material;
 
     public class BuildingInputModel : IMapTo<Building>
     {
@@ -29,6 +30,8 @@
         public ICollection<BuildingTeamMapping> TeamsOnBuilding = new List<BuildingTeamMapping>();
 
         public ICollection<Guid> selectedTeamEntities = new List<Guid>();
+
+        public ICollection<MaterialViewModel> Materials { get; set; } = new List<MaterialViewModel>();
 
     }
 }

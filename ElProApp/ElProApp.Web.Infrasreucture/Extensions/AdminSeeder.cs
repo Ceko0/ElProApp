@@ -6,7 +6,7 @@
     using Microsoft.Extensions.DependencyInjection;
     
     using ElProApp.Data.Models;
-    using ElProApp.Services.Data.Interfaces;    
+    using ElProApp.Application.Services.Interfaces;    
     using static ElProApp.Common.ApplicationConstants;    
 
     public static class ApplicationBuilderExtensions

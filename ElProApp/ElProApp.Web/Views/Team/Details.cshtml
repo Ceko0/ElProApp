@@ -1,63 +1,57 @@
-﻿@using ElProApp.Data.Models
-@using ElProApp.Web.Models.Team
+﻿@using ElProApp.Web.Models.Team
 @model TeamViewModel
 
-@{
-    ViewData["Title"] = "Информация за екипа";
-}
+<div class="page-container">
 
-<div class="container mt-4">
-    <h1 class="display-4">Информация за @Model.Name</h1>
+    <h2 class="section-title">Екип: @Model.Name</h2>
 
-    <div class="mb-4">
-        <h3>Информация за екипа</h3>
-        <p><strong>Име на екипа:</strong> @Model.Name</p>
-    </div>
+    <div class="card mb-3">
+        <div class="card-body">
 
-    <div class="mb-4">
-        <h4>Сгради, свързани с екипа</h4>
-        <ul class="list-group">
+            <p><strong>Име:</strong> @Model.Name</p>
+
+            <hr />
+
+            <h5>Сгради</h5>
+
             @if (Model.BuildingWithTeam != null && Model.BuildingWithTeam.Any())
             {
-                foreach (var building in Model.BuildingWithTeam)
-                {
-                    <li class="list-group-item">
-                        <strong>Име на сградата:</strong> @building.Building?.Name
-                        <br />
-                        <strong>Местоположение на сградата:</strong> @building.Building?.Location
-                    </li>
-                }
+                <ul>
+                    @foreach (var building in Model.BuildingWithTeam)
+                    {
+                        <li>@building.Building?.Name (@building.Building?.Location)</li>
+                    }
+                </ul>
             }
             else
             {
-                <li class="list-group-item">Няма свързани сгради с този екип.</li>
+                <p class="text-muted">Няма сгради</p>
             }
-        </ul>
-    </div>
-    
-    <div class="mb-4">
-        <h4>Служители в екипа</h4>
-        <ul class="list-group">
-            @if (Model.EmployeesInTeam != null)
+
+            <hr />
+
+            <h5>Служители</h5>
+
+            @if (Model.EmployeesInTeam != null && Model.EmployeesInTeam.Any())
             {
-                var counter = 1;
-                foreach (var employee in Model.EmployeesInTeam)
-                {
-                    <li class="list-group-item">
-                        <strong>Служител @counter:</strong> @employee.Employee?.Name @employee.Employee?.LastName
-                    </li>
-                    counter++;
-                }
+                <ul>
+                    @foreach (var employee in Model.EmployeesInTeam)
+                    {
+                        <li>@employee.Employee?.Name @employee.Employee?.LastName</li>
+                    }
+                </ul>
             }
             else
             {
-                <li class="list-group-item">Няма служители в този екип.</li>
+                <p class="text-muted">Няма служители</p>
             }
-        </ul>
-        <div class="d-flex justify-content-between">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Редактиране</a>
-            <a asp-action="All" class="btn btn-secondary">Списъка с екипи</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+
         </div>
     </div>
+
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">Редактирай</a>
+        <a asp-action="All" class="btn btn-primary">Назад</a>
+    </div>
+
 </div>

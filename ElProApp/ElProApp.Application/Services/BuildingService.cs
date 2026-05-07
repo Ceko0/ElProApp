@@ -1,0 +1,243 @@
+﻿namespace ElProApp.Application.Services
+{
+    using Microsoft.EntityFrameworkCore;
+
+    using ElProApp.Data.Models;
+    using ElProApp.Data.Repository.Interfaces;
+    using ElProApp.Services.Mapping;
+    using Web.Models.Building;
+    using Interfaces;
+    using ElProApp.Web.Models.JobDone;
+    using Microsoft.Extensions.DependencyInjection;
+    using ElProApp.Web.Models.Material;
+
+    public class BuildingService(IRepository<Building, Guid> buildingRepository,
+                                 IBuildingTeamMappingService buildingTeamMappingService,
+                                 IHelpMethodsService helpMethodsService,
+                                 IBuildingMaterialMappingService buildingMaterialMappingService) :
+                                 IBuildingService
+    {
+        /// <summary>
+        /// Adds a new building based on the provided input model.
+        /// </summary>
+        /// <param name="model">The input model containing building details.</param>
+        /// <returns>The ID of the newly added building.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if a building with the same name already exists.</exception>
+        public async Task<string> AddAsync(BuildingInputModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Building model cannot be null.");
+            }
+
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                throw new ArgumentException("Building name must be provided.");
+            }
+
+            var existingBuilding = await buildingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x => x.Name == model.Name && !x.IsDeleted);
+
+            if (existingBuilding != null)
+                throw new InvalidOperationException("A building with this name already exists!");
+
+            var building = AutoMapperConfig.MapperInstance.Map<Building>(model);
+            await buildingRepository.AddAsync(building);
+            return building.Id.ToString();
+        }
+
+
+        /// <summary>
+        /// Retrieves the edit input model for a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building.</param>
+        /// <returns>The edit input model for the specified building.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the building is deleted.</exception>
+        public async Task<BuildingEditInputModel> GetEditByIdAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                throw new ArgumentException("Building ID must be provided.");
+
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
+
+            var entity = await buildingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x => x.Id == validId && !x.IsDeleted)
+                ?? throw new InvalidOperationException("Building not found or is deleted.");
+
+            var model = new BuildingEditInputModel
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Location = entity.Location
+            };
+
+            var allMappings = await buildingTeamMappingService
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .ToListAsync();
+
+            model.TeamsOnBuilding = allMappings
+                .GroupBy(x => x.Team.Id)
+                .Select(g => g.First())
+                .ToList();
+
+            model.selectedTeamEntities = allMappings
+                .Where(x => x.BuildingId == model.Id)
+                .Select(x => x.TeamId)
+                .ToList();
+
+            return model;
+        }
+
+        /// <summary>
+        /// Updates a building based on the provided edit input model.
+        /// </summary>
+        /// <param name="model">The input model containing updated building details.</param>
+        /// <returns>True if the update was successful, otherwise false.</returns>
+        public async Task<bool> EditByModelAsync(BuildingEditInputModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "Building edit model cannot be null.");
+            }
+
+            var entity = await buildingRepository.GetByIdAsync(model.Id);
+            if (entity == null)
+            {
+                throw new InvalidOperationException("Building not found.");
+            }
+
+            AutoMapperConfig.MapperInstance.Map(model, entity);
+            await buildingRepository.SaveAsync();
+
+            var buildingTeamMappings = await buildingTeamMappingService
+                .GetAllAttached()
+                .Include(x => x.Team)
+                .Include(x => x.Building)
+                .Where(m => m.BuildingId == model.Id && !m.Team.IsDeleted && !m.Building.IsDeleted)
+                .ToListAsync();
+
+            foreach (var buildingTeamMapping in buildingTeamMappings)
+            {
+                if (!model.selectedTeamEntities.Contains(buildingTeamMapping.TeamId))
+                {
+                    var mappingToRemove = buildingTeamMappings.FirstOrDefault(m => m.TeamId == buildingTeamMapping.TeamId);
+                    if (mappingToRemove != null)
+                    {
+                        await buildingTeamMappingService.RemoveAsync(mappingToRemove);
+                    }
+                }
+            }
+
+            foreach (var teamId in model.selectedTeamEntities)
+            {
+                if (!buildingTeamMappingService.Any(model.Id, teamId))
+                    await buildingTeamMappingService.AddAsync(model.Id, teamId);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Retrieves a list of all Buildings.
+        /// </summary>
+        /// <returns>A collection of view models representing all Buildings.</returns>
+        public async Task<ICollection<BuildingViewModel>> GetAllAsync()
+        {
+            var model = await buildingRepository
+                .GetAllAttached()
+                .Where(b => !b.IsDeleted)
+                .Select(b => new BuildingViewModel
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    Location = b.Location
+                })
+                .ToListAsync();
+
+            foreach (var building in model)
+            {
+                building.TeamsOnBuilding = await helpMethodsService.GetBuildingTeamMapping(building.Id);
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Retrieves all attached Buildings.
+        /// </summary>
+        /// <returns>An <see cref="IQueryable{Building}"/> collection of all attached Buildings.</returns>
+        public IQueryable<Building> GetAllAttached()
+            => buildingRepository.GetAllAttached().Where(x => !x.IsDeleted);
+
+        /// <summary>
+        /// Retrieves a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building.</param>
+        /// <returns>The view model representing the building.</returns>
+        public async Task<BuildingViewModel?> GetByIdAsync(string id)
+        {
+            Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
+
+            var entity = await buildingRepository
+                .GetAllAttached()
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == validId)
+                ?? throw new InvalidOperationException("Building not found or is deleted.");
+
+            var model = new BuildingViewModel
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Location = entity.Location
+            };
+
+            model.TeamsOnBuilding = await helpMethodsService
+                .GetBuildingTeamMapping(model.Id);
+
+            var materials = await buildingMaterialMappingService
+                .GetAllAttached()
+                .Include(x => x.Material)
+                .Where(x => x.BuildingId == model.Id)
+                .ToListAsync();
+
+            model.Materials = materials
+                .Select(x => new BuildingMaterialViewModel
+                {
+                    MaterialId = x.MaterialId,
+                    MaterialName = x.Material.Name,
+                    Quantity = x.Quantity,
+                    BuildingId = x.BuildingId,
+                    BuildingName = x.Building.Name
+                })
+                .ToList();
+
+            return model;
+        }
+
+        /// <summary>
+        /// Soft deletes a building by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the building to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
+        public async Task<bool> SoftDeleteAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new ArgumentException("Building ID must be provided.");
+            }
+
+            try
+            {
+                Guid validId = helpMethodsService.ConvertAndTestIdToGuid(id);
+                bool isDeleted = await buildingRepository.SoftDeleteAsync(validId);
+                return isDeleted;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+}

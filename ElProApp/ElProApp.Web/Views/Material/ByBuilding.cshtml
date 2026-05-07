@@ -1,0 +1,86 @@
+﻿@using ElProApp.Web.Models.Material
+@model ICollection<BuildingMaterialViewModel>
+
+@{
+    ViewData["Title"] = "Материали за сградата";
+    Layout = "_Layout";
+}
+
+<div class="page-container">
+
+    <h2 class="section-title">
+        Материали за: @Model.FirstOrDefault()?.BuildingName
+    </h2>
+
+    <div class="mb-3 d-flex justify-content-between">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            Начало
+        </a>
+
+        <a asp-action="All" class="btn btn-primary">
+            Списък с материали
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Материал</th>
+                <th>Количество</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var material in Model)
+                {
+                    <tr>
+                        <td>@material.MaterialName</td>
+
+                        <td class="@(material.Quantity < 0 ? "text-danger fw-bold" : "")">
+                            @material.Quantity
+                        </td>
+
+                        <td>
+                            @if (material.Quantity < 0)
+                            {
+                                <span class="badge bg-danger">Недостиг</span>
+                            }
+                            else if (material.Quantity == 0)
+                            {
+                                <span class="badge bg-warning text-dark">Нула</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">OK</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">
+                        Няма материали за тази сграда
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+        @if (Model != null && Model.Any())
+        {
+            <tfoot>
+                <tr>
+                    <td><strong>Общо</strong></td>
+                    <td><strong>@Model.Sum(x => x.Quantity)</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        }
+
+    </table>
+
+</div>

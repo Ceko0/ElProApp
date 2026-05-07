@@ -3,9 +3,8 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Application.Services.Interfaces;
     using Models.Building;
-    using static Common.ApplicationConstants;
 
     /// <summary>
     /// Controller for managing building entries and operations.
@@ -18,13 +17,9 @@
         /// </summary>
         /// <returns>A view with the list of all Buildings.</returns>
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
-                return RedirectToAction("AllBuildings", "Admin", new { area = "admin" });
-
-            return View(await buildingService.GetAllAsync());
-        }
+        public async Task<IActionResult> All() =>
+            View(await buildingService.GetAllAsync());
+        
 
         /// <summary>
         /// Displays the form for adding a new building.

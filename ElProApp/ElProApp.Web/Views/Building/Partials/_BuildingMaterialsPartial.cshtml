@@ -1,0 +1,61 @@
+﻿@using ElProApp.Web.Models.Material
+@using static ElProApp.Common.ApplicationConstants
+@model ICollection<BuildingMaterialViewModel>
+
+@if (Model != null && Model.Any())
+{
+    <h5 class="section-title mt-3">Материали</h5>
+
+    @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
+    {
+        <div class="mb-2">
+            <a asp-controller="Material"
+               asp-action="EditQuantities"
+               asp-route-buildingId="@Model.First().BuildingId"
+               class="btn btn-success">
+                Редактирай количества
+            </a>
+        </div>
+    }
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Материал</th>
+                <th>Количество</th>
+
+                @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                {
+                    <th>Действия</th>
+                }
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var material in Model)
+            {
+                <tr>
+                    <td>@material.MaterialName</td>
+                    <td>@material.Quantity</td>
+
+                    @if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
+                    {
+                        <td>
+                            <a asp-controller="Material"
+                               asp-action="AddToBuilding"
+                               asp-route-buildingId="@material.BuildingId"
+                               asp-route-materialId="@material.MaterialId"
+                               class="btn btn-success btn-sm">
+                                Добави количество
+                            </a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Няма материали.</p>
+}

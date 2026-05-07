@@ -3,33 +3,45 @@
 @model ICollection<TeamViewModel>
 
 @{
-    ViewData["Title"] = "Списък с екипи";
+    ViewData["Title"] = "Екипи";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Списък с екипи</h1>
+<div class="page-container">
 
-    <table class="table table-striped mt-4">
+    <h2 class="section-title">Списък с екипи</h2>
+
+    <div class="mb-3 d-flex justify-content-between">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Начало</a>
+        <a asp-controller="Team" asp-action="Add" class="btn btn-success">Създай екип</a>
+       
+    </div>
+
+    <table class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>Име на екипа</th>
+                <th>Име</th>
                 <th>Служители</th>
                 <th>Сгради</th>
-                <th>Детайли</th>
+                <th style="width:200px;">Действия</th>
             </tr>
         </thead>
+
         <tbody>
             @if (Model != null && Model.Any())
             {
                 foreach (var team in Model)
                 {
+                    var isUserInTeam = team.EmployeesInTeam != null &&
+                    team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId);
+
                     <tr>
                         <td>@team.Name</td>
 
                         <td>
                             @if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any())
                             {
-                                <ul>
+                                <ul class="mb-0">
                                     @foreach (var employee in team.EmployeesInTeam)
                                     {
                                         <li>@employee.Employee.Name @employee.Employee.LastName</li>
@@ -38,14 +50,14 @@
                             }
                             else
                             {
-                                <span>Няма налични служители</span>
+                                <span class="text-muted">—</span>
                             }
                         </td>
 
                         <td>
                             @if (team.BuildingWithTeam != null && team.BuildingWithTeam.Any())
                             {
-                                <ul>
+                                <ul class="mb-0">
                                     @foreach (var building in team.BuildingWithTeam.Where(b => b.Building != null))
                                     {
                                         <li>@building.Building.Name</li>
@@ -54,17 +66,32 @@
                             }
                             else
                             {
-                                <span>Няма налични сгради</span>
+                                <span class="text-muted">—</span>
                             }
                         </td>
 
                         <td>
-                            @{
-                                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                                if (team.EmployeesInTeam != null && team.EmployeesInTeam.Any(e => e.Employee.UserId.ToString() == currentUserId))
-                                {
-                                    <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-warning btn-sm">Информация за екипа</a>
-                                }
+                            @if (isUserInTeam || User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Details" asp-route-id="@team.Id" class="btn btn-details btn-sm">
+                                    Детайли
+                                </a>
+                            }
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@team.Id" class="btn btn-success btn-sm">
+                                    Редактирай
+                                </a>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <form asp-action="SoftDelete" asp-route-id="@team.Id" method="post" style="display:inline;">
+                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Сигурен ли си?')">
+                                        Изтрий
+                                    </button>
+                                </form>
                             }
                         </td>
                     </tr>
@@ -78,8 +105,5 @@
             }
         </tbody>
     </table>
-    <div class="d-flex justify-content-between">
-        <a asp-area="" asp-controller="Team" asp-action="Add" class="btn btn-success">Добави екип</a>
-        <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-    </div>
+
 </div>

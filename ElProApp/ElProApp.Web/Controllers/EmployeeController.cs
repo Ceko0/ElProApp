@@ -6,8 +6,7 @@
 
     using Data;
     using Models.Employee;
-    using ElProApp.Services.Data.Interfaces;
-    using static Common.ApplicationConstants;
+    using ElProApp.Application.Services.Interfaces;
 
     /// <summary>
     /// Controller for managing employee entries.
@@ -26,13 +25,9 @@
         /// </summary>
         /// <returns>A view with the list of employees.</returns>
         [HttpGet]
-        public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName))
-                return RedirectToAction("AllEmployees", "Admin", new { area = "Admin" });
-
-            return View(await employeeService.GetAllAsync());
-        }
+        public async Task<IActionResult> All() =>
+            View(await employeeService.GetAllAsync());
+        
         /// <summary>
         /// Displays the form for adding a new employee.
         /// Accessible only by administrators.

@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.17.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Localization" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ElProApp.Application\ElProApp.Application.csproj" />
     <ProjectReference Include="..\ElProApp.Data\ElProApp.Data.csproj" />
     <ProjectReference Include="..\ElProApp.Services.Data\ElProApp.Services.Data.csproj" />
   </ItemGroup>

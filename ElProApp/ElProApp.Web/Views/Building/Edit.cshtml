@@ -1,58 +1,54 @@
-﻿@using ElProApp.Web.Models.Building
-@model BuildingEditInputModel
-
+﻿@model ElProApp.Web.Models.Building.BuildingEditInputModel
 @{
-    ViewData["Title"] = "Редактиране на сграда";
-    Layout = "_Layout";
+    ViewData["Title"] = "Редактиране";
 }
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Редактиране на сграда - @Model.Name</h1>
+<div class="page-container">
+
+    <h2 class="section-title">Редактиране: @Model.Name</h2>
 
     <form asp-action="Edit" method="post">
         <input type="hidden" asp-for="Id" />
 
-        <div class="form-group">
-            <label asp-for="Name" class="control-label">Име на сградата</label>
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Име</label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Location" class="control-label">Локация</label>
+        <div class="mb-3">
+            <label asp-for="Location" class="form-label">Локация</label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
-       @if (Model.TeamsOnBuilding != null && Model.TeamsOnBuilding.Any())
-        {
-            <div class="form-group">
-                <label>Екипи на сградата</label>
-                @foreach (var teamMapping in Model.TeamsOnBuilding)
-                {
-                    <div class="form-check">
-                        <input type="checkbox" name="selectedTeamEntities" value="@teamMapping?.Team?.Id" class="form-check-input"
-                        @(teamMapping?.Team != null ? "checked" : "") />
-                        <label class="form-check-label">@teamMapping?.Team?.Name</label>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <p>Няма свързани екипи със сградата.</p>
-        } 
+        <div class="mb-3">
+            <label class="form-label">Екипи</label>
 
-        <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-warning">Запази</button>
-            <a asp-action="All" asp-route-id="@Model.Id" class="btn btn-secondary">Списъка с сгради</a>
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
+            @foreach (var teamMapping in Model.TeamsOnBuilding)
+            {
+                var isChecked = Model.selectedTeamEntities.Contains(teamMapping.Team.Id);
+
+                <div class="form-check">
+                    <input type="checkbox"
+                           name="selectedTeamEntities"
+                           value="@teamMapping.Team.Id"
+                           class="form-check-input"
+                    @(isChecked ? "checked" : "") />
+                    <label class="form-check-label">@teamMapping.Team.Name</label>
+                </div>
+            }
         </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Запази</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
+        </div>
+
     </form>
+
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

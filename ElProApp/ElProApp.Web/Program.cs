@@ -8,10 +8,11 @@
     using Microsoft.AspNetCore.Mvc;
 
     using ElProApp.Data.Models;
-    using ElProApp.Services.Data;
+    using ElProApp.Application.Services;
     using Data;
     using Models;
     using Infrastructure.Extensions;
+    using ElProApp.Web.Areas.Identity.Pages.Account;
 
     public class Program
     {
@@ -20,14 +21,15 @@
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<ElProAppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+                options.UseMySql(builder.Configuration.GetConnectionString("ElProAppDbContextConnection"),
+                    new MySqlServerVersion(new Version(5, 7, 44))));
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                options.Password.RequireDigit = false;
+                options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
+                options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 6;
 
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -35,7 +37,7 @@
 
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedAccount = false;
             })
                 .AddEntityFrameworkStores<ElProAppDbContext>()
@@ -45,7 +47,7 @@
             {
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SameSite = SameSiteMode.Lax;
                 options.ExpireTimeSpan = TimeSpan.FromDays(14);
                 options.LoginPath = new PathString("/Identity/Account/Login");
                 options.AccessDeniedPath = new PathString("/Home/Error/403");
@@ -53,6 +55,8 @@
 
             builder.Services.RegisterRepositories(typeof(Employee).Assembly);
             builder.Services.RegisterUserDefinedServices(typeof(EmployeeService).Assembly);
+            builder.Services.AddScoped<Infrastructure.Interfaces.IAdminService,Infrastructure.Services.AdminService>();
+            builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender,EmailSender>();
 
             builder.Services.AddControllersWithViews(cfg =>
             {
@@ -99,13 +103,13 @@
 
             app.MapRazorPages();
             
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ElProAppDbContext>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                var seeder = new Data.SeedData.DatabaseSeeder(dbContext, userManager);
-                seeder.SeedDatabase();
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<ElProAppDbContext>();
+            //    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            //    var seeder = new Data.SeedData.DatabaseSeeder(dbContext, userManager);
+            //    seeder.SeedDatabase();
+            //}
 
             app.Run();
         }

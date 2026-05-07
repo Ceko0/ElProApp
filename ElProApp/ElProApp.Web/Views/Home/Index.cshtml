@@ -2,43 +2,95 @@
     ViewData["Title"] = "Начална страница";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Добре дошли в сайта на Ел Про БГ!</h1>
-    <p>Тук можете да регистрирате свършената работа по проектите на фирмата.</p>
+<div class="text-center mb-4">
+    <h1 class="display-5">Добре дошли в Ел Про БГ</h1>
+    <p class="text-muted">
+        Тук можете да регистрирате свършената работа по проектите.
+    </p>
 </div>
 
-<div class="container mt-5">
-    <h2>За нас</h2>
-    <p>Ел Про БГ е фирма, специализирана в: </p>
-    <p> - проектирането и изграждането на електрически системи и инсталации </p>
-    <p> - изграждането на пожароизвестителни системи и видеонаблюдение </p>
-    <p> - проектиране, инсталация и поддръжка на сигнално охранителна техника</p>
-
-     <p>   Фирмата има изградени дългогодишни партньорски отношения със своите клиенти и се отличава с прецизност при изпълнението на поетите ангажименти и висока работна експертиза.</p>
-    <h2>Контакти</h2>
-    <p>Ако имате въпроси, свържете се с нас на e-mail: <a href="mailto:office@elprobg.com">info@elprobg.com</a></p>
-    <p>Или на номер : 0898080808</p>
-</div>
-
-<div class="container mt-5">
+<!-- DASHBOARD -->
+<div class="mb-4">
     <div class="row">
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("All", "Employee")" class="btn btn-primary w-100">Служители</a>
+            <a href="@Url.Action("All", "Employee")" class="btn btn-primary w-100 dashboard-btn">
+                Служители
+            </a>
         </div>
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("All", "Building")" class="btn btn-primary w-100">Сгради</a>
+            <a href="@Url.Action("All", "Building")" class="btn btn-primary w-100 dashboard-btn">
+                Сгради
+            </a>
         </div>
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("All", "Team")" class="btn btn-primary w-100">Екипи</a>
+            <a href="@Url.Action("All", "Team")" class="btn btn-primary w-100 dashboard-btn">
+                Екипи
+            </a>
         </div>
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("All", "JobDone")" class="btn btn-primary w-100">Свършена работа</a>
+            <a href="@Url.Action("All", "JobDone")" class="btn btn-primary w-100 dashboard-btn">
+                Свършена работа
+            </a>
         </div>
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("All", "Job")" class="btn btn-primary w-100">Работа</a>
+            <a href="@Url.Action("All", "Job")" class="btn btn-primary w-100 dashboard-btn">
+                Работа
+            </a>
         </div>
+
         <div class="col-md-2 col-sm-4 col-6 mb-3">
-            <a href="@Url.Action("Add", "JobDone")" class="btn btn-success w-100">Добави свършена работа</a>
+            <a href="@Url.Action("All", "Material")" class="btn btn-primary w-100 dashboard-btn">
+                Материали
+            </a>
         </div>
+
+        <div class="col-md-2 col-sm-4 col-6 mb-3">
+            <a href="@Url.Action("Add", "JobDone")" class="btn btn-success w-100 dashboard-btn">
+                Добави работа
+            </a>
+        </div>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician"))
+        {
+            <div class="col-md-2 col-sm-4 col-6 mb-3">
+                <a href="@Url.Action("AddToBuilding", "Material")" class="btn btn-success w-100 dashboard-btn">
+                    Материал към сграда
+                </a>
+            </div>
+        }
+
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
+        {
+            <div class="col-md-2 col-sm-4 col-6 mb-3">
+                <a href="@Url.Action("SetPrice", "Material")" class="btn btn-success w-100 dashboard-btn">
+                    Цени на материали
+                </a>
+            </div>
+        }
+
     </div>
+</div>
+
+<!-- INFO -->
+<div class="mb-4">
+    <h4 class="section-title">За нас</h4>
+    <p>Ел Про БГ е фирма, специализирана в:</p>
+    <ul>
+        <li>електрически системи и инсталации</li>
+        <li>пожароизвестяване и видеонаблюдение</li>
+        <li>охранителна техника</li>
+    </ul>
+</div>
+
+<div>
+    <h4 class="section-title">Контакти</h4>
+    <p>
+        Email: <a href="mailto:office@elprobg.com">info@elprobg.com</a><br />
+        Телефон: 0898080808
+    </p>
 </div>

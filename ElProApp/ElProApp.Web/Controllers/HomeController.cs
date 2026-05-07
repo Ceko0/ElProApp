@@ -1,9 +1,27 @@
 namespace ElProApp.Web.Controllers
 {
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.UI.Services;
     using Microsoft.AspNetCore.Mvc;
 
     public class HomeController : Controller
     {
+        private readonly IEmailSender _emailSender;
+
+            public HomeController(IEmailSender emailSender)
+            {
+                _emailSender = emailSender;
+            }
+
+            public async Task<IActionResult> TestEmail()
+            {
+                await _emailSender.SendEmailAsync(
+                    "falenangel86@gmail.com",
+                    "TEST",
+                    "<h1>raboti!</h1>");
+
+                return Content("Sent");
+            }
         /// <summary>
         /// Displays the home page.
         /// </summary>
@@ -33,5 +51,8 @@ namespace ElProApp.Web.Controllers
                 _ => View("Error"),
             };
         }
-    }
+     
+            
+        }
+    
 }

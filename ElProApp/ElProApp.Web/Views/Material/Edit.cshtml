@@ -1,0 +1,28 @@
+﻿@using ElProApp.Web.Models.Material
+@model MaterialEditInputModel
+
+<div class="page-container">
+
+    <h2 class="section-title">Редактиране на материал - @Model.Name</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label>Име на материала</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Запази</button>
+            <a asp-action="All" class="btn btn-primary">Назад</a>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -10,6 +10,7 @@
     using static Common.EntityValidationErrorMessage.JobDobe;
     using static Common.EntityValidationErrorMessage.Master;
     using static Common.EntityValidationConstants.JobDone;
+    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
     /// Represents a completed job record, including details about the job, quantity completed, and time spent.
@@ -69,5 +70,8 @@
         [Comment("The date when the record was deleted (logically deleted).")]
         [Column(TypeName = "date")]
         public DateTime? DeletedDate { get; set; }
+
+        public ICollection<JobDoneMaterialMapping> Materials { get; set; } = new List<JobDoneMaterialMapping>();
+
     }
 }

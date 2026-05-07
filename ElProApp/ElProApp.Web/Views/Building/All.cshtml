@@ -1,21 +1,35 @@
-﻿@using ElProApp.Web.Models.Building
-@model ICollection<BuildingViewModel>
-
+﻿@model IEnumerable<ElProApp.Web.Models.Building.BuildingViewModel>
 @{
-    ViewData["Title"] = "Всички сгради";
-    Layout = "_Layout";
+    ViewData["Title"] = "Сгради";
 }
 
-<div class="container mt-4">
-    <h1 class="display-4 text-center">Списък на всички сгради</h1>
+<div class="page-container">
 
+    <h2 class="section-title">Списък със сгради</h2>
+
+    <!-- ACTIONS -->
+    <div class="mb-3 d-flex justify-content-between">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            Начало
+        </a>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager") || User.IsInRole("Technician"))
+        {
+            <a asp-controller="Building" asp-action="Add" class="btn btn-success">
+                Добави сграда
+            </a>
+        }
+    </div>
+
+    <!-- TABLE -->
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>Име на сградата</th>
+                    <th>Име</th>
                     <th>Локация</th>
-                    <th>Екипи към сградата</th>
+                    <th>Екипи</th>
+                    <th style="width:180px;">Действия</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,31 +39,35 @@
                         <td>@building.Name</td>
                         <td>@building.Location</td>
                         <td>
+                            @await Html.PartialAsync("Partials/_BuildingTeamsPartial", building.TeamsOnBuilding)
+                        </td>
 
-                            @if (building.TeamsOnBuilding != null && building.TeamsOnBuilding.Any(te => te != null))
+                        <td>
+                            <a asp-action="Details" asp-route-id="@building.Id" class="btn btn-primary btn-info btn-sm">
+                                Детайли
+                            </a>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("OfficeManager"))
                             {
-                                <select class="form-select" onchange="location.href=this.value;">
-                                    <option selected disabled>Изберете екип за информация</option>
-                                    @foreach (var teamMapping in building.TeamsOnBuilding.Where(te => te != null))
-                                    {
-                                        <option value="@Url.Action("Details", "Team", new { id = teamMapping.Team.Id })">
-                                            @teamMapping?.Team?.Name
-                                        </option>
-                                    }
-                                </select>
+                                <a asp-action="Edit" asp-route-id="@building.Id" class="btn btn-success btn-sm">
+                                    Редактирай
+                                </a>
                             }
 
-                            else
+                            @if (User.IsInRole("Admin"))
                             {
-                                <span>Няма екипи към тази сграда.</span>
+                                <form asp-action="SoftDelete" asp-route-id="@building.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Сигурен ли си?')">
+                                        Изтрий
+                                    </button>
+                                </form>
                             }
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <div class="d-flex justify-content-between">
-            <a asp-controller="Home" asp-action="index" class="btn btn-secondary">Начална страница</a>
-        </div>
     </div>
+
 </div>

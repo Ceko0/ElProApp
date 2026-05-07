@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
 
-    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Application.Services.Interfaces;
 
     /// <summary>
     /// Controller responsible for handling search operations.

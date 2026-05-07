@@ -8,6 +8,7 @@
     using static Common.EntityValidationConstants.Building;
     using static Common.EntityValidationErrorMessage.Building;
     using static Common.EntityValidationErrorMessage.Master;
+    using ElProApp.Data.Models.Mappings;
 
     /// <summary>
     /// Represents a building entity with details about its name, location, and associated teams.
@@ -59,5 +60,7 @@
         [Comment("The date when the record was deleted (logically deleted).")]
         [Column(TypeName = "date")]
         public DateTime? DeletedDate { get; set; }
+
+        public ICollection<BuildingMaterialMapping> Materials { get; set; } = new List<BuildingMaterialMapping>();
     }
 }

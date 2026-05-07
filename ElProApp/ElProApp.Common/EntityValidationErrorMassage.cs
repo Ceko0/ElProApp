@@ -52,5 +52,12 @@
             public const string ErrorMassagePasswordMaxLength = "Паролата  не трябва да бъде повече от 30 символа.";
             public const string ErrorMassagePasswordInvalid = "Паролата трябва да съдържа само букви и цифри.";
         }
+
+        public static class Material
+        {
+            public const string ErrorMassageNameMinLength = "Името на материала трябва да бъде поне 3 символа.";
+            public const string ErrorMassageNameMaxLength = "Името на материала не може да надвишава 50 символа.";
+            public const string ErrorMassageQuantity = "Стойността трябва да е с максимум 6 цифри преди и до 2 след десетичната запетая.";
+        }
     }
 }

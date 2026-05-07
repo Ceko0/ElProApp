@@ -89,15 +89,6 @@
             }
             context.SaveChanges();
 
-            foreach (var job in initialData.Jobs)
-            {
-                if (!context.Jobs.Any(x => x.Id == job.Id))
-                {
-                    context.Jobs.Add(job);
-                }
-            }
-            context.SaveChanges();
-
             foreach (var jobDone in initialData.JobDones)
             {
                 if (!context.JobsDone.Any(x => x.Id == jobDone.Id))

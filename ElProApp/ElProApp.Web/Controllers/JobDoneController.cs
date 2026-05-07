@@ -3,130 +3,125 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    using ElProApp.Services.Data.Interfaces;
+    using ElProApp.Application.Services.Interfaces;
     using Models.JobDone;
-    using static Common.ApplicationConstants;
+
+    using static ElProApp.Common.EntityValidationConstants.CalculationAction;
 
     /// <summary>
-    /// Controller for managing completed JobsList.
+    /// Controller responsible for managing job-done operations.
     /// </summary>
     [Authorize]
-    public class JobDoneController(IJobDoneService jobDoneService) : Controller
+    public class JobDoneController(IJobDoneService jobDoneService)
+        : Controller
     {
-     
-
         /// <summary>
-        /// Displays a list of all completed JobsList.
+        /// Retrieves all job-done records.
         /// </summary>
-        /// <returns>A view with the list of completed JobsList.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> All()
-        {
-            if (User.IsInRole(AdminRoleName) || User.IsInRole(OfficeManagerRoleName) || User.IsInRole(TechnicianRoleName))
-                return RedirectToAction("AllJobDones", "Admin", new { area = "admin" });
+            => View(await jobDoneService.GetAllAsync());
 
-            return View(await jobDoneService.GetAllAsync());
-        }
         /// <summary>
-        /// Displays the form for adding a new completed job.
-        /// Accessible only by administrators.
+        /// Displays the create job-done form.
         /// </summary>
-        /// <returns>A view for adding a completed job.</returns>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
-        public async Task<IActionResult> Add() => View(await jobDoneService.AddAsync());
+        public async Task<IActionResult> Add()
+            => View(await jobDoneService.AddAsync());
 
         /// <summary>
-        /// Processes the request to add a new completed job.
-        /// Accessible only by administrators.
+        /// Creates a new job-done record.
         /// </summary>
-        /// <param name="model">The completed job input model.</param>
-        /// <returns>Redirects to job details or displays the same view if there's an error.</returns>
-        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
+        /// <param name="model">The input model.</param>
+
         [HttpPost]
+        [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         public async Task<IActionResult> Add(JobDoneInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            model.Name = $"От {model.StartDate:dd.MM.yyyy} до {model.EndDate:dd.MM.yyyy} Екип : {model.TeamName}";
 
-            try
+            if (!ModelState.IsValid)
             {
-                string jobDoneId = await jobDoneService.AddAsync(model);
-                return RedirectToAction(nameof(Details), new { id = jobDoneId });
+                var freshModel = await jobDoneService.AddAsync();
+
+                freshModel.StartDate = model.StartDate;
+                freshModel.EndDate = model.EndDate;
+                freshModel.DaysForJob = model.DaysForJob;
+                freshModel.TeamId = model.TeamId;
+                freshModel.BuildingId = model.BuildingId;
+                freshModel.Materials = model.Materials;
+
+                return View(freshModel);
             }
-            catch
-            {
-                return RedirectToAction(nameof(All));
-            }
+
+            string jobDoneId = await jobDoneService.AddAsync(model);
+
+            return RedirectToAction(nameof(Details), new { id = jobDoneId });
         }
 
         /// <summary>
-        /// Displays details of a completed job by its ID.
+        /// Displays details for a job-done record.
         /// </summary>
-        /// <param name="id">The ID of the completed job.</param>
-        /// <returns>A view with the completed job details.</returns>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician , Worker")]
         [HttpGet]
         public async Task<IActionResult> Details(string id)
             => View(await jobDoneService.GetByIdAsync(id));
 
         /// <summary>
-        /// Displays the form for editing a completed job.
-        /// Accessible only by administrators.
+        /// Displays the edit form.
         /// </summary>
-        /// <param name="id">The ID of the completed job to edit.</param>
-        /// <returns>A view for editing the completed job.</returns>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpGet]
         public async Task<IActionResult> Edit(string id)
-        {
-            var model = await jobDoneService.EditByIdAsync(id);
-
-            return View(model);
-        }
+            => View(await jobDoneService.EditByIdAsync(id));
 
         /// <summary>
-        /// Processes the request to edit a completed job.
-        /// Accessible only by administrators.
+        /// Updates a job-done record.
         /// </summary>
-        /// <param name="model">The edited completed job input model.</param>
-        /// <returns>Redirects to job details or displays the same view if there's an error.</returns>
+        /// <param name="model">The edit model.</param>
         [Authorize(Roles = "Admin , OfficeManager , Technician")]
         [HttpPost]
         public async Task<IActionResult> Edit(JobDoneEditInputModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-
-            try
+            if (!ModelState.IsValid)
             {
-                if (await jobDoneService.EditByModelAsync(model))
-                    return RedirectToAction(nameof(Details), new { id = model.Id });
-            }
-            catch
-            {
-                return RedirectToAction(nameof(All));
+                var freshModel = await jobDoneService.EditByIdAsync(model.Id.ToString());
+
+                freshModel.Name = model.Name;
+                freshModel.DaysForJob = model.DaysForJob;
+                freshModel.Materials = model.Materials ?? new List<MaterialInputPair>();
+
+                return View(freshModel);
             }
 
-            return View(model);
+            await jobDoneService.EditByModelAsync(model);
+
+            return RedirectToAction(nameof(Details), new { id = model.Id });
         }
 
         /// <summary>
-        /// Processes the request to soft delete a completed job.
-        /// Accessible only by administrators.
+        /// Soft deletes a job-done record.
         /// </summary>
-        /// <param name="id">The ID of the completed job to delete.</param>
-        /// <returns>Redirects to the list of completed JobsList.</returns>
+        /// <param name="id">The identifier.</param>
         [Authorize(Roles = "Admin , OfficeManager")]
         [HttpPost]
-        public async Task<IActionResult> SoftDelete(string id, string teamId)
+        public async Task<IActionResult> SoftDelete(string id)
         {
-            bool isDeleted = await jobDoneService.SoftDeleteAsync(id , teamId);
-            if (isDeleted)
+            var jobDone = await jobDoneService.GetByIdAsync(id);
+
+            bool isDeleted = await jobDoneService
+                .SoftDeleteAsync(id, jobDone.TeamId.ToString());
+
+            if (!isDeleted)
             {
-                return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(Details), new { id });
             }
-            ModelState.AddModelError("", "Failed to delete the completed job.");
-            return RedirectToAction(nameof(Details), new { id });
+
+            return RedirectToAction(nameof(All));
         }
     }
 }
